@@ -6,9 +6,10 @@
 
 
 ### TODO !!
-## plot functions (see .Rnw => method for options)
-## function updateyield gets current yield (ie. euribor.org)
-## 
+## - plot functions (see .Rnw => method for options)
+## - function updateyield gets current yield (ie. euribor.org)
+## - position extractor
+## - as.option takes option class
 
 
 payoff <- function(path,x,r) {
@@ -29,7 +30,6 @@ payoff <- function(path,x,r) {
     stop("American option not implemented yet")
   }   
 }
-
 
 ## extractors
 maturity <- function(x){
@@ -103,16 +103,26 @@ as.option <- function(x, ...){
 .as.option.default <- function(x){
   writeLines("no default method implemented yet, use a list as input")
 }
+
+.as.option.option <- function(x){
+  x <- unclass(x)
+  NextMethod(.as.option)
+}
+
 .as.option.list <- function(x){
   if(!inherits(x,"list")) stop("'x' not of class 'list'")
   available_types<- c("call","put")
+  available_positions<- c("long","short")
   available_classes <- "european"
   if(is.null(x$kind)) x$kind <- available_classes[1]
   x$type <- tolower(x$type)
-  if(!any(x$type==available_types)) stop(paste("'x$type' must be either",available[1],"or",available[2]))
+  if(!any(x$type==available_types)) stop(paste("'x$type' must be either",available_types[1],"or",available_types[2]))
   if(is.null(x$kind)) x$kind <- available_classes[1]
   x$kind <- tolower(x$kind)
-  if(!any(x$kind==available_classes)) stop(paste("'x$type' must be either",available[1],"or",available[2]))
+  if(!any(x$kind==available_classes)) stop(paste("'x$type' must be either",available_classes[1],"or",available_classes[2]))
+  if(is.null(x$position)) x$position <- "long"
+  x$position <- tolower(x$position)
+  if(!any(x$position==available_positions)) stop(paste("'x$position' must be either",available_positions[1],"or",available_positions[2]))
   if(!is.numeric(x$strikeprice)) stop("'x$strikeprice' must be a numeric")
   if(!is.numeric(x$present)) stop("'x$present' must be a numeric")
   if(is.null(x$maturity)) x$maturity <- 1
@@ -143,11 +153,42 @@ wienerPath <- function(S,n,T){
   ts(c(S,S+cumsum(rnorm(n)*sqrt(h))),start=0,frequency=n/T)
 }
 
-
 returns <- function(mu,sigma,n,T){
   eps <- rnorm(n)
   dt <- T/n
   path = (mu-sigma^2/2)*dt + sigma*sqrt(dt)*eps
   path
 }
+
+## plot method
+
+plot.option <- function(x, ...){
+  if(!inherits(x,"option")) stop("'x' not of class 'option'")
+  
+  if(position=="long")
+    pos <- 1
+  else if(position=="short")
+    pos <- -1
+  else stop("'position' must be 'short' or 'long'")
+
+  type <- optiontype(x)
+  cl <- optionclass(x)
+  strike <- strikeprice(x)
+  price <- priceof(x)
+  if(is.null(x)){
+    warning("no price calculated yet, using '0'")
+    price <- 0
+  }
+  int <- strike/2
+  x <- seq(from=strike-int,to=strike+int,by=strike/100)
+  if(type == "call") y <- (apply(matrix(
+       c(x-strike,rep(0,length(x))),ncol=2),1,max)-price)*pos
+  if(type == "put") y <- (apply(matrix(
+       c(strike-x,rep(0,length(x))),ncol=2),1,max)-price)*pos
+
+  main <- paste(cl, type, "option with option price",price,"and strike price",strike)
+  plot(x,y,type="l",xlab="stock price",ylab="profit",main=main)
+  invisible(x)
+}
+ 
 
