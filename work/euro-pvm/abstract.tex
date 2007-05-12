@@ -1,23 +1,45 @@
-\documentclass[a4paper,fleqn]{article}
+\documentclass{llncs}
 
-\usepackage[utf8]{inputenc}
+\usepackage{makeidx}  % allows for indexgeneration
+%\usepackage[utf8]{inputenc}
 \usepackage[austrian]{babel}
-\usepackage[round]{natbib}
+%\usepackage[round]{natbib}
 \usepackage{graphicx}
-\usepackage{hyperref}
-
-\title{Applied High Performance Computing in Statistics and Operations
-Research}
-\author{Reinhard Harter and Stefan Theussl}
+%\usepackage{hyperref}
 
 \begin{document}
 
+\title{Applied High Performance Computing in Statistics and Operations
+Research}
+
+\author{Reinhard Harter\inst{1} \and Stefan Theu"sl\inst{2}}
+
+\institute{Vienna University of Economics and Business Administration,
+  Augasse 2-6, 1090 Vienna, Austria\\
+\email{reinhard.harter@sap.com} \and Vienna University of Economics and Business Administration,
+  Augasse 2-6, 1090 Vienna, Austria\\
+\email{stefan.theussl@wu-wien.ac.at}
+}
+
+\maketitle              % typeset the title of the contribution
+
+%\begin{abstract}
+%The abstract should summarize the contents of the paper
+%using at least 70 and at most 150 words. It will be set in 9-point
+%font size and be inset 1.0 cm from the right and left margins.
+%There will be two blank lines before and after the Abstract. \dots
+%\end{abstract}
+
+\keywordname{ Parallel Computation, Statistics, Operation Research,
+  R-project, COIN-OR }
+\\
 % Aufmacher
 As a matter of fact parallel processing has become more and more
 important in the last decade. Nowadays not only clusters of
 workstations are capable of processing threads in parallel but also
-mainstream consumer PCs. Furthermore the computational complexity of
-applications in Statistics and Operations Research has advanced
+mainstream consumer PCs, as technology has driven the cost of
+multiprocessors down enough. Furthermore the computational complexity of
+applications in Statistics and Operations Research have advanced
 rapidly in the last years. Reducing the amount of time an application
 needs to calculate a solution for a time-critical process has become a
 major task not only for IT professionals but also for researches and
@@ -26,17 +48,30 @@ applicants developing software in Statistics or Operations Research.
 % Ziele der Arbeit
 
 In the diploma thesis by \cite{theussl07} a comparison of parallel
-processing techniques is being presented. Implementations of various
-CPU intensive problems like heuristics of the travelling salesman
-problem (TSP) or option pricing using Monte Carlo Simulation with the
-Message Passing Interface (MPI) are compared with 
-Parallel Virtual Machine (PVM) and compiler driven parallelizer like
-OpenMP.
+processing techniques is being presented. Implementations using either
+the Message Passing Interface (MPI), Parallel Virtual Machine (PVM)
+and compiler driven parallelizer (OpenMP) of various
+CPU intensive algorithms like heuristics for the travelling salesman
+problem (TSP) or Monte Carlo Simulation of option prices are
+compared to each other. 
+As parallel programs are traditionally designed using low-level
+message-passing (PVM or MPI) the aim is also to make use of
+contributed packages to the R-project, which is a free software
+environment for statistical
+computing and graphics, to provide high level functions so that
+enduser are able to make use of distributed or parallel computing
+without having to look into the details of how to implement threads in
+parallel using these message-passing libraries.
 
 % Ergebnisse
 
+Results show speedup lines for each implementation either in C or R. 
 
 % verwendete Infrastruktur
+The performance of the applications is evaluated using a cluster of 68
+Linux workstations, running a Core 2 Duo 2.4 GHz???? and four workstations
+running two Dual-Core Xeons at 3 GHz????. Message-passing is achieved using the MPI
+implementation LAM as well as PVM. The programms are written in C and R. 
 
 
 % Lobeshymnen auf R und OpenSource
