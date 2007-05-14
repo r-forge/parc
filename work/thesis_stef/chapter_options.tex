@@ -1,0 +1,116 @@
+\chapter{Option Pricing using Parallel Monte Carlo Simulation}
+\section{Introduction}
+\label{sec:optionintro}
+Derivatives are important in todays financial markets. Futures and
+options have been increasingly traded since the last 20 years. Now,
+there are many different types of derivatives.
+\begin{description}
+\item[A derivative] is an financial instrument whose value depends on
+  the value of an other variable (or the values of other
+  variables). This variable is called \textit{Underlying}.
+\end{description}
+Derivatives are traded on exchange-traded markets (people trade
+standardized contracts defined by the exchange) or over-the-counter
+markets (trades are done in a computer linked network or over the
+phone - no physical contact).
+
+There are two main types of derivatives, namely forwards (or futures)
+and options.
+
+\begin{description}
+\item[A Forward] is a contract in which one party buys (long position)
+  or sells (short postion) an
+  asset at a certain time in the future for a certain price. Unlike
+  forward contracts, \textit{futures} are standardized and therefore
+  are normally traded on an exchange.
+\item[A call Option] is a contract, which gives the holder the right
+  to buy an asset at a certain time for a certain price. 
+\item[A put Option] is a contract, which gives the holder the right
+  to sell an asset at a certain time for a certain price. 
+\end{description}
+
+With this information given we can write down their payoff functions:\newline
+for the call option
+\begin{equation}\label{eq:call}
+C_T = \left\{ \begin{array}{lcl} 0 & \textrm{when}& S_T \leq K \\
+                         S_T - K & \textrm{when} & S_T > K, \end{array}\right.
+\end{equation}
+and
+\begin{equation}\label{eq:put}
+P_T = \left\{ \begin{array}{lcl} 0 & \textrm{when}& K \leq S_T \\
+                         K - S_T & \textrm{when} & K > S_T \end{array}\right.
+\end{equation}
+for the put option.
+
+Figure \ref{fig:payoffs} shows the payoff functions of a call and
+a put option and the position of the investor (left:~long position,
+right:~short position).
+
+
+%% TODO: Figure fig:payoffs produced from .rnw
+
+Forward Prices (or Future Prices) can be determined in a simple way
+and therefore it is not computational interesting for this chapter.
+
+\subsection{Random Walk}\label{sec:randomwalk}
+Given a probability space ($\Omega,{\cal F},P$) we can differentiate
+between stochastic processes in discrete time (sequences of random
+variables $(X_n)_{n=0}^N$, $N \in\mathbf{N}$) and stochastic processes
+in continous time $(X_t)_{0 \leq t \leq T}$.
+
+A process $(X_n)_{n=0}^N$ with independent and identical distributed
+increments~($Z_i ~ Z_1$ for $n=1,\ldots,N$)is called random walk.
+$$ X_n = X_0 + Z_1 + Z_2 + \ldots + Z_n $$
+Figure~\ref{fig:randomwalk} shows a random walk starting from $X_0 =
+10$ and $Z_i ~ Z_1 ~ N(0,1)$.
+
+%% TODO: Figure produced from RNW
+
+
+\subsection{Binomial process}
+
+A random walk, which can only have 1 of 2 values $u$ and $d$ as increments, is
+called a binomial process.
+
+There is a $0 \leq p \leq 1$ where the probability $P(Z_n = u)$ equals
+$p$ and the probability $P(Z_n = d)$ equals $1 - p$.
+
+Figure~\ref{fig:binomial} shows a binomial tree (relevant for the
+pricing of the option) and a path of a binomial process. 
+
+
+%% TODO: Figure produced from RNW
+
+\subsection{Wiener process}
+
+A process $(W_t)_{0 \leq < \infty}$ is a Wiener process if
+\begin{enumerate}
+\item $W_0 = 0$,
+\item the paths are continous,
+\item all increments $W_{t_1}, W_{t_2} - W_{t_1}, \ldots W_{t_n} - W_{t_{n-1}}$
+  are independent and normal distributed for all $0 < t_1 < t_2 < \ldots < t_n$ 
+\end{enumerate}
+
+
+%% TODO: Figure produced from RNW
+
+In figure \ref{fig:wienerpath} one can see an example of a Wiender
+path.
+
+\subsection{Black-Scholes model}
+
+There is a market which consists of
+\begin{itemize}
+\item a bank account process $B_t = e^{rt}$
+\item and a share $S_t = S_0 e^{(\mu - \frac{\sigma^2}{2}) t + \sigma W_t}$. 
+\end{itemize}
+
+Equation~\ref{eq:blackscholes} gives the price of a European call
+option of time $t$ with maturity $T$ and payoff function $h(S_T)$.
+\begin{equation}\label{eq:blackscholes}
+ F(t,x) = \int e^{-r(T-t)}h(xe^{(r - \frac{\sigma^2}{2})(T-t)+\sigma \sqrt{T-tz}})\phi(z)dz 
+\end{equation}
+
+\section{Implementation}
+\section{Results}
+

@@ -1,0 +1,224 @@
+\chapter{Parallel Computing}
+\section{Introduction}
+
+Massive parallel machines (MPPs) or network of workstations (NOW)
+
+
+Furthermore greater speed implicates greater memory, otherwise you have
+the situation that a computer capable of performing trillions of
+operations in each second only has access to a small memory which is
+rather useless for solving data driven calculations.
+
+
+critical problems in the development of parallel computing (see
+pacheco p5-6)
+\begin{itemize}
+\item decide on and implement an interconnection network for the
+  processors
+\item design and implement system software for the hardware
+\item devise algorithms and data structures for solving th problem
+\item divide the algorithms and data structures up into subproblems
+\item identify the communications that will be needed among the
+  subproblems, and
+\item assign subproblems to processors and memory modules
+\end{itemize}
+
+\section{Computer Architecture}
+
+traditionally computers can be  categorized as follows:
+\begin{itemize}
+\item personal computers
+\item workstations
+\item mini computers
+\item mainframe computers
+\item High performance computing servers (super computers)
+\end{itemize}
+
+This has changed rapidly in the last years, as the requirements of
+people went through an interesting process. Not only schientists
+needed more and more computing power but also endusers. 
+
+In this diploma thesis we will have a closer look on the last category
+namely high performance computing servers. I start with a definition
+of what is a HPC server and continue with a taxonomy of such
+machines. I'm closing this section with a short description of the
+Servers I used to produce all the output in this thesis.
+
+\subsection{Beyond Flynn's Taxonomy}
+
+Providing a high-level standard for programming HPC applications is a
+major challenge nowadays. There are a variety of architectures for
+large-scale computing. They all have specific features and 
+therefore there should be a taxonomy in which such architectures can
+be classified. \cite{flynn72sco} classified architectures on the
+presence of single or multiple either instructions or data streams
+known as Flynn's taxonomy:
+\begin{description}
+\item[Single Instruction Single Data (SISD)]
+  For a long time this type of architecture of CPUs, developed by the
+  mathematician John von Neumann, was the standard. This computers are
+  known as serial computers. 
+\item[Multiple Instruction Single Data (MISD)] the theoritical possibility
+  of applying multiple instructions on a single datum is generally
+  impractical.
+\item[Single Instruction Multiple Data (SIMD)] 
+  a single instruction is applied by multiple processors to different
+  data.
+\item[Multiple Instruction Multiple Data (MIMD)] processors apply
+  different instructions on different data. 
+\end{description}
+
+But these distinctions are insufficient for classifying modern
+computers according to \cite{duncan90survey}. For example there are
+pipelined vector processors capable of concurrent arithmetic execution and
+manipulating hundreds of vector elements in parallel.
+
+Therefore \cite{duncan90survey} defines that a parallel architecture
+provides an explicit, high-level framework for 
+the development of parallel programming solutions by providing
+multiple processors that cooperate to solve problems through
+concurrent execution:
+
+\begin{description}
+\item[Synchronos architectures] coordinate concurrent operations in
+  lockstep through global clocks, central control unit, or vector unit
+  controllers. These architectures involve pipelined vector processors
+  (characterized by multiple, pipelined functional units, which
+  implement arithmetic and Boolean operations), SIMD architectures
+  (typically a control unit broadcasting a single instruction to
+  all processors executing the instruction on local data) and Systolic
+  architectures (pipelined multiprocessors in which data flows from
+  memory through a network of processors back to memory synchronized
+  by a global clock. 
+\item[MIMD architectures] consist of multiple processors applying
+  different instructions on local (different) data. The MIMD models
+  are asynchronous computers although they may be synchronized by
+  messages passing through an interconnection network (or by accessing
+  data in a shared memory). The advantage is the possibility of
+  executing largely independent subcalculations. These architectures
+  can further be classified in distributed or shared memory systems
+  whereas the first achieves interprocess communication via an
+  interconnection network and the last via a global memory each
+  processor can address.
+\item[MIMD-based architectural paradigms] involve MIMD/SIMD hybrids,
+  dataflow architectures, reduction machines, and wavefront arrays. A
+  MIMD architecture can be called a MIMD/SIMD hybrid if parts of the
+  MIMD architecture are controlled in SIMD fashion (some sort of
+  master/slave relation). In dataflow architectures instructions are
+  enabled for execution as soon as all of their operands become
+  available whereas in reduction architectures an instruction is
+  enabled for execution when its results are required as operands for
+  another instruction already enabled for execution. Wavefront array
+  processors are a mixture of systolic data piplining and asynchronous
+  dataflow execution.
+\end{description}
+
+\subsection{High performance computing server}
+
+These computers have the highest computation power. They are mainly used
+for scientific or technical applications. The number of processors
+such a computer can have reaches from 100 to several thousand (mainly
+64 bit processors).
+You can divide this category of computers in ``vector computers'' or ``parallel
+computers''. The amount of memory they have varies according to the type of
+these servers or application, which is running on them. The maximum
+amount of memory can absolutely be beyond several tera bytes.  
+
+This development started in the 1990's where parallel programming has
+become more and more important. With the increasing need of powerful
+hardware computer vendors started to build supercomputers capable of
+executing more and more instructions in parallel. In the beginning
+vector supercomputing system using a single shared memory were widely
+used to run large-scale applications. Due to the fact that vector
+systems were rather expensive in both purchasing and operation and
+bus-based shared-memory parallel systems were technologically bounded
+to smaller CPU counts the first distributed-memory parallel platforms (DMPs)
+came up. The big advantage was that they were inexpensive and could be
+built in many different sizes. DMPs could be rather small like a
+connection of workstations connected via a network to form a cluster of
+workstations (COW) or arbitrarily large. In fact individual
+organizations could buy clusters of a size that suited their
+budgets. The big disadvantage DMPs have is the higher transportation
+time of messages passing through a network in comparison to a shared
+memory system. Although the technology has improved (Infiniband) there
+is still space for improvements. 
+
+Current HPC systems are still formed of vector supercomputers
+(providing highest level of performance, but only for certain
+applications), SMPs with two to over 100 hundred CPUs and DMPs. As
+more than one CPU has become commonplace in desktop machines clusters
+can nowadays provide both small SMPs and big DMPs. When it comes to a
+decition which architecture to buy companies, laboratories or
+universities often choose to use a cluster of workstations because the
+cost of networking has decreased as I mentioned before and performance
+has increased since systems of this kind already dominate the Top500
+list. Furthermore, COWs are so successful because they can be
+configured from commodity chips and network and built the open-source
+Linux operating system and therefore offer high performance for a
+really good price.
+
+New developments show that there are interesting alternatives. Some
+HPC platforms offer a global addressing scheme and therefore enables
+CPUs to directly access the entire system's memory. This can be done
+with ccNUMA (cache coherent nonuniform memory access) systems (cite hp
+sgi paper and sgi.pdf-luthien) or
+global arrays (see section \ref{globalArrays})
+They have become an important improvement to distributed memory
+paltforms because amongst others it enables compiler driven
+parallelizing techniques like OpenMP (see section \ref{OpenMP})to be
+used on these systems. 
+ 
+\subsection{Hardware used}
+
+R-Forge specs
+Cluster specs (node.q, bignode, bignode.q)
+
+\section{Parallel Programming Models}
+
+
+
+\subsection{The Message Passing Interface (MPI)}
+\label{MPI}
+
+A message-passing function is a function which explicitly transmits
+data from one process to another. With these
+functions, creating parallel programs can be extremely efficient.
+Drawbacks: very difficult to design and implement (you have to deal
+with many details of a parallel program)
+
+MPI forum developed a standard, which should support parallel
+applications and libraries (inter process communication is very
+important)
+
+MPI is a library which can be called from various programming
+languages like C or Fortran. It contains all the infrastructure for
+inter process communication which the user need not know in detail
+then. 
+
+
+\subsection{Parallel Virtual Machine (PVM)}
+\label{PVM}
+
+\subsection{OpenMP}
+\label{OpenMP}
+
+
+ie. High Performance Fortran~(HPF)
+
+Dividing the data among the processors and having each processor apply
+the same program to its portion of the data.
+
+MPI
+
+\subsection{Global Arrays}
+\label{globalArrays}
+
+
+TODO: performance in a closer sense
+
+      benchmarks
+
+      LINPACK benchmark (implement LINPACK Java in R
+      http://www.top500.org/about/linpack
+
+      performance in a wider sense

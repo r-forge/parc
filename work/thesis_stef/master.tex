@@ -1,0 +1,66 @@
+\documentclass[12pt,a4paper,twoside]{report}
+% zur Kontrolle des Umbruchs Klassenoption draft verwenden
+%\usepackage[ngerman]{babel}
+\usepackage[utf-8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{latexsym}
+\usepackage{amsmath,amssymb}
+\usepackage{ifpdf}
+
+% Seitenlayout
+% DIV# gibt den Divisor für die Layoutberechnung an.
+% Vergrößern des Divisors vergrößert den Textbereich.
+% BCOR#cm gibt die Breite des Bundstegs an.
+\usepackage[DIV11,BCOR2cm]{typearea}
+
+% Abstand obere Blattkante zur Kopfzeile ist 2.54cm - 15mm
+\setlength{\topmargin}{-5mm}
+
+% Umgebungen für Definitionen, Sätze, usw.
+\newtheorem{Definition}{Definition}[chapter]
+%\newtheorem{Satz}{Satz}[chapter]
+\newtheorem{Lemma}{Lemma}[chapter]
+\newenvironment{Proof}{\noindent{Proof:}}{%
+  \hspace*{\fill}$\Box$\par\vskip2ex}
+
+
+\begin{document}
+  \pagestyle{empty}
+
+  % Title Page
+  \include{titlepage}
+  %% Table of contents
+  \tableofcontents
+  % show page headings now
+  \pagestyle{headings}
+
+    %% Chapter Introduction to Parallel Computing 
+    \input{chapter_intro.tex}
+
+    %% Chapter High Performance Computing
+    \input{chapter_hpc.tex}
+
+    %% Chapter GRASP: The Travelling Salesman Problem
+    \input{chapter_tsp.tex}
+
+    %% Chapter Option Pricing using Monte Carlo Simulation: 
+    \input{chapter_options.tex}
+
+    %% Chapter Parallel Support Vector Machines: Classification with
+    %% Support Vector Machines
+    \input{chapter_svm.tex}
+  
+    %% Conclusions and Future Work
+    \input{chapter_conclusions.tex}
+  
+    
+   
+  % Bibliography (begins on an odd page)
+  \cleardoublepage
+  
+  \bibliographystyle{plainnat}
+  \bibliography{hpc}
+  
+
+\end{document}
