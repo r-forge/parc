@@ -1,0 +1,103 @@
+\documentclass[a4paper,fleqn]{article}
+
+\usepackage[austrian]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[round]{natbib}
+\usepackage{graphicx, url}
+\usepackage{hyperref}
+
+\def\email#1{{\tt#1}}
+
+\begin{document}
+
+\title{Antrag F\"orderungsstipendium - Beschreibung der noch nicht
+  abgeschlossenen Arbeit}
+
+\author{Reinhard Harter \\ Matrikelnummer: 0353051 \\ Email:\email{h0353051@wu-wien.ac.at}}
+
+\maketitle              % typeset the title of the contribution
+
+\section{Kurzbeschreibung}
+
+\begin{description}
+\item[Titel der Diplomarbeit] High Performance Computing using COIN-OR
+\item[Betreuer] Prof. Dr. Kurt Hornik, Department of Statistics and
+  Mathematics
+\item[Sprache] Englisch
+
+\end{description}
+
+Diese Diplomarbeit besch\"aftigt sich mit dem L\"osen komplexer nicht-linearer
+Optimierungsprobleme, mit einem speziellen Fokus auf verteiltem Rechnen.
+Verteiltes Rechnen erm\"oglicht die immensen M\"oglichkeiten eines Cluster-Rechners, wie
+wir ihn am Institut f\"ur Mathematik und Statistik vorfinden, auszun\"{u}tzen und hochperformantes Rechnen durchzuf\"uhren.
+Aufgaben die fr\"uher Jahre gebraucht h\"atten, k\"onnen nun in wenigen Stunden und Tagen
+durchgef\"uhrt werden.
+Es wird gezeigt, wie diese in der Praxis sehr relevanten Problemstellungen mithilfe von Open Source L\"osungen (z.B. COIN-OR \cite{lougeeheimer2003coi}) gel\"ost werden k\"onnen.
+Durch die Unterst\"utzung von verteiltem Rechnen und deren Techniken wie PVM, OpenMP und Cluster OpenMP sind Open Source Frameworks auch wirtschaftlich interessant und kommerziell einsetzbar. 
+
+Die Teilnahme an der Konferenz EuroPVM/MPI (Detaillierte Informationen finden sich unter \url{http://pvmmpi07.lri.fr}) wird weitere Aufschl\"usse geben und Zukunftsperspektiven er\"offnen, welche in diese Diplomarbeit einfliessen werden und einen groﬂen Nutzen f\"ur die zuk\"unftige Verwendung des Cluster-Rechners mit sich bringen wird.
+
+Es wurde auch fristgerecht folgender Abstract bei der Konferenz \linebreak EuroPVM/MPI  eingereicht, um die Zwischenergebnisse im Rahmen der Erstellung der Diplomarbeit auch dort vorzutragen und zu diskutieren:
+
+\begin{abstract}
+Solving mixed-integer optimization problems has hardly ever been a trivial
+task. The diploma thesis by \cite{rharter07} focuses on possibilities to solve these problems using
+available open-source alternatives with a special focus on COIN-OR.
+The Computational Infrastructure for Operations Research (COIN) project is an initiative to spur the development of open-source software for the
+operations research community.
+It is a constantly growing repository of source code, models, data and
+examples available under open-source licenses.
+The thesis gives you an introduction into linear and integer programming in
+general. 
+Afterwards we focus on the specific implementation using COINOR
+and show how to use SYMPHONY as part of COIN-OR solving for
+optimization problems with a special focus on high performance computing
+(HPC) on multiple processors.
+An introduction to the modeling language AMPL and it's open source
+alternative using the GLPK package is provided in order to have all the
+necessary tools for implementation .
+The thesis then moves on to a few practical examples and solutions
+are being shown, which demonstrate the capabilities of the used techniques in
+an HPC computing environment.
+ 
+The diploma thesis will give you a introduction into
+mixed-integer linear programming on multiple processors.
+Starting with theory and necessary modeling languages (GLPK, AMPL) an overview
+of different high performance computing techniques and their usage will be
+provided. PVM, OpenMP as well as ClusterOpenMP by Intel will be the technologies of our choice.
+Used programming languages in the COIN-OR package are C (used in SYMPHONY) and
+C++ (as used in BCP, Branch Cute Price).
+Furthermore we're exploring the possibilities of connecting COIN-OR projects to
+the widely used language R.
+
+% Ziele der Arbeit
+The computational infrastructure is provided by the Department of
+Statistics and Mathematics of the Vienna University of Economics and
+Business Administration. The performance of the applications is
+evaluated using a cluster of 68 
+Linux workstations, running an Intel Core 2 Duo 6600 at 2.4 GHz and
+four workstations 
+running two Intel Dual-Core Xeons 5140 at 2.33 GHz. Message-passing is achieved
+using the MPI implementation LAM as well as PVM. The programs are
+written in C, C++ and R. C programs are compiled using either the GNU GCC
+compiler or the Intel compiler.
+
+\end{abstract}
+
+
+\begin{thebibliography}{2}
+%
+\bibitem {rharter07}
+Harter, R.:
+High Performance Computing using COIN-OR
+Diploma Thesis (2007)
+
+\bibitem{lougeeheimer2003coi}
+Lougee-Heimer, R.: The common optimization INterface for operations research: promoting open-source software in the operations research community.
+IBM Journal of Research and Development
+volume 47, number 1, pages 57-66, year 2003
+
+\end{thebibliography}
+
+\end{document}
