@@ -38,8 +38,8 @@ parallel_dot <- function(x, y, n_cpu,spawnRslaves=FALSE) {
 }
 
 ## example
-x <- runif(100000,-3,3)
-y <- runif(100000,-2,4)
+x <- runif(500000,-3,3)
+y <- runif(500000,-2,4)
 
 system.time(x%*%y)           ## fast, faster, fastest
 system.time(serial_dot(x,y)) ## very slow
