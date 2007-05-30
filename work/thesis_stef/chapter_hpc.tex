@@ -175,10 +175,45 @@ Cluster specs (node.q, bignode, bignode.q)
 
 \section{Parallel Programming Models}
 
+Programmers who like to create an application which should run in
+parallel have to face a challenging task. They have to distribute all
+the computation involved to a large number of processors. It is
+important that this is done in a way so that each of these computation
+nodes performs roughly the same work. Furthermore, developers have to
+ensure that the data required for the computation is available to the
+processor witch as little delay as possible. Therefore some sort of
+coordination is required for the locality of data in the memory.
+One might think that this could be hard work, and indeed it is. But
+there are programming models for HPC already available which make life
+easier.
 
+When parallel computing came up there have been a lot of programming
+languages developed. Only few of them experienced any real use. There
+have also been many implementations of computer vendors for their own
+machines. For a long time there has been no standard in sight as no
+agreement between hardware vendors and developers emerged. It was
+common that application developers have to write seperate HPC
+applications for each architecture.
+
+In the 1990's broad commonity efforts produced the first defacto
+standards for parallel computing. Commonalities were identified
+between all the implementations available and the field of parallel
+computing had been understood better. Since then libraries and certain
+implementations as well as compiler driven parallelizer have been
+developed.
+
+The programming models presented in this section are common and widely
+used. Starting with the first generation the Message Passing Interface
+(MPI - see \cite{}) and Parallel Virtual Machine (PVM - see \cite{})
+are going to be described. The second generation of HPC programming
+models involve OpenMP (see \cite{}) and Global Arrays (GA - see
+\cite{}). These programming models are not the only ones but are
+commonly used. 
 
 \subsection{The Message Passing Interface (MPI)}
 \label{MPI}
+
+
 
 A message-passing function is a function which explicitly transmits
 data from one process to another. With these
