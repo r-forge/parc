@@ -171,9 +171,26 @@ used on these systems.
 \subsection{Hardware used}
 
 R-Forge specs
+
+2 x Dual Core AMD Opteron 2.4 GHz
+12 GB RAM
+1.2 TB RAID 5
+
 Cluster specs (node.q, bignode, bignode.q)
 
+4 Nodes (bignodes):
+2 x Dual Core Intel XEON CPU 5140 @ 2.33 GHz
+16 GB RAM
+
+68 Nodes:
+1 x Intel Core 2 Duo CPU 6600 @ 2.4 GHz
+4 GB RAM
+
+
+
+
 \section{Parallel Programming Models}
+\label{sec:programming_models}
 
 Programmers who like to create an application which should run in
 parallel have to face a challenging task. They have to distribute all
@@ -204,38 +221,93 @@ developed.
 
 The programming models presented in this section are common and widely
 used. Starting with the first generation the Message Passing Interface
-(MPI - see \cite{}) and Parallel Virtual Machine (PVM - see \cite{})
+(MPI - see \cite{forum94:MPI}) and Parallel Virtual Machine (PVM - see
+\cite{geist94pvm})
 are going to be described. The second generation of HPC programming
-models involve OpenMP (see \cite{}) and Global Arrays (GA - see
-\cite{}). These programming models are not the only ones but are
-commonly used. 
+models involve OpenMP (see \cite{openMP05}) and Global Arrays (GA - see
+\cite{nieplocha96gan}). These programming models are not the only ones
+but are commonly used. 
 
 \subsection{The Message Passing Interface (MPI)}
 \label{MPI}
 
+In 1994 the Message Passing Interface Forum (MPIF) has defined a set
+of library interface standards for message passing. Over 40
+organizations participated in the discussion which started in
+1993. The aim was to develop a widely standard for writing
+message-passing programs. The standard was called the Message Passing
+Interface (see \cite{forum94:MPI}).
+
+As mentioned in section \cite{sec:programming_models} before there
+were a lot of different programming models and languages for high
+performance computing available. With MPI a standard was established
+that should be practical, portable, efficient and flexible. After
+releasing Version 1.0 in 1994 the MPIF continued to correct errors and
+made clarifications in the MPI document so that in June 1995 Version
+1.1 of MPI had been released.
+
+Further corrections and clarifications have been made Version 1.2 of
+MPI and with Version 2 completely new types of functionality has been
+added (see \cite{forum94:MPI-2} for details).
+
+MPI is now a library which can be called from various programming
+languages like C or Fortran. It contains all the infrastructure for
+inter process communication.
 
 
+
+\subsubsection{Why using message-passing?}
+\label{sec:why_m-p}
+
+If one uses a distributed memory machine (DMP) as platform for
+carrying out computations in parallel, data hs to be transmitted from
+one computation node to the other. With MPI there are higher level
+routines and abstractions available which build upon lower level
+message-passing routines.
+  
 A message-passing function is a function which explicitly transmits
 data from one process to another. With these
-functions, creating parallel programs can be extremely efficient.
-Drawbacks: very difficult to design and implement (you have to deal
-with many details of a parallel program)
+functions, creating parallel programs can be extremely
+efficient. Developers don't have to care about low level
+message-passing anymore.
 
-MPI forum developed a standard, which should support parallel
-applications and libraries (inter process communication is very
-important)
+\subsubsection{Implementations of the MPI standard}
 
-MPI is a library which can be called from various programming
-languages like C or Fortran. It contains all the infrastructure for
-inter process communication which the user need not know in detail
-then. 
 
+\begin{description}
+\item[LAM/MPI] is an open-source implementation of MPI. It runs on a
+  network of UNIX machines connected via a local area network or via
+  the Internet. On each node runs one UNIX daemon which is a
+  micro-kernel plus a dozen system processes responsible for network
+  communication among other things. The micro-kernel is
+  responsible for the communication between local processes (see
+  \cite{burns94lam}). The LAM/MPI implementation includes all of the
+  MPI-1.2 but not everything of the MPI-2 standard. LAM/MPI is
+  available at \url{http://www.lam-mpi.org/}.
+\item[MPICH] is a freely available complete implementation of the MPI
+  specification (MPICH1 includes all MPI-1.2 and MPICH2 all MPI-2
+  specifications). The main goal was to deliver high performance with
+  respect to portability. ``CH'' in MPICH stands for ``Chameleon''
+  which means adaptability to one's environment and high performance
+  as chameleons are fast (see \cite{gropp96mpich}). MPICH had been
+  developed during the discussion process of the MPIF and had immediately been
+  available to the community after the standard had been
+  confirmed. There are many other implementaions of MPI based on MPICH
+  available because of its high and easy portability.
+\item[OpenMPI] (see \cite{gabriel04:_open_mpi}) 
+\end{description}
+
+for setting up these implementations in Debian GNU Linux and cluster
+jobscripts see appendix \cite{app:mpi_imp}. 
 
 \subsection{Parallel Virtual Machine (PVM)}
 \label{PVM}
 
+
+
 \subsection{OpenMP}
 \label{OpenMP}
+
 
 
 ie. High Performance Fortran~(HPF)

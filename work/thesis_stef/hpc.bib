@@ -1,3 +1,7 @@
+%% Papers
+
+%% Surveys
+
 @article{mcbryan94overview,
     author = "Oliver A. McBryan",
     title = "An overview of message passing environments",
@@ -8,13 +12,17 @@
     year = 1994,
     url = "citeseer.ist.psu.edu/mcbryan94overview.html" }
 
-@Article{burns94lam,
-  author = 	 {Greg Burns and Raja Daoud and James Vaigl},
-  title = 	 {LAM: An Open Cluster Environment for MPI},
-  journal = 	 {Proceedings of Supercomputer Symposium '94},
-  year = 	 1994
+@article{duncan90survey,
+  title={{A survey of parallel computer architectures}},
+  author={Duncan, R.},
+  journal={Computer},
+  volume={23},
+  number={2},
+  pages={5--16},
+  year={1990}
 }
 
+%% Other
 
 @Article{gropp02pvmandmpi,
   author = 	 {William Gropp and Ewing Lusk},
@@ -31,35 +39,6 @@
   publisher={Springer}
 }
 
-@article{gropp96mpich,
-  title={{A High-Performance, Portable Implementation of the MPI Message Passing Interface Standard}},
-  author={Gropp, W. and Lusk, E.L. and Doss, N. and Skjellum, A.},
-  journal={Parallel Computing},
-  volume={22},
-  number={6},
-  pages={789--828},
-  year={1996}
-}
-@article{duncan90survey,
-  title={{A survey of parallel computer architectures}},
-  author={Duncan, R.},
-  journal={Computer},
-  volume={23},
-  number={2},
-  pages={5--16},
-  year={1990}
-}
-
-@article{nieplocha96gan,
-  title={{Global arrays: A nonuniform memory access programming model for high-performance computers}},
-  author={Nieplocha, J. and Harrison, R.J. and Littlefield, R.J.},
-  journal={The Journal of Supercomputing},
-  volume={10},
-  number={2},
-  pages={169--189},
-  year={1996},
-  publisher={Springer}
-}
 
 @InBook{hpc06chap2,
   editor =	 {Laurence T. Yang and Minyi Guo},
@@ -77,13 +56,6 @@
   publisher={Morgan Kaufmann}
 }
 
-@book{geist94pvm,
-  title={{Pvm: Parallel Virtual Machine-A Users' Guide and Tutorial for Networked Parallel Computing}},
-  author={Al Geist and Adam Beguelin and Jack Dongarra and Weicheng Jiang and Robert Manchek and Vaidy Sunderam},
-  year={1994},
-  publisher={MIT Press}
-}
-
 @article{flynn72sco,
   title={{Some computer organizations and their effectiveness}},
   author={Michael J. Flynn},
@@ -95,3 +67,81 @@
 }
 
 
+%% Standards
+
+%% PVM
+
+@book{geist94pvm,
+  title={{Pvm: Parallel Virtual Machine-A Users' Guide and Tutorial for Networked Parallel Computing}},
+  author={Al Geist and Adam Beguelin and Jack Dongarra and Weicheng Jiang and Robert Manchek and Vaidy Sunderam},
+  year={1994},
+  publisher={MIT Press}
+}
+
+
+%% MPI 
+
+@Manual{forum94:MPI,
+  title = 	 {MPI: A Message-Passing Interface Standard},
+  author =	 {Message Passing Interface Forum},
+  year =	 1994
+}
+
+@Manual{forum94:MPI-2,
+  title = 	 {MPI-2: Extensions to the Message-Passing Interface},
+  author =	 {Message Passing Interface Forum},
+  year =	 2003
+}
+
+
+
+@Article{gabriel04:_open_mpi,
+  author = 	 {Gabriel, E. and Fagg, G.E. and Bosilca, G. and Angskun, T. and Dongarra, J.J. and Squyres, J.M. and Sahay, V. and Kambadur, P. and Barrett, B. and Lumsdaine, A. and others},
+  title = 	 {Open MPI: Goals, concept, and Design of a Next Generation MPI Implementation},
+  journal = 	 {Proceedings, 11th European PVM/MPI Users' Group Meeting},
+  pages =        {97--104},
+  year = 	 2004,
+  publisher =    {Springer}
+}
+
+
+@article{gropp96mpich,
+  title={{A High-Performance, Portable Implementation of the MPI Message Passing Interface Standard}},
+  author={Gropp, W. and Lusk, E.L. and Doss, N. and Skjellum, A.},
+  journal={Parallel Computing},
+  volume={22},
+  number={6},
+  pages={789--828},
+  year={1996}
+}
+
+@Article{burns94lam,
+  author = 	 {Greg Burns and Raja Daoud and James Vaigl},
+  title = 	 {LAM: An Open Cluster Environment for MPI},
+  journal = 	 {Proceedings of Supercomputer Symposium '94},
+  volume =       {94},
+  pages =        {379--386},
+  year = 	 1994
+}
+
+%% OpenMP
+
+
+@Manual{openMP05,
+  title = 	 {OpenMP Application Program Interface Version 2.5},
+  author =	 {OpenMP Architecture Review Board},
+  year =	 2005
+}
+
+%% Global Arrays
+
+@article{nieplocha96gan,
+  title={{Global arrays: A nonuniform memory access programming model for high-performance computers}},
+  author={Nieplocha, J. and Harrison, R.J. and Littlefield, R.J.},
+  journal={The Journal of Supercomputing},
+  volume={10},
+  number={2},
+  pages={169--189},
+  year={1996},
+  publisher={Springer}
+}
