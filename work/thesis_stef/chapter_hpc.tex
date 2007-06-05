@@ -1,6 +1,7 @@
 \chapter{Parallel Computing}
 \section{Introduction}
 
+
 Massive parallel machines (MPPs) or network of workstations (NOW)
 
 
@@ -35,10 +36,10 @@ traditionally computers can be  categorized as follows:
 \end{itemize}
 
 This has changed rapidly in the last years, as the requirements of
-people went through an interesting process. Not only schientists
+people went through an interesting process. Not only scientists
 needed more and more computing power but also endusers. 
 
-In this diploma thesis we will have a closer look on the last category
+In this diploma thesis I will have a closer look on the last category
 namely high performance computing servers. I start with a definition
 of what is a HPC server and continue with a taxonomy of such
 machines. I'm closing this section with a short description of the
@@ -170,6 +171,9 @@ used on these systems.
  
 \subsection{Hardware used}
 
+\textbf{TODO: own section? short description of machines, details in
+  appendix}
+
 The Hardware I used for the applications presented in this thesis is
 going to be described in this section.
 At the Department of Statistics and Mathematics of the Vienna
@@ -193,7 +197,11 @@ Cluster specs (node.q, bignode, bignode.q)
 4 GB RAM
 
 
+\section{Distributed Computing}
 
+\textbf{TODO: distributed and shared memeory systems}
+
+heterogeneous network computing see geist et al p.2
 
 \section{Parallel Programming Models}
 \label{sec:programming_models}
@@ -235,7 +243,7 @@ models involve OpenMP (see \cite{openMP05}) and Global Arrays (GA - see
 but are commonly used. 
 
 \subsection{The Message Passing Interface (MPI)}
-\label{MPI}
+\label{sec:MPI}
 
 In 1994 the Message Passing Interface Forum (MPIF) has defined a set
 of library interface standards for message passing. Over 40
@@ -260,7 +268,7 @@ MPI is now a library which can be called from various programming
 languages like C or Fortran. It contains all the infrastructure for
 inter process communication.
 
-
+\textbf{TODO: Advantages/Disadvantages}
 
 \subsubsection{Why using message-passing?}
 \label{sec:why_m-p}
@@ -279,6 +287,7 @@ message-passing anymore.
 
 \subsubsection{Implementations of the MPI standard}
 
+\textbf{TODO: introduction to implementations}
 
 \begin{description}
 \item[LAM/MPI] is an open-source implementation of MPI. It runs on a
@@ -299,33 +308,79 @@ message-passing anymore.
   developed during the discussion process of the MPIF and had immediately been
   available to the community after the standard had been
   confirmed. There are many other implementaions of MPI based on MPICH
-  available because of its high and easy portability.
-\item[OpenMPI] (see \cite{gabriel04:_open_mpi}) 
+  available because of its high and easy portability. Sources and
+  Windows binaries are available from
+  \url{http://www-unix.mcs.anl.gov/mpi/mpich/}.
+\item[Open MPI] has been build upon three MPI Implementations like
+  LAM/MPI among the others. It is a new open-source MPI-2
+  Implementation. The goal of Open MPI is to implement the full
+  MPI-1.2 and MPI-2 specifications focusing on production-quality and
+  performance (see \cite{gabriel04:_open_mpi}). Open MPI can be
+  downloaded from  \url{http://www.open-mpi.org/}.
 \end{description}
 
 for setting up these implementations in Debian GNU Linux and cluster
-jobscripts see appendix \ref{app:mpi_imp}. 
+jobscripts see Appendix \ref{app:mpi_imp}. 
 
 \subsection{Parallel Virtual Machine (PVM)}
-\label{PVM}
+\label{sec:PVM}
 
+The PVM system is another but own implementation of a functionally
+complete message-passing model. It is designed to link computing
+resources for example in a heterogenous network and to provide
+developers with a parallel platform. As the message-passing model
+seemed to be the paradigm of choice in the late 80's the PVM project
+was created in 1989 to allow developers to exploit distributed
+computing across a wide variety of computer types. A key concept in
+PVM is that it makes a collection of computers appear as one large
+\textit{virtual} machine, hence its name \cite{geist94pvm}. The PVM
+system can be found on \url{http://www.csm.ornl.gov/pvm/}. In Appendix
+\ref{app:mpi_imp} one can find on how to setup this system on a linux
+machine and how to start a PVM job on a cluster.
+
+\textbf{TODO: Advantages/Disadvantages}
 
 
 \subsection{OpenMP}
-\label{OpenMP}
+\label{sec:OpenMP}
 
+A completely other approach in the parallel programming model context
+is the use of shared memory. Message-passing is built upon this shared
+memory model that means every processor has direct access to the
+memory of every other processor in the system. This class of
+multiprocessor is also called Scalable Shared Memory Multiprocessor
+(SSMP). Like the development of the MPI specifications the development
+of OpenMP started for one simple reason: portability. Prior the
+introduction of OpenMP as an industry standard every vendor of shared
+memory systems has created its own proprietary extension for
+developers. Therefore a lot of people interested in parallel
+programming used portabel message-passing models like MPI (see
+Section \ref{sec:MPI}) or PVM (see Section \ref{sec:PVM}). As there
+was an increasing demand for a simple and scalable programming model and
+the desire to begin parallelizing existing code without having to
+completely rewrite it, the OpenMP Architecture Review Board released a
+set of compiler directives and callable runtime library routines
+called the OpenMP API (see \cite{openMP05}). This directives and routines extend the
+programming languages Fortran and C or C++ respectively to express
+shared memory parallelism.
+Furthermore this programming model is based on the fork/join execution
+model which makes it easy to get parallelism out of a sequential
+program. Therefore unlike in message-passing the program or algorithm
+need not to be completely decomposed for parallel execution. Given a
+working sequential program it is not difficult to incrementally
+parallelize individual loops and thereby realize a performance gain in
+a multiprocessor system (\cite{dagum1997opi}). The specification and
+further information can be found on the following website:
+\url{http://www.openmp.org/}.
 
-
-ie. High Performance Fortran~(HPF)
-
-Dividing the data among the processors and having each processor apply
-the same program to its portion of the data.
-
-MPI
+\textbf{TODO: Advantages/Disadvantages}
 
 \subsection{Global Arrays}
 \label{globalArrays}
 
+
+\section{Performance Analysis}
+\label{sec:perf_analysis}
 
 \section{Implementation of parallel applications in R}
 \label{sec:parallel_R}
