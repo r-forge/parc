@@ -1,6 +1,7 @@
 useDynLib("paRc")
 
-export("c_serial_dot"
+export("c_serial_dot",
+       "MPI_Test"
        
     )
 

@@ -9,8 +9,8 @@ MPI_Test <- function () {
     }
   }
 	
-  out <- .Call("mpi_test", test = integer(1), PACKAGE = "paRc")
-  out$test
+  .C("mpi_test", test = integer(1), PACKAGE = "paRc")
+  #out$test
 }
 
 

@@ -1,6 +1,6 @@
-#include "mpi.h"
+#include "paRc_mpi.h"
 
-void mpi_test(*test) {
+void mpi_test(int *test) {
   
   int my_rank, p;
   MPI_Init((void *)0,(void *)0);
