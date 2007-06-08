@@ -1,11 +1,11 @@
 Package: paRc
-Type: Package
+Version: 0.0-3
+Date: 2007-06-07
 Title: Parallel computations in R
-Version: 0.0-2
-Date: 2007-05-17
 Author: Stefan Theussl
-Maintainer: Stefan Theussl <theussl@wu-wien.ac.at>
-SystemRequirements: LAM-MPI (http://www.lam-mpi.org/), OpenMP (http://www.open-mpi.org/)
-Suggests: rmpi, rpvm
+Maintainer: Stefan Theussl <stefan.theussl@wu-wien.ac.at>
+SystemRequirements: LAM/MPI (http://www.lam-mpi.org/), Open MPI (http://www.open-mpi.org/), PVM (www.epm.ornl.gov/pvm/)
 Description: This package uses and extends parallel infrastructure available in R and provides various applications in HPC.
 License: GPL v2 or newer
+Depends: R (>= 2.5.0)
+Suggests: rmpi, rpvm

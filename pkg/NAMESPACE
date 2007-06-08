@@ -1,12 +1,12 @@
-# useDynLib(paRc)
+useDynLib("paRc")
 
-export(
-    
+export("c_serial_dot"
+       
     )
 
 ## S3methods
 S3method("print","randomWalk")
 
 ## coercions
-S3method(as., )
+##S3method(as., )
 
