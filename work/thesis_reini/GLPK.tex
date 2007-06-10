@@ -1,0 +1,160 @@
+\chapter{GLPK}
+\label{sec:AMPLGLPK}
+
+
+The GLPK - GNU Linear Programming Kit - package is intended for solving large-scale linear programming (LP), mixed integer programming (MIP), and other related problems. It is a set of routines written in ANSI C and organized in the form of a callable library is an open-source alternative to read files AMPL format and parse them for usage with our optimization tools
+
+GLPK supports the GNU MathProg language, which is a subset of the AMPL language.
+
+AMPL is a commercial software developed at Bell Laboratories\footnote{\url{http://www.bell-labs.com/}}.
+It is a high-level programming language for describing and solving high complexity problems for large scale mathematical computation (i.e. large scale optimization and scheduling type problems).
+
+GLPK as well as AMPL offer much more possibilities than the old standard MPS.
+
+\section{Current State of GLPK development}
+\label{sec:CurrentStateOfGLPKDevelopment}
+
+GLPK is a work in progress and is presently under continual development. As of
+the current version 4.3, GLPK is a simplex-based solver is able to handle problems with up to 100,000 constraints. In particular, it successfully solves all instances from netlib (see the file bench.txt included in the GLPK distribution). The interior-point solver is not very robust as it is unable to handle dense columns, sometimes terminates due to numeric instability or slow convergence.
+The Mixed Integer Programming (MIP) solver currently is based on branch-and-bound, so it is unable to solve hard or very large problems with a probable practical limit of 100-200 integer variables. However, sometimes it is able to solve larger problems of up to 1000 integer variables, although the size that depends on properties of particular problem.
+
+\section{GLPK Installation}
+\label{sec:GLPKInstallation}
+
+To use AMPL files in our COIN-OR project we have to first install GLPK from \url{www.gnu.org/software/glpk/} and configure our application to use GLPK during the installation process.
+
+\begin{verbatim}
+wget http://gnu-ftp.basemirror.de/gnu/glpk/glpk-4.15.tar.gz
+tar -xzvf glpk-4.15.tar.gz
+./configure
+
+make prefix=~/gnu
+make prefix=~/gnu install
+
+./configure --with-glpk-incdir=/home/rharter/usr/gnu/include --with-glpk-lib="-L/home/rharter/usr/gnu/lib -lglpk" --enable-gnu-packages --with-openmp CC=icc
+
+make
+make install prefix=~/usr/symphony
+
+export PATH=$PATH:~/usr/symphony/bin
+
+\end{verbatim}
+
+
+\section{Using GLPK}
+\label{sec:Using GLPK}
+
+GLPK can be either used with the included stand-alone optimizer \verb*|glpsol| or you can create the file using the correct syntax and the parse it using another optimization tools as shown later, see \ref{sec:ConfigureSYMPHONYUsingGLPK}
+
+Running the stand-alone optimizer
+
+Assuming that you have a GLPK input file called \verb*|example.txt| and want to get output in a file called \verb*|results.txt|, you would issue the following command:
+
+\begin{verbatim}
+
+glpsol --model example.txt --output results.txt
+
+\end{verbatim}
+
+The \verb*|--model example.txt| part means that the input file is a GLPK file named example.txt.
+The \verb*|--output results.txt| part says that you would like output placed in a file called results.txt. 
+
+\section{Configure SYMPHONY using GLPK}
+\label{sec:ConfigureSYMPHONYUsingGLPK}
+
+\begin{verbatim}
+./configure --with-glpk-incdir=/home/rharter/usr/gnu/include
+						--with-glpk-lib="-L/home/rharter/usr/gnu/lib -lglpk"			
+\end{verbatim}
+
+\textsl{Be sure to specify the link line for the library correctly using ``-L'' in front and ``lglpk'' after the path.}
+
+After configuration compile and test it
+
+\begin{verbatim}
+make
+make test
+make install	
+\end{verbatim}
+
+\section{GLPK file structure}
+\label{sec:GLPKFileStructure}
+
+GLPK files are structured in a way, so that the logical model and the data are being seperated.
+The layout of an GLPK model is quite free. Sets, parameters, and variables must be declared before they are used but can otherwise appear in any order.
+
+For more details referring its syntax please consult the GLPK  documentation.
+
+\subsection{Sample two-variable linear program}
+\label{sec:SampleProblemGLPK}
+
+This example has been taken from \cite{fourer2003aml}:
+
+An (extremely simplified) steel company must decide how to allocate next week’s
+time on a rolling mill. The mill takes unfinished slabs of steel as input, and can produce either of two semi-finished products, which we will call bands and coils. (The terminology is not entirely standard; see the bibliography at the end of the chapter for some accounts of realistic LP applications in steelmaking.) The mill’s two products come off the rolling line at different rates:
+
+Tons per hour: 
+Bands 200
+Coils 140
+
+and they also have different profitabilities:
+
+Profit per ton: 
+Bands $25
+Coils $30
+
+To further complicate matters, the following weekly production amounts are the most that can be justified in light of the currently booked orders:
+
+Maximum tons: 
+Bands 6,000
+Coils 4,000
+
+The question facing the company is as follows: If 40 hours of production time are available this week, how many tons of bands and how many tons of coils should be produced to bring in the greatest total profit?
+
+\subsection{GLPK Model File Structure}
+\label{sec:GLPKModel}
+
+The solution of the previously mentioned problem\ref{sec:SampleProblemGLPK} shows the usage of GLPK. When creating your own models you can learn the most by looking at other models and adapting them for your specific use.
+
+Example \verb|prod.mod|:
+\begin{verbatim}
+set P;
+
+param a {j in P};
+param b;
+param c {j in P};
+param u {j in P};
+
+var X {j in P};
+
+maximize Total_Profit: sum {j in P} c[j] * X[j];
+
+subject to Time: sum {j in P} (1/a[j]) * X[j] <= b;
+
+subject to Limit {j in P}: 0 <= X[j] <= u[j];
+\end{verbatim}
+
+\subsection{GLPK Data File Structure}
+\label{sec:GLPKDataFileStructure}
+
+Example \verb|prod.dat|:
+\begin{verbatim}
+data;
+
+set P := bands coils;
+
+param:     a     c     u  :=
+  bands   200   25   6000
+  coils   140   30   4000 ;
+
+param b := 40;
+\end{verbatim}
+
+\section{Testcases GLPK}
+\label{sec:TestcasesGLPK}
+
+Many example testcases for near-real-life problems are available at
+http://plato.asu.edu/sub/testcases.html
+
+
+

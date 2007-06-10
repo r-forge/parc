@@ -1,0 +1,172 @@
+
+\chapter{Applications}
+\label{sec:Applications}
+
+\section{Partitions of Partitions}
+\label{sec:PartitionsOfPartitions}
+
+This example application is based on the paper ``Partitions of Partitions'' by Gordon and Vichi \cite{partitionsOfpartitions}.
+Further insights into the topic of consensus partitions in a different context are provided by Valls/Torra \textit{Explaining the consensus of opinions with the vocabulary of the experts}\cite{ConsensusOpinions}
+
+\bfseries
+Mention problems taking ``polynomial'' and the ones taking ``ex-po-nen-tial'' time later on!
+
+\url{http://www.americanscientist.org/template/AssetDetail/assetid/14705/page/3}
+
+\section{Sudoku, Number Placement Puzzle}
+\label{sec:Sudoku}
+
+Sudoku is a logic-based number placement puzzle. The objective is to fill a 9x9 grid so that each column, each row, and each of the nine 3x3 boxes contains the digits from 1 to 9. The puzzle setter provides a partially completed grid.
+
+Completed Sudoku puzzles are a type of Latin square, with an additional constraint on the contents of individual regions. Leonhard Euler is sometimes cited as the source of the puzzle, based on his work with Latin squares.
+
+The modern puzzle was invented by an American, Howard Garns, in 1979 and published by Dell Magazines under the name "Number Place". It became popular in Japan in 1986, when it was published by Nikoli and given the name Sudoku. It became an international hit in 2005.\cite{wiki:sudoku}
+
+Find the model and data files at \verb*|C:\Uni\Diplomarbeit\AMPL\glpk-4.13\examples|
+
+Enclosed an example application from glpk 4.13 written in GNU MathProg by Andrew Makhorin
+
+
+The model file for the Sudoko-Application looks like this
+
+\begin{verbatim}
+
+/* Example:
+   +-------+-------+-------+
+   | 5 3 . | . 7 . | . . . |
+   | 6 . . | 1 9 5 | . . . |
+   | . 9 8 | . . . | . 6 . |
+   +-------+-------+-------+
+   | 8 . . | . 6 . | . . 3 |
+   | 4 . . | 8 . 3 | . . 1 |
+   | 7 . . | . 2 . | . . 6 |
+   +-------+-------+-------+
+   | . 6 . | . . . | 2 8 . |
+   | . . . | 4 1 9 | . . 5 |
+   | . . . | . 8 . | . 7 9 |
+   +-------+-------+-------+
+
+   (From Wikipedia, the free encyclopedia.) */
+
+param givens{1..9, 1..9}, integer, >= 0, <= 9, default 0;
+/* the "givens" */
+
+var x{i in 1..9, j in 1..9, k in 1..9}, binary;
+/* x[i,j,k] = 1 means cell [i,j] is assigned number k */
+
+s.t. fa{i in 1..9, j in 1..9, k in 1..9: givens[i,j] != 0}:
+     x[i,j,k] = (if givens[i,j] = k then 1 else 0);
+/* assign pre-defined numbers using the "givens" */
+/* 's.t.' declares a constraint (optional) 			 */
+
+s.t. fb{i in 1..9, j in 1..9}: sum{k in 1..9} x[i,j,k] = 1;
+/* each cell must be assigned exactly one number */
+
+s.t. fc{i in 1..9, k in 1..9}: sum{j in 1..9} x[i,j,k] = 1;
+/* cells in the same row must be assigned distinct numbers */
+
+s.t. fd{j in 1..9, k in 1..9}: sum{i in 1..9} x[i,j,k] = 1;
+/* cells in the same column must be assigned distinct numbers */
+
+s.t. fe{I in 1..9 by 3, J in 1..9 by 3, k in 1..9}:
+     sum{i in I..I+2, j in J..J+2} x[i,j,k] = 1;
+/* cells in the same region must be assigned distinct numbers */
+
+/* there is no need for an objective function here */
+
+solve;
+
+for {i in 1..9}
+{  for {0..0: i = 1 or i = 4 or i = 7}
+      printf " +-------+-------+-------+\n";
+   for {j in 1..9}
+   {  for {0..0: j = 1 or j = 4 or j = 7} printf(" |");
+      printf " %d", sum{k in 1..9} x[i,j,k] * k;
+      for {0..0: j = 9} printf(" |\n");
+   }
+   for {0..0: i = 9}
+      printf " +-------+-------+-------+\n";
+}
+
+
+/* sudoku.dat, a hard Sudoku puzzle which causes branching */
+
+data;
+
+param givens : 1 2 3 4 5 6 7 8 9 :=
+           1   1 . . . . . 7 . .
+           2   . 2 . . . . 5 . .
+           3   6 . . 3 8 . . . .
+           4   . 7 8 . . . . . .
+           5   . . . 6 . 9 . . .
+           6   . . . . . . 1 4 .
+           7   . . . . 2 5 . . 9
+           8   . . 3 . . . . 6 .
+           9   . . 4 . . . . . 2 ;
+
+end;
+
+\end{verbatim}
+
+After designing this problem using the GNU MathProg language (GLPK) you can solve it with either glpksol (as it's delivered together with the GLPK package) or using any other solvers capable of reading GLPK/AMPL format.
+
+First we would like to show how to solve it with glpksol:
+
+\begin{enumerate}
+	\item The model and the data file should be stored separately, here we called it sudoku.mod and sudoko.dat
+	\item We then execute the solver and using the 2 files as parameters.
+	
+		\begin{verbatim}
+		glpsol -m sudoku.mod -d sudoku.dat
+		\end{verbatim}
+\end{enumerate}
+
+The output then shows that the GLPK model as transformed in a linear program of 504 rows and 729 columns, as well as the time and memory used.
+
+Output:
+\begin{verbatim}
+Reading model section from sudoku.mod...
+69 lines were read
+Reading data section from sudoku.dat...
+16 lines were read
+
+Generating fa...
+Generating fb...
+Generating fc...
+Generating fd...
+Generating fe...
+Model has been successfully generated
+
+lpx_simplex: original LP has 504 rows, 729 columns, 3096 non-zeros
+lpx_simplex: presolved LP has 204 rows, 179 columns, 716 non-zeros
+lpx_adv_basis: size of triangular part = 132
+      0:   objval =   0.000000000e+00   infeas =   1.000000000e+00 (56)
+     86:   objval =   0.000000000e+00   infeas =   8.862306600e-16 (69)
+     
+OPTIMAL SOLUTION FOUND
+Integer optimization begins...
+Objective function is integral
++    86: mip =     not found yet >=              -inf        (1; 0)
++   412: mip =   0.000000000e+00 >=   0.000000000e+00   0.0% (1; 1)
++   412: mip =   0.000000000e+00 >=     tree is empty   0.0% (0; 3)
+
+INTEGER OPTIMAL SOLUTION FOUND
+Time used:   0.0 secs
+Memory used: 1.7M (1803791 bytes)
+
+ +-------+-------+-------+
+ | 1 8 9 | 5 6 2 | 7 3 4 |
+ | 3 2 7 | 1 9 4 | 5 8 6 |
+ | 6 4 5 | 3 8 7 | 9 2 1 |
+ +-------+-------+-------+
+ | 5 7 8 | 2 4 1 | 6 9 3 |
+ | 4 3 1 | 6 7 9 | 2 5 8 |
+ | 9 6 2 | 8 5 3 | 1 4 7 |
+ +-------+-------+-------+
+ | 8 1 6 | 4 2 5 | 3 7 9 |
+ | 2 9 3 | 7 1 8 | 4 6 5 |
+ | 7 5 4 | 9 3 6 | 8 1 2 |
+ +-------+-------+-------+
+Model has been successfully processed
+
+\end{verbatim}

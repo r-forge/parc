@@ -1,0 +1,14 @@
+
+\chapter{Connect R and SYMPHONY}
+\label{sec:ConnectRAndSYMPHONY}
+
+Compiled code meant to be used together with R has to be loaded as a shared object. \footnote{applies to Unix/MacOS X environments. Under Windows use a Dynamic Link Library (DLL)}
+You can load shared objects from R via \verb|dyn.load| and unload it via \verb|dyn.unload|
+
+\section{Example for loading a shared object}
+\label{sec:ExampleForLoadingASharedObject}
+
+\begin{verbatim}
+dyn.load ~/Coin-SYMPHONY/build_usual/lib/libSym.so
+
+\end{verbatim}

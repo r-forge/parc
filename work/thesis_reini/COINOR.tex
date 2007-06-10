@@ -1,0 +1,464 @@
+\chapter{COIN-OR}
+\label{sec:COIN-OR}
+
+\section{History}
+\label{sec:History}
+
+The Computational Infrastructure for Operations Research (COIN) project
+\footnote{COIN-OR: see http://www.coin-or.org} 
+is an initiative to spur the development of open-source software for the operations research community. 
+
+It is a constantly growing repository of source code, models, data and examples available under open-source licenses.
+
+Goals of COIN-OR\cite{COINORGoals}
+
+\begin{itemize}
+	\item provide a repository for hosting open source development projects related to operations research,
+  \item encourage mechanisms for peer review of software that complement the already-existing peer-review process for journal articles, and
+  \item faster software development efforts by helping \- to identify funding sources for such projects.
+
+\end{itemize}
+
+A sample of applications available at COIN-OR are for example
+\verb|Clp| (an LP solver), 
+\verb|BCP| (a Branch-Cut-Price software) and \verb|Ipopt| (non-linear solver).
+
+For a more detailed list I refer to the overview of existing projects below
+\ref{sec:OverviewProjects}.
+
+The software in the COIN-OR repository is organized into individual projects, each with its own project manager, project management Web site, project wiki, project mailing list(s), and bug tracking system. Each project is managed by a project manager who oversees development. Some of the projects are inter-dependent and others are stand-alone.
+
+
+\subsection{Overview of existing projects by category (Feb 2007, source: www.coin-or.org}
+\label{sec:OverviewProjects}
+
+\subsubsection{Graphs}
+
+\begin{description}
+	\item[CGC] COIN-OR Graph Classes, a collection of network representations and algorithms
+\end{description}
+
+\subsubsection{Infrastructure}
+
+\begin{description}
+	\item[BuildTools] COIN-OR Unix developer tools and documentation, \-
+	 tools for managing configuration and compilation of various COIN-OR projects under Linux, Unix, and Cygwin
+  \item[CoinBinary] COIN-OR Binary Distributions, pre-compiled binary distributions of COIN-OR projects
+  \item[CoinWeb] COIN-OR Web Services, COIN-OR Web pages, Subversion, Trac, etc.
+  \item[MSVisualStudio] MSVisualStudio, tools for building various COIN-OR projects using Microsoft Visual Studio compilers
+\end{description}
+
+\subsubsection{Metaheuristics}
+
+    
+\begin{description}
+	\item[OTS] Open Tabu Search, a framework for constructing tabu search algorithms
+
+Optimization deterministic linear continuous
+
+  \item[CLP] COIN-OR LP, a simplex solver
+  \item[CoinMP] A lightweight API and DLL for CLP, CBC, and CGL
+  \item[DyLP] Dynamic LP, an implementation of the dynamic simplex methods
+  \item[FLOPC++] An algebraic modeling language embedded in C++
+  \item[OSI] Open Solver Interface, a uniform API for calling embedded linear and mixed-integer programming solvers
+  \item[VOL] Volume Algorithm, a subgradient algorithm that also computes approximate primal solutions
+\end{description}
+
+\subsubsection{Optimization deterministic linear discrete}
+
+    
+\begin{description}
+
+	\item [BCP] Branch-Cut-Price Framework, a framework for constructing parallel branch-cut-price algorithms for mixed-integer linear programs
+  \item [CBC] COIN-OR Branch and Cut, an LP-based branch-and-cut library
+  \item [CGL] Cut Generator Library, a library of cutting-plane generators
+  \item [COPS] COIN-OR Open Parallel Search Framework, a framework for constructing parallel tree search algorithms (includes an LP-based branch-cut-price implementation)
+  \item [SBB] Simple Branch and Bound, an early version of the CBC library
+  \item [SYMPHONY] A callable library for solving \\ mixed-integer linear programs
+  
+\end{description}
+
+\subsubsection{Optimization deterministic nonlinear}
+
+    
+\begin{description}
+
+	\item [DFO] Derivative-Free Optimization, a package for solving general nonlinear optimization problems when derivatives are unavailable
+	
+  \item [Ipopt] Interior-Point Optimizer, for general large-scale nonlinear optimization
+  
+  \item [NLPAPI] Nonlinear Programming API, \-
+  a subroutine interface for defining and solving nonlinear programming problems
+  
+  \item [SVM-QP] Support Vector Machine Quadratic Programming, 
+  support vector machine quadratic programming
+  
+\end{description}
+
+\subsubsection{Optimization deterministic nonlinear discrete}
+
+    
+\begin{description}
+	\item [Bonmin] Basic Open-source Nonlinear Mixed INteger programming, an experimental open-source C++ code for solving general MINLP (Mixed Integer NonLinear Programming) problems
+\end{description}
+
+\subsubsection{Optimization deterministic semidefinite continuous}
+
+    
+\begin{description}
+	\item [CSDP] An interior-point method for semidefinite programming
+\end{description}
+
+\subsubsection{Optimization stochastic}
+
+\begin{description}
+	\item [SMI] Stochastic Modeling Interface, for optimization under uncertainty
+\end{description}
+
+\subsubsection{Optimization utility}
+
+    
+\begin{description}
+	\item [CoinUtils] COIN-OR utilities, utilities, data structures, and linear algebra methods for COIN-OR projects
+  \item [CppAD] CppAD, a tool for differentiation of C++ functions
+\end{description}
+
+\subsubsection{Systems of equations nonlinear}
+
+    
+\begin{description}
+	\item [Multifario] A continuation method for computing implicitly defined manifolds
+\end{description}
+
+
+\section{SYMPHONY}
+\label{sec:SYMPHONY}
+
+SYMPHONY is an open-source solver for mixed-integer linear programs (MILPs) written in C. It can be used in three different main modes:
+
+\begin{itemize}
+	\item As a callable library through either the native C interface or through the Osi.
+	\item As an interactive solver using a command-line interface.
+	\item As a framework to build customized solvers for specific problem classes. 
+\end{itemize}
+
+SYMPHONY can be executed in either parallel (distributed or shared memory) or sequential modes and has a number of advanced features that make it unique, including the ability to
+
+\begin{itemize}
+	\item solve biobjective MILPs (BIP) \footnote{\cite{ralphs2005}: "Biobjective integer programming (BIP) is an extension of the classical single-objective integer programming
+problem motivated by a variety of real world applications in which it is necessary to consider two or more
+criteria when selecting a course of action."}
+  \item	warm start the solution procedure,
+  \item	perform basic sensitivity analyses and
+  \item parallel execution
+\end{itemize}
+
+\subsection{SYMPHONY Main Modes}
+\label{sec:SYMPHONYMainModes}
+
+\subsubsection{Using SYMPHONY from the command line}
+In LINUX, the following command would solve the instance
+``sample.mps''
+
+\begin{verbatim}
+symphony -F sample.mps
+\end{verbatim}
+
+\subsubsection{Using the SYMPHONY interactive optimizer}
+To use SYMPHONY's Interactive shell, run the executable name without any
+command line arguments.
+To load and solve an ampl/gmpl file, you will need to type 
+\verb|load sample.mod sample.dat| and then \verb|solve|.
+
+\subsubsection{Using the callable library}
+To use SYMPHONY as a generic callable library, compile SYMPHONY as described
+above. The library that is created along with the solver itself can be linked
+to using the API described in the user's manual. For examples of using the
+callable library in this way, see the Examples/ subdirectory.
+
+\subsection{Parallel Execution}
+\label{sec:ParallelExecutionSymphony}
+
+To enable parallel execution, SYMPHONY is functionally divided into
+five independent modules, that communicate through shared\footnote{Shared memory refers to a kind of memory which is accessible by more than one processor} or
+distributed memory\footnote{Unlike shared memory distributed memory means that each processor has it's own memory in a multi-processor system }.
+
+\subsubsection{SYMPHONY modules}
+\label{sec:SYMPHONYModules}
+
+\begin{description}
+	\item \textbf{Master}
+		\begin{itemize}
+			\item Maintains static data between solves
+			\item Spawns parallel processes and
+			\item Performs I/O
+		\end{itemize}
+	\item \textbf{Tree Manager (TM)}
+				Controls overall execution by tracking growth of the tree and dispatching subproblems to the LP solvers
+	\item \textbf{Node Processors (NP)}
+				Perform processing and branching operations
+	\item \textbf{Cut Generator (CG)}
+				Generates cuts.
+	\item \textbf{Cut Pool (CP)}
+	Acts as an auxiliary cut generator by maintaining a list of the "`most effective"' cuts found so far			
+
+\end{description}
+
+
+\subsection{OpenMP - Building and Execution for Shared Memory}
+\label{sec:OpenMPBuildingAndExecutionForSharedMemory}
+
+\subsubsection{Introduction to OpenMP}
+\label{sec:IntroductionOpenMP}
+
+\begin{description}
+		\item Building for shared memory is exactly the same as for sequential,	except an OpenMP\footnote{\cite{wiki:OpenMP}The OpenMP (Open Multi-Processing) application programming interface (API) supports multi-platform shared memory multiprocessing programming in C/C++ and Fortran on many architectures, including Unix and Microsoft Windows platforms. 
+	
+	It consists of a set of compiler directives, library routines, and environment variables that influence run-time behavior}-enabled compiler must be used.
+
+\subsubsection{OpenMP and Symphony}
+\label{sec:UsageOpenMP}
+
+	\item The number of threads/processors must be specified on the
+command line of the SYMPHONY call as follows
+
+	\begin{verbatim}
+	
+	symphony -p 4 -F sample.mps
+	
+	\end{verbatim}
+
+	\item At run time, multiple threads will be created, one for the
+Master/TM, and one for each of the node processors.
+
+	\item All modules will communicate through shared memory.
+
+\end{description}
+
+\subsubsection{Shared Memory Build}
+\label{sec:SharedMemoryBuild}
+
+\begin{enumerate}
+
+	\item To compile a shared memory version of SYMPHONY, simply use an OpenMP
+compliant compiler. Version 5.1 has been tested with gcc 4.2, and should work
+by configuring with
+
+  
+\begin{verbatim}
+./configure --with-openmp
+\end{verbatim}
+
+	\item Follow the instructions above for building and testing.
+
+	\item To invoke SYMPHONY from the command-line with multiple threads, specify the
+number of threads with the '-p' option, i.e.,
+
+\begin{verbatim}
+  bin/symphony -p 2 -F SYMPHONY/Datasets/sample.mps
+\end{verbatim}
+\end{enumerate}
+
+\url{http://en.wikipedia.org/wiki/OpenMP}
+
+
+\subsection{PVM - Building for Distributed Memory}
+\label{sec:PVMBuildingForDistributedMemory}
+
+\subsubsection{Introduction to PVM}
+\label{sec:IntroductionPVM}
+
+PVM (Parallel Virtual Machine) is a software package that permits a heterogeneous collection of Unix and/or Windows computers hooked together by a network to be used as a single large parallel computer. 
+
+PVM was developed by the University of Tennessee, Oak Ridge National Laboratory and Emory University. The first version was written at ORNL in 1989, and after being rewritten by University of Tennessee, version 2 was released in March 1991. Version 3 was released in March 1993, and supported fault tolerance and better portability.
+\cite{wiki:PVM}
+See \url{http://www.csm.ornl.gov/pvm/} for more details.
+
+\subsubsection{PVM and Symphony}
+\label{sec:UsagePVM}
+
+To run the distributed memory version, you must first install \textit{PVM}.
+
+Before pvm is started it reads the file \verb|$HOME/.pvmrc|.
+Make  modifications to this file or create it with your editor of choice if it's not already existing.
+Example entries to this file which proved to be useful in practice were e.g.:
+
+\begin{verbatim}
+ alias ? help
+ alias j jobs
+ setenv PVM_EXPORT DISPLAY
+ # print my id
+ echo new pvm shell
+ id
+\end{verbatim}
+
+Once \textit{PVM} 
+is installed and you are able to start the console, you need to make a few modifications to the config file.
+You find the config file in your build directory of Symphony in \verb|SYMHPHONY/config|
+
+For the “standard” configuration, set
+\begin{verbatim}
+
+COMM_PROTOCOL = PVM
+SYM_COMPILE_IN_CG = TRUE
+SYM_COMPILE_IN_CP = TRUE
+SYM_COMPILE_IN_LP = FALSE
+SYM_COMPILE_IN_TM = TRUE
+
+\end{verbatim}
+
+\begin{description}
+
+	\item[SYM\_COMPILE\_IN\_CG] If set to true, then the CG function will be called
+       directly from each LP solver instead of running as a separate
+       executable. Note that the parameter "use\_cg" should be set to FALSE
+       (the default) if this option is set. The executable containing the LP
+       solver will have the suffix \_cg added to it to denote the inclusion of
+       the cut generator function.
+       
+  \item[SYM\_COMPILE\_IN\_CP] As above, if this flag is set, then the cut pool resides
+       in the LP solver and the pool is scanned directly from there. Note that
+       if this option is chosen when multiple LP processes are running, then
+       they will all have their own cut pool. The executable containing the
+       LP solver will have the suffix \_cp added to it to denote the inclusion
+       of the cut generator function.
+       
+  \item[SYM\_COMPILE\_IN\_LP] If this flag is set, the LP solver will be called
+       directly from the tree manager. Note that this necessarily implies
+       that there only be one LP solver. This DOES NOT automatically imply
+       that the cut generator and/or cut pool will be compiled in. The tree
+       manager executable name will have the appropriate suffix added to it
+       to denote the inclusion of the LP solver function.
+       
+  \item[SYM\_COMPILE\_IN\_TM] If this flag is set, the tree manager function will be
+       compiled directly from the master module instead of running as a
+       separate executable. This DOES NOT imply that the LP, cut generator
+       or cut pool functions will be compiled in. The master executable
+       name will contain a suffix indicating what functions are compiled in.
+       
+\end{description}
+
+Alternately, you can use the configure call together with the PVM parameter which is maybe simpler.
+
+\begin{verbatim}
+./configure --with-pvm
+\end{verbatim}
+	
+This will result in two executables and two callable libraries.
+
+The most common distributed-memory parallel configuration is to have two executables:
+		
+\begin{description}
+
+	\item \textbf{Combined NP/CG executable}
+
+	\item	\textbf{Combined Master/TM/CP executable}
+	Storing and distributing generated data 
+	(subproblem descriptions and cuts)
+	
+\end{description}
+	
+Parallel Executables
+	
+	\begin{verbatim}
+	symphony lp cg
+	symphony m tm cp
+	\end{verbatim}
+
+To run the distributed memory version, you must first start \textit{PVM}.
+Then run the master executable as in the shared memory case.
+
+	\begin{verbatim}
+	symphony m tm cp -p 4 -F sample.mps
+	\end{verbatim}
+
+As with any \textit{PVM} application, the executables must be in \textit{PVM}’spath.
+
+The easiest way to accomplish this is to create a soft link from $HOME/pvm3/bin/$PVM ARCH
+
+\begin{verbatim}
+cd ˜/pvm3/bin/$PVM_ARCH
+ln -s ˜/COIN-SYMP
+HONY/SYMPHONY/bin/$ARCH/$LP_SOLVER/symphony_
+\end{verbatim}
+
+
+!!!!MY try to correctly set the path :
+
+\begin{verbatim}
+export PVM_ARCH=$PVMARCH:~/Coin-SYMPHONY/build_pvm/bin/
+\end{verbatim}
+
+To test the PVM implementation together with symphony run
+
+\begin{verbatim}
+./bin/symphony_m_tm_cp -p 4 -f ./SYMPHONY/Datasets/sample.mps
+\end{verbatim}
+
+\subsection{Intel Cluster OpenMP - Building for Distributed Memory}
+\label{sec:DistributedMemoryUsingClusterOpenMP}
+
+\paragraph{Overview}
+\label{sec:Overview}
+
+
+OpenMP is a high level, pragma-based\footnote{Pragma: a compiler directive; data embedded in source code by programmers to tell compilers some intention about compilation} approach to parallel application programming. Cluster OpenMP is a simple means of extending OpenMP parallelism to 64-bit Intel® architecture-based Linux clusters, with only slight modifications to the code.
+
+Cluster OpenMP use requires that you have a license for the Intel® C++ Compiler for Linux or the Intel® Fortran Compiler for Linux. The Cluster OpenMP license can be purchased separately from, or together with, the compiler license.
+
+\paragraph{Benefits of Cluster OpenMP}
+\label{sec:BenefitsofClusterOpenMP}
+
+Portability and flexibility makes development for cluster computing easier and less expensive
+
+    
+\begin{itemize}
+	\item Simplifies porting of serial or OpenMP code to clusters.
+  \item Allows use of the same code for serial, multi-core, and cluster applications.
+  \item Requires few source code modifications, which eases debugging.
+  \item Allows slightly modified OpenMP code to run on more processors without requiring investment in expensive Symmetric Multiprocessing (SMP) hardware.
+  \item Offers an alternative to MPI that is easier to learn and faster to implement.
+\end{itemize}
+
+\begin{figure}
+	\centering
+		\includegraphics[width=0.8\textwidth]{pics/CostComparisonOpenMPCluster.jpg}
+	\caption{Cluster Computing Cost Comparison (source: www.intel.com)}
+	\label{fig:CostComparisonOpenMPCluster}
+\end{figure}
+
+\subsection{Implementing a Basic MILP Solver}
+\label{sec:ImplementingABasicMILPSolver}
+
+\begin{description}
+	\item We only need a few lines to implement a basic solver.
+	\item The default command line parser can be invoked.
+	\item The code is exactly the same for all architectures, even parallel.
+Command line would be \verb|symphony -F model.mps|
+\begin{verbatim}
+
+#include "symphony_api.h"
+int main(int argc, char **argv)
+{
+		sym_environment *env = sym_open_environment();
+		sym_parse_command_line(env, argc, argv);
+		sym_load_problem(env);
+		sym_solve(env);
+		sym_close_environment(env);
+}
+\end{verbatim}
+\end{description}
+
+\section{BCP - Branch-Cut-Price Framework}
+\label{sec:BCP}
+
+BCP is another project of the COIN-OR platform.
+It a parallel framework for implementing branch, cut, and price algorithms for solving mixed integer programs (MIPs). BCP provides the user with an object-oriented framework that can be used to develop an efficient problem class specific MIP solver without all the implementational effort involved with implementing a branch and bound framework from scratch.
+BCP cannot be used as a general integer program solver. Only when BCP is interfaced with CGL and CGL is well populated, BCP could be used as a general solver. 
+CGL stands for Cut Generation Library which is also part of COIN-OR. It is a collection of cut generators that can be used with other COIN-OR packages that make use of cuts, such as, among others, the linear solver Clp or the mixed integer linear programming solvers Cbc or BCP.
+
+\subsection{Parallel Execution}
+\label{sec:ParallelExecutionBCP}
+
+BCP processes the Branch-and-Bound search tree nodes in parallel by employing a master/slave model. BCP is designed for a distributed network via a message passing protocol (currently PVM, or a serial version).
+Serial version means that BCP contains a message passing module that mimics a parallel environment on a single processor.

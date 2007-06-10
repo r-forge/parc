@@ -1,0 +1,87 @@
+\chapter{Introduction}
+\label{sec:Introduction}
+
+\section{Abstract}
+\label{sec:Abstract}
+
+Solving mixed-integer optimization problems has hardly ever been a trivial task.
+This thesis focuses on possibilities to solve these problems using available open-source alternatives with a special focus on \textit{COIN-OR} (see \ref{sec:COIN-OR}).
+
+It starts with an introduction into linear and integer programming in general.
+Afterwards we focus on the specific implementation using 
+\textit{COIN-OR} 
+and show how to use  
+\textit{SYMPHONY} as part of \textit{COIN-OR}
+solving for optimization problems; also under the aspect of high performance computing (HPC) on multiple processors.
+
+An introduction to the modeling language \textit{AMPL} and it's open source alternative using the \textit{GLPK} package is provided in order to have all the necessary tools from implementation available.
+
+In the second part of this work a few practical examples and solutions are be shown, which demonstrate the capabilities of the used techniques in an HPC computing environment.
+
+\section{Prerequisites}
+\label{sec:Prerequisites}
+
+Although this thesis tries to start most of the topics from the very beginning it would go beyond the scope of this document to explain everything in.
+We anticipate, that the reader has basic knowledge about IT, Mathematics, Programming and Linux system administration.
+If you think you lack in any of these disciplines please consolidate the appropriate professional reading. 
+
+\section{Optimization Algorithms}
+\subsection{Linear Programming}
+Linear programming (LP) problems are mathematical optimization problems in which the objective function and the constraints are all linear \citep{luenberger2003lan}.
+Linear and integer programming have proved valuable for modeling many and diverse types of problems in planning, routing, scheduling, assignment, and design. Industries that make use of LP and its extensions include transportation, energy, telecommunications, and manufacturing of many kinds.
+
+\subsubsection{LP Standard Form}
+\label{sec:LPStandardForm}
+
+maximize \[ \mathbf{c}^T \mathbf{x} \]
+
+subject to \[ \mathbf{A}\mathbf{x} \le \mathbf{b}, \, \mathbf{x} \ge 0 \]
+
+%\begin{quote}
+
+\begin{table}[htbp] 
+\begin{tabular}{||l|l|l||} \hline\hline
+	
+	cx			&...&	objective function\\
+	AX < b	&...&	constraints\\	\hline\hline
+
+\end{tabular} 
+\caption{Variables used in example LP}
+\end{table}
+
+\subsubsection{Solution Techniques}
+\label{sec:SolutionTechniques}
+
+There are basically two families of solution techniques in use nowadays:
+
+\begin{description}
+
+	\item[Simplex methods] visit "basic" solutions computed by fixing enough of the variables at their bounds to reduce the constraints Ax = b to a square system, which can be solved for unique values of the remaining variables.
+	Basic solutions represent extreme boundary points of the feasible region defined by the constraints, and the simplex method can be viewed as moving from one such point to another along the edges of the boundary
+	\item[Interior-point methods] by contrast, visit points within the interior of the feasible region
+	
+\end{description}
+
+\subsection{(Mixed-)Integer programming}
+\label{sec:IntegerProgramming}
+
+The related problem of (mixed-)integer linear programming requires some or all of the variables to take integer (whole number) values. Integer programs (IPs) often have the advantage of being more realistic than LPs, but the disadvantage of being much harder to solve.
+The most widely used general-purpose techniques for solving IPs use the solutions to a series of LPs to manage the search for integer solutions and to prove optimality
+
+\section{Software}
+\label{sec:Software}
+
+\subsection{Overview LP Software}
+\label{sec:OverviewLPSoftware}
+
+Thanks to the advances in computing of the past decade even relatively large LPs are able to be worked out.
+Problems having tens or hundreds of thousands of continuous variables are regularly solved. Tractable integer programs are necessarily smaller, but are still commonly in the hundreds or thousands of variables and constraints. 
+The computers of choice for linear and integer programming applications are no more necessarily mainframes but Pentium-based PCs and the several varieties of Unix workstations.
+
+There are two different kinds of software packages:
+
+\begin{itemize}
+	\item \textbf{Algorithmic codes} are used for finding optimal solutions for a given problem. Their input is in a compact standard format (e.g. MPS, AMPL see \ref{sec:AMPLGLPK}) and the output consists of optimal solution values and related information.
+	\item \textbf{Modeling systems} are designed to help people formulate LPs and analyze their solutions. The input is in a natural - not too mathematical - way and also the output is viewed in similar terms.
+\end{itemize}
+

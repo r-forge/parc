@@ -1,0 +1,32 @@
+
+\documentclass[a4paper, 11pt, twoside]{report}
+\pagestyle{plain}
+\title{HPC using COIN-OR}
+\author{Reinhard Harter}
+\date{10.01.2007}
+
+\usepackage{amssymb,glossary,graphicx,amsmath,inputenc,url,natbib}
+\usepackage[bookmarks=true, bookmarksnumbered=true]{hyperref}
+
+\bibliographystyle{plainnat}
+\makeindex
+\makeglossary
+%\includeonly{Introduction, Glossary}
+
+\begin{document}
+
+\tableofcontents
+\include{Introduction}
+\include{ClusterComputing}
+\include{COINOR}
+\include{GLPK}
+\include{R_andSYMPHONY}
+\include{Applications}
+\include{Appendix}
+
+\include{Glossary}
+\printglossary
+\bibliography{literature}
+
+
+\end{document}

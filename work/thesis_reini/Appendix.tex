@@ -1,0 +1,106 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                 %
+%                            APPENDICES                           %
+%                                                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\appendix
+\addcontentsline{toc}{chapter}{Appendices}
+\chapter{Cluster experiences}
+
+To test our cluster we first have to install the necessary software, starting with the Cluster openMP intel compiler.
+
+For a first test the evaluation version downloaded from www.intel.com will be sufficient. After the registration you'll receive a serial key valid for 30 days.
+
+VV7M-PNSJ6FG8 
+
+Latest download instruction for cluster openMP evaluation version
+Installing as root (using sudo if you have that privilege) is recommended, as that will update the system RPM database. 
+
+\section{Setting Up the Compiler Environment}
+\label{sec:SettingUpTheCompilerEnvironment}
+
+The programs in the Intel C++ Compiler 9.1 for Linux product rely on the environment variables \verb*|PATH| and \verb*|LD_LIBRARY_PATH|.
+The installation script (install.sh) creates compiler environment script files (iccvars.sh/idbvars.sh) that set these variables. It is strongly recommended that you add those script files into your login script (.login file). 
+Once the variables are set in the .login file there is no need to run the script files for each session.
+
+source the script to setup the compiler environment:
+
+    * > source <install-dir>/bin/iccvars.sh(.csh)
+      to use icc
+    * > source <install-dir>/bin/idbvars.sh(.csh)
+      to use idb
+
+\begin{verbatim}
+wget http://registrationcenter-download.intel.com/irc_nas/659/l_cc_c_9.1.047.tar.gz
+tar -xzvf l_cc_c_9.1.047.tar.gz
+%
+cd l_cc_c_9.1.047/
+./install.sh
+%
+The installation program was not able to detect the IA32 version of the following libraries installed   :
+libstdc++
+libgcc
+glibc
+
+
+Link to cluster openMP installation guide:
+
+http://registrationcenter-download.intel.com/irc_nas/659/l_cc_c_9.1.047_InstallationGuide.htm
+
+ ./configure CC=icc CXX=icc LD=link
+ 
+ ./configure --with-gmpl --with-glpk-incdir=/home/rharter/usr/gnu/include 						--with-glpk-lib="-L/home/rharter/usr/gnu/lib -lglpk"	--with-openmp CC=icc CXX=icc LD=link
+ 
+ besseres format: 
+ ./configure --with-gmpl --with-glpk-incdir=/home/rharter/usr/gnu/include --with-glpk-lib="-L/home/rharter/usr/gnu/lib -lglpk" --with-openmp CC=icc CXX=icc LD=link
+
+das mit CC=icc und CXX=icc scheint nicht wirklich zu funktionieren.
+
+
+GLPK:
+
+VERSION 4.15 is not working, so use 4.13!!!!!!!!!
+
+wget http://gd.tuwien.ac.at/gnu/gnusrc/glpk/glpk-4.13.tar.gz
+tar -xzvf glpk-4.13.tar.gz
+
+./configure CC=icc CXX=icc LD=link
+make prefix=~/usr/gnu
+make prefix=~/usr/gnu install
+
+
+Bignode:
+
+#$ -N mein_job_name
+#$ -q bignode.q@bignode001
+
+echo "dieser job laueft auf der bignode queue mit xeons"
+
+echo "finished"
+
+Damit rechnet ers auf bignode001
+
+#$ -q bignode.q@bignode001
+
+Normaler MPI job:
+
+#$ -N mpi-pachecoEx2
+#$ -pe lam 20
+#$ -q node.q
+
+mpirun -np 20  ./pachecoEx2-mpi.x
+
+20 prozessoren aktivieren und mit lam rechnen
+
+#$ -pe lam 20
+
+Stefans Aufruf von symphony:
+
+ #$ -N openMP-symphony
+#$ -pe pvm 20
+#$ -q node.q
+
+./symphony model.dat
+
+\end{verbatim}
