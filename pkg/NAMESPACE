@@ -1,12 +1,13 @@
 useDynLib("paRc")
 
 export("c_serial_dot",
+       "c_serial_mm",
        "MPI_Test"
        
     )
 
 ## S3methods
-S3method("print","randomWalk")
+## xS3method("print","randomWalk")
 
 ## coercions
 ##S3method(as., )

@@ -1,3 +1,5 @@
+
+/*
 #include "paRc_mpi.h"
 
 void mpi_test(int *test) {
@@ -10,3 +12,4 @@ void mpi_test(int *test) {
     *test = p;
   MPI_Finalize();
 }
+*/
