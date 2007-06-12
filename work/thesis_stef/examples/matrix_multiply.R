@@ -92,6 +92,8 @@ serial_mm(X,Y)
 parallel_mm(X,Y,2,spawnRslaves=TRUE)
 X%*%Y
 
+mpi.close.Rslaves()
+
 n <- 80
 A <- matrix(runif(n*n,-5,5),nrow=n)
 B <- matrix(runif(n*n,-5,5),nrow=n)

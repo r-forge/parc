@@ -1,0 +1,8 @@
+#$ -N PVM
+#$ -pe pvm 20
+#$ -q node.q
+
+# Job for using the PVM implementation on 20 Nodes
+# make sure that all the environment variables are declared in your .bashrc
+./pvm-executable 20
+

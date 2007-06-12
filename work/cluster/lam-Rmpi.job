@@ -1,0 +1,7 @@
+#$ -N LAM_using_Rmpi
+#$ -pe lam 4
+#$ -q node.q
+
+R-g --vanilla < my_Rmpi_script.R
+
+

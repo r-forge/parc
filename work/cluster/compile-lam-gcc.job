@@ -1,0 +1,21 @@
+#$ -N compile-lam-gcc
+
+cd /home/stheussl/src/lam-7.1.3/
+
+echo "#### clean ####"
+
+make clean
+
+echo "#### configure ####"
+
+./configure CC=gcc CXX=g++  FC=gfortran --prefix=/home/stheussl/lib/lam-gcc --enable-shared
+
+echo "#### make ####"
+
+make all
+
+echo "#### install ####"
+
+make install
+
+echo "#### finished ####"

@@ -1,0 +1,7 @@
+#$ -N mpi-lam
+#$ -pe lam 20
+#$ -q node.q
+
+# Job for using the MPI implementation LAM on 20 Nodes
+mpirun -np 20  ./lam-executable
+

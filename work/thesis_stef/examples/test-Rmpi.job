@@ -1,0 +1,6 @@
+#$ -N Rmpi-test
+#$ -pe lam 30
+#$ -q node.q
+
+R-g --vanilla < /home/stheussl/svn/paRc/work/thesis_stef/examples/test-Rmpi.R
+
