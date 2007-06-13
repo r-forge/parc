@@ -26,9 +26,9 @@ require("vcd")
 ## FIXME: pch and lty (what if we have more than 3 functions to test => rep? )
 ## TODO: finish legend
 
-plot.cpubench <- function(x, ... ){
-  if(!class(x)=="cpubench")
-    stop("'x' not of class cpubench!")
+plot.bench_results <- function(x, ... ){
+  if(!class(x)=="bench_results")
+    stop("'x' not of class 'bench_results'")
   xlim <- c(0,x$cpucount[x$cpusteps]+1)
   ylim <- c(0,max(x$times))
   ncolors <- 2*x$kinds

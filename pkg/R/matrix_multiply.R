@@ -1,5 +1,5 @@
 
-c_serial_mm <- function(X, Y)
+matrixmult.C <- function(X, Y)
 {
     if(!(is.matrix(X) && is.matrix(Y)))
         stop("'X' and 'Y' must be matrices.")
@@ -22,4 +22,23 @@ c_serial_mm <- function(X, Y)
               z = double(dx[1]*dy[1]),
               PACKAGE = "paRc")
     matrix(out$z,ncol=dy[1])
+}
+
+
+dotproduct.C <- function(x, y)
+{
+    if(!is.vector(x) && !is.vector(y))
+        stop("'x' and 'y' must be vectors.")
+
+    nx <- length(x)
+    ny <- length(y)
+    if(nx != ny)
+        stop("x and y must be of the same length.")
+    
+    storage.mode(x) <- "double"
+    storage.mode(y) <- "double"
+    
+    out <- .C("Serial_dot", x, y, nx, prod = double(1),
+              PACKAGE = "paRc")
+    out$prod
 }

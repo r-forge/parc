@@ -272,6 +272,3 @@ returns <- function(mu,sigma,n,T){
   path = (mu-sigma^2/2)*dt + sigma*sqrt(dt)*eps
   path
 }
-
-
-
