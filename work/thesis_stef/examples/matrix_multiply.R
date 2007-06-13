@@ -84,14 +84,24 @@ parallel_mm <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   mpi.bcast.Robj2slave(nrows_on_last)
   
   mpi.bcast.Robj2slave(serial_mm)
+
   mpi.bcast.cmd(if(commrank==(n_cpu - 1)) local_mm <- serial_mm(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y) else local_mm <- serial_mm(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y))
   local_mm <- serial_mm(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
                
   mpi.bcast.cmd(mpi.gather.Robj(local_mm,root=0,comm=1))
   mm <- mpi.gather.Robj(local_mm, root=0, comm=1)
+
   out <- NULL
-  for(i in 1:n_cpu)
-    out <- rbind(out,mm[[i]])
+  ## st... Rmpi returns a list when the vectors have different length and a matrix otherwise
+  ## so we have to hack this by hand again
+  if(nrows_on_slaves == nrows_on_last)
+    for(i in 1:n_cpu)
+      out <- rbind(out,matrix(mm[,i],nrow=nrows_on_slaves))
+  else {
+    for(i in 1:n_cpu)
+      out <- rbind(out,mm[[i]])
+  }
+  
   if( spawnRslaves == TRUE )
     mpi.close.Rslaves()
   out
@@ -103,7 +113,7 @@ n <- 500
 A <- matrix(runif(n*n,-5,5),ncol=n)
 B <- matrix(runif(n*n,-5,5),ncol=n)
 system.time(A%*%B)
-system.time(c_serial_mm(A,B))
+system.time(matrixmult.C(A,B))
 
 ## parallel examples
 library("Rmpi")
@@ -120,7 +130,6 @@ X%*%Y
 mpi.close.Rslaves()
 
 ## example test run serial vs. MPI implementation for 80x80 Matrix
-
 n <- 80
 A <- matrix(runif(n*n,-5,5),nrow=n)
 B <- matrix(runif(n*n,-5,5),nrow=n)

@@ -34,7 +34,7 @@ benchmark.cpu.range <- function(x) {
 print.benchmark <- function(x){
   if(class(x) != "benchmark")
     stop("'x' not of class 'benchmark'")
-  type <- ifelse(any(is.parallel(x))==TRUE,"parallel","serial")
+  type <- ifelse(any(benchmark.is.parallel(x))==TRUE,"parallel","serial")
   task <- task_in_benchmark(x)
   writeLines(paste("A", type, "benchmark running task:", task))
 }
@@ -54,15 +54,15 @@ run.benchmark <- function(x){
   ## build dataframe for results
   out <- data.frame(task=NA,foo=NA,n_cpu=NA,time_usr=NA,time_sys=NA,time_ela=NA,is_parallel=NA)
   foocount <- length(benchmark.functions.to.apply(x))
-  for( n_cpu in cpu_range(x)){
+  for( n_cpu in benchmark.cpu.range(x)){
     if(n_cpu == 1){
       for(i in 1:foocount){
-        foo <- match.fun(functions.to.apply(x)[i])
-        out[i,] <- c(benchmark.task(x),functions.to.apply(x)[i],n_cpu,as.vector(system.time(foo(x$data1,x$data2)))[1:3],is.parallel(x)[i])
+        foo <- match.fun(benchmark.functions.to.apply(x)[i])
+        out[i,] <- c(benchmark.task(x),benchmark.functions.to.apply(x)[i],n_cpu,as.vector(system.time(foo(x$data1,x$data2)))[1:3],benchmark.is.parallel(x)[i])
       }
     }
     else {
-      parfoos <- functions.to.apply(x)[is.parallel(x)]
+      parfoos <- benchmark.functions.to.apply(x)[benchmark.is.parallel(x)]
       for(i in 1:length(parfoos)){
         mpi.spawn.Rslaves(nslaves = n_cpu - 1)
         foo <- match.fun(parfoos[i])
