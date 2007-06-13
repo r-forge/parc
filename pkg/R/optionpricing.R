@@ -174,15 +174,15 @@ monteCarloSimulation <- function(x,r,n,length,
 
 ## generics
 as.option <- function(x, ...){
-  UseMethod(".as.option")
+  UseMethod("as.option")
 }
 
 ## methods
-.as.option.default <- function(x){
+as.option.default <- function(x){
   writeLines("no default method implemented yet, use a list as input")
 }
 
-#.as.option.option <- function(x){
+#as.option.option <- function(x){
 #  x <- unclass(x)
 #  NextMethod(".as.option")
 #}
@@ -191,7 +191,7 @@ as.list.option <- function(x){
   unclass(x)
 }
 
-.as.option.list <- function(x){
+as.option.list <- function(x){
   if(!inherits(x,"list")) stop("'x' not of class 'list'")
   available_types<- c("call","put")
   available_positions<- c("long","short")

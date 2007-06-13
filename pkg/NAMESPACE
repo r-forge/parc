@@ -18,14 +18,14 @@ export("dotproduct.C",
        "optiontype",
        "optionclass",
        "priceof",
-       "postition",
-       "'maturity<-'",
-       "'strikeprice<-'",
-       "'underlying<-'",
-       "'optiontype<-'",
-       "'optionclass<-'",
-       "'priceof<-'",
-       "'position<-'",
+       "position",
+       "maturity<-",
+       "strikeprice<-",
+       "underlying<-",
+       "optiontype<-",
+       "optionclass<-",
+       "priceof<-",
+       "position<-",
        "monteCarloSimulation",
        "as.option",
        "wienerPath",
@@ -38,8 +38,8 @@ S3method("print","benchmark")
 S3method("plot","bench_results")
 
 ## option pricing
-S3method(".as.option","default")
-S3method(".as.option","list")
+S3method("as.option","default")
+S3method("as.option","list")
 S3method("as.list","option")
 S3method("print","option")
 S3method("plot","option")
