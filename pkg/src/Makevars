@@ -1,0 +1,5 @@
+## Makevars
+## R package: paRc
+## theussl, 2007
+
+PKG_CFLAGS   = -openmpi
