@@ -1,3 +1,7 @@
+## FIXME: we need a reference in a benchmark: most of the time serial version
+## defined in benchmark object -> the reference in a task is in the first line
+
+
 ## extractor functions
 
 benchmark.task <- function(x){

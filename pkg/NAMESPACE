@@ -1,7 +1,9 @@
 useDynLib("paRc")
 
-export("dotproduct.C",
+export(## calling of C functions
+       "dotproduct.C",
        "matrixmult.C",
+       "omp.mm.C",
 
        ## benchmarking
        "benchmark.task",
