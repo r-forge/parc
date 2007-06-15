@@ -1,0 +1,224 @@
+
+\documentclass[notes=show,beamer]{beamer}
+
+\usepackage{graphicx}
+
+%gute: Goettingen, Copenhagen, Malmoe, Montpellier, Warsaw, Singapore (minimalversion: Pittsburgh)
+\usetheme{Malmoe}
+
+\title{Parallel Computations in R}
+\author{Stefan Theussl}
+\institute{Department of Statistics and Mathematics\newline
+Vienna University of Economics and Business Administration}
+\date{\today}
+
+\begin{document}
+
+\frame{
+\titlepage
+}
+\section*{outline}
+\frame{
+\frametitle{Outline}
+\tableofcontents}
+
+
+\section{Computer Architecture}
+\frame{\frametitle{Computer Architecture}}
+
+\subsection{Beyond Flynn's Taxonomy}
+
+\frame{
+\frametitle{Flynns Taxonomy}
+
+\begin{description}
+\item[Single Instruction Single Data (SISD)]
+  For a long time this type of architecture of CPUs, developed by the
+  mathematician John von Neumann, was the standard. This computers are
+  known as serial computers. 
+\item[Multiple Instruction Single Data (MISD)] the theoritical possibility
+  of applying multiple instructions on a single datum is generally
+  impractical.
+\item[Single Instruction Multiple Data (SIMD)] 
+  a single instruction is applied by multiple processors to different
+  data.
+\item[Multiple Instruction Multiple Data (MIMD)] processors apply
+  different instructions on different data. 
+\end{description}
+
+see \cite{flynn72sco}
+}
+
+\frame{
+\frametitle{Beyond Flynns Taxonomy}
+
+\cite{duncan90survey} tries to define a taxonomy explicit for parallel
+frameworks:
+
+\begin{description}
+\item[Synchronos architectures] coordinate concurrent operations in
+  lockstep through global clocks, central control unit, or vector unit
+  controllers.  
+\item[MIMD architectures] consist of multiple processors applying
+  different instructions on local (different) data. The MIMD models
+  are asynchronous computers although they may be synchronized by
+  messages passing through an interconnection network (or by accessing
+  data in a shared memory). 
+\item[MIMD-based architectural paradigms] involve MIMD/SIMD hybrids,
+  dataflow architectures, reduction machines, and wavefront arrays.
+\end{description}
+
+}
+
+\subsection{High Performance Computing Systems}
+\frame{
+\frametitle{Current HPC systems}
+
+\begin{itemize}
+\item vector supercomputers
+\item shared memory computing servers
+\item distributed memory computing servers (NOW or COW)
+\end{itemize}
+
+}
+
+\frame{
+\frametitle{platforms@WU}
+
+\begin{itemize}
+\item AMD Opteron Server of Stat-Math\newline
+2 x Dual Core AMD Opteron 2.4 GHz\newline
+12 GB RAM\newline
+1.2 TB RAID 5
+\item Cluster of FIRM\newline
+4 Nodes (bignodes):\newline
+2 x Dual Core Intel XEON CPU 5140 @ 2.33 GHz\newline
+16 GB RAM\newline
+68 Nodes:\newline
+1 x Intel Core 2 Duo CPU 6600 @ 2.4 GHz\newline
+4 GB RAM
+\end{itemize}
+
+}
+
+
+\section{Parallel Programming Models}
+
+\frame{
+\frametitle{Parallel Programming Models}
+
+\begin{itemize}
+
+\item The Message Passing Interface (MPI)
+
+\item Parallel Virtual Machine (PVM)
+
+\item OpenMP
+
+\end{itemize}
+}
+
+\subsection{MPI}
+
+\frame{
+\frametitle{The Message Passing Interface Standard}
+
+\begin{itemize}
+\item distributed memory systems
+\item a set of library interface standards
+\item callable from various programming languages
+\item difficult to implement
+\end{itemize}
+
+}
+
+
+\frame{
+\frametitle{MPI Implementations}
+
+\begin{itemize}
+\item LAM/MPI
+\item MPICH
+\item Open MPI
+\end{itemize}
+
+}
+
+
+\subsection{OpenMP}
+\frame{
+\frametitle{OpenMP}
+
+\begin{itemize}
+\item shared memory systems
+\item simple scalable programming
+\item set of compiler directives (GNU Compiler since 4.2, Intel
+  Compiler)
+\item fork join execution
+\end{itemize}
+
+}
+
+\section{Package paRc}
+\subsection{Parallel Computations in R}
+\frame{
+\frametitle{Parallel Computations in R - paRc}
+
+The R package paRc provides
+\begin{itemize}
+\item high level functions for parallel applications
+\item a framework for performance evaluation
+\end{itemize}
+
+}
+
+\frame{
+\frametitle{Parallel Computations in R - paRc}
+
+Todo:
+\begin{itemize}
+\item Parallel Monte Carlo Simulation (Intel Paper)
+\item Parallel GRASP
+\item key figures like speedup
+\end{itemize}
+}
+
+\subsection{Literature}
+
+\frame{
+\frametitle{Literature so far}
+
+\begin{thebibliography}{9}
+
+
+\bibitem{hpc} Laurence T. Yang, Minyi Guo:
+  \emph{High Performance Computing - Paradigm and Infrastructure},
+  Wiley, 2006
+
+\bibitem{lam} John L. Hennessy and David A. Patterson:
+  \emph{Computer Architecture - A quantitative Approach},
+  Morgan Kaufmann, 2006
+
+\bibitem{mpi} Peter S. Pacheco:
+  \emph{Parallel Programming with MPI},
+  The MIT Press, 1994
+
+\bibitem{pvm} Geist, Beguelin, Dongarra:
+  \emph{PVM Parallel Virtual Machine},
+  The MIT Press, 1994
+
+\end{thebibliography}
+
+
+}
+
+\begin{frame}
+
+\textbf{Thank you for your attention}
+
+\end{frame}
+
+
+%\bibliographystyle{plainnat}
+%\bibliography{hpcreferences}
+\end{document}
