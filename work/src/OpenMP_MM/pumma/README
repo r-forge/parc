@@ -1,0 +1,23 @@
+Source File
+    cannonOpen.c		: source code which is cannon algorithm in OpenMP
+   				  
+    cannonOpen.h        : header file which has array size.
+
+	times.h     : header file which has timing function.
+
+	makefile    : makefile which can compile cannonOpen.c and delete cannonOpen
+                	( executable file ).
+
+    data        : a data file which has 6 by b matrices.
+    
+
+
+HOW TO USE
+
+	HOW TO COMPILE cannonOpen.c        : make
+	
+	HOW TO DELETE              : make clean  - delete cannonOpen ( executable file )
+	
+         HOW TO RUN           	   : cannonOpen < data
+					
+								 

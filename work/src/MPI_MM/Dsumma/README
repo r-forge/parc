@@ -1,0 +1,24 @@
+FILE EXPLANATION
+
+makefile   : file to compile , run, remove files.
+mul.c	   : source code for fox MPI
+mul.h	   : header file for mul.c
+
+COMPILATION
+		make
+
+DELETE runnable file and object file ( mul, mul.o )
+	   make clean		   
+
+EXECUTION
+		make run < input_file
+
+		Number of processor can be changed by changing "make run" in makefile
+		or by typing  
+		/opt/SUNWhpc/bin/mprun -np 5(num_processors) mul < input_file
+
+INPUT_FILE
+		the matrix size and two matrices.
+
+10              10 by 10 matrices.
+data            6 by 6 matrices.

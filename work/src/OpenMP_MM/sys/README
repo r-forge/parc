@@ -1,0 +1,23 @@
+Source File
+    systolicOpen.c		: source code which is cannon algorithm in OpenMP
+   				  
+    systolicOpen.h        : header file which has array size.
+
+	times.h     : header file which has timing function.
+
+	makefile    : makefile which can compile systolicOpen.c and delete systolicOpen
+                	( executable file ).
+
+    data        : a data file which has 6 by b matrices.
+    
+
+
+HOW TO USE
+
+	HOW TO COMPILE systolicOpen.c        : make
+	
+	HOW TO DELETE              : make clean  - delete systolicOpen ( executable file )
+	
+         HOW TO RUN           	   : systolicOpen
+					
+								 
