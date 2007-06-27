@@ -2,4 +2,5 @@
 ## R package: paRc
 ## theussl, 2007
 
-PKG_CFLAGS   = -openmpi
+PKG_CFLAGS   = -openmp -lm -lguide -lpthread
+PKG_LIBS   = -lguide -lpthread

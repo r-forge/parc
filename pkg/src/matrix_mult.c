@@ -38,3 +38,4 @@ void OMP_matrix_mult( double *x, int *nrx, int *ncx,
       z[i + j**nrx] = sum;
     }
 }
+
