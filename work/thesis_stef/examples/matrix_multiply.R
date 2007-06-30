@@ -1,43 +1,21 @@
+##########################################################
+## script file: function definitions
+## matrix_multiply.R
+## application: Parallel Matrix Multiplication
+## theussl, 2007
+##########################################################
 
-## define functions
-## serial and parallel (Rmpi) matrix multiplication
+require("paRc")
 
-serial_mm_native <- function(X, Y) {
+serial.matrix.mult.native <- function(X, Y) {
   X%*%Y
 }
 
-serial_mm <- function(X, Y) {
-  if(!(is.matrix(X) && is.matrix(Y)))
-    stop("'X' and 'Y' must be matrices.")
-  ##if(!all(dim(X)==dim(Y)))
-  ##    stop("'X' and 'Y' must have the same order")
-  
-  dx <- dim(X) ## dimensions of matrix X
-  dy <- dim(Y) ## dimensions of matrix Y
-  if(!(dx[2]==dy[1]))
-    stop("'X' and 'Y' not compatible")
-
-  x <- as.vector(X)
-  y <- as.vector(Y)
-  z <- vector()
-  length(z) <- dx[1]*dy[1]
-  for(i in 1:dx[1])
-    for(j in 1:dy[2]){
-      sum = 0.0
-      for(k in 1:dx[2])
-	sum <- sum + x[i + (k-1)*dx[1]]*y[k + (j-1)*dy[1]]
-      z[i + (j-1)*dx[1]] <- sum
-    }
-  matrix(z,ncol=dy[1])
-}
-
-parallel_mm <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
+mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   ## Input validation
   if(!(is.matrix(X) && is.matrix(Y)))
     stop("'X' and 'Y' must be matrices.")
-  #if(!all(dim(X)==dim(Y)))
-  #    stop("'X' and 'Y' must have the same order")
-  
+
   dx <- dim(X) ## dimensions of matrix A
   dy <- dim(Y) ## dimensions of matrix B
   if(!(dx[1]==dy[2])&&(dx[2]==dy[1]))
@@ -47,7 +25,7 @@ parallel_mm <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   ##x <- as.vector(t(X)) ## because mpi.scatterv doesn't work
     
   if( n_cpu == 1 )
-    return(serial_mm(X, Y))
+    return(serial.matrix.mult(X, Y))
   if( spawnRslaves == TRUE )
     mpi.spawn.Rslaves(nslaves = n_cpu - 1)
 
@@ -66,9 +44,9 @@ parallel_mm <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   ##                                   rdata=double(len_slaves),root=0))
   ##local_x <- mpi.scatter(x, type=2,
   ##                       rdata=double(len_master),root=0)
-  ##mpi.bcast.Robj2slave(serial_mm)
-  ##mpi.bcast.cmd(local_mm <- serial_mm(matrix(local_x,ncol=ncol(Y),byrow=TRUE),Y))
-  ##local_mm <- serial_mm(matrix(local_x,ncol=ncol(Y),byrow=TRUE),Y)
+  ##mpi.bcast.Robj2slave(serial.matrix.mult)
+  ##mpi.bcast.cmd(local_mm <- serial.matrix.mult(matrix(local_x,ncol=ncol(Y),byrow=TRUE),Y))
+  ##local_mm <- serial.matrix.mult(matrix(local_x,ncol=ncol(Y),byrow=TRUE),Y)
 
 
   mpi.bcast.cmd(commrank <- mpi.comm.rank())
@@ -80,10 +58,10 @@ parallel_mm <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   mpi.bcast.Robj2slave(nrows_on_slaves)
   mpi.bcast.Robj2slave(nrows_on_last)
   
-  mpi.bcast.Robj2slave(serial_mm)
+  mpi.bcast.Robj2slave(serial.matrix.mult)
 
-  mpi.bcast.cmd(if(commrank==(n_cpu - 1)) local_mm <- serial_mm(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y) else local_mm <- serial_mm(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y))
-  local_mm <- serial_mm(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
+  mpi.bcast.cmd(if(commrank==(n_cpu - 1)) local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y) else local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y))
+  local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
                
   mpi.bcast.cmd(mpi.gather.Robj(local_mm,root=0,comm=1))
   mm <- mpi.gather.Robj(local_mm, root=0, comm=1)

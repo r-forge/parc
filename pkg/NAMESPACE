@@ -1,9 +1,14 @@
 useDynLib("paRc")
 
-export(## calling of C functions
-       "dotproduct.C",
-       "matrixmult.C",
-       "omp.mm.C",
+export(## OpenMP function wrappers
+       "omp_get_num_procs",
+       "omp_set_num_threads",
+
+       ## Application: Matrix Multiplication 
+       "serial.matrix.mult",
+       "omp.matrix.mult",
+       
+       "serial.dot.product",
 
        ## benchmarking
        "benchmark.task",
@@ -12,7 +17,7 @@ export(## calling of C functions
        "benchmark.cpu.range",
        "run.benchmark",
 
-       ## option pricing
+       ## Application: option pricing
        "payoff",
        "maturity",
        "strikeprice",

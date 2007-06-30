@@ -23,7 +23,7 @@ n <- 100
 
 ## define benchmark
 bench <- list()
-bench$functions_to_be_applied <- c("serial_mm","serial_mm_native","parallel_mm")
+bench$functions_to_be_applied <- c("serial.matrix.mult","serial.matrix.mult.native","mpi.matrix.mult")
 bench$is_parallel <- c(FALSE,FALSE,TRUE)
 bench$cpu_range <- 1:maxcpu
 bench$task <- "matrix multiplication"

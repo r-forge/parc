@@ -52,8 +52,8 @@ run.benchmark <- function(x){
     stop("all values in 'cpu_range' must be of type integer")
   if(!all(benchmark.cpu.range(x) > 0))
     stop("all values in 'cpu_range' must be greater than 0")
-  if(max(benchmark.cpu.range(x)) > mpi.universe.size())
-    stop("all values in 'cpu_range' must be smaller than the number of available CPU's oin the LAM/MPI environment")
+##  if(max(benchmark.cpu.range(x)) > mpi.universe.size()) ## MPI specific validation
+##    stop("all values in 'cpu_range' must be smaller than the number of available CPU's oin the LAM/MPI environment")
 
   ## build dataframe for results
   out <- data.frame(task=NA,foo=NA,n_cpu=NA,time_usr=NA,time_sys=NA,time_ela=NA,is_parallel=NA)
