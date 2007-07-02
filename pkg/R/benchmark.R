@@ -66,7 +66,7 @@ run.benchmark <- function(x){
 
   task <- benchmark.task(x)
   tasks <- c(
-             "matrix_multiplication",
+             "matrix multiplication",
              "task2"
              )
 
@@ -74,12 +74,17 @@ run.benchmark <- function(x){
   else taskNr <- pmatch(tolower(task), tolower(tasks))
   if(is.na(taskNr)) stop (paste("Unknown task:",sQuote(task)))
 
-  if(methodNr == 1) {
+  if(taskNr == 1) {
     results <- bm.matrix.multiplication(x)
-  }else if(methodNr == 2) {
+  }else if(taskNr == 2) {
     writeLines("Not implemented yet")
+    results <- NULL
   }
-
+  ## format data.frame accordingly
+  results$time_usr <- as.numeric(results$time_usr)
+  results$time_sys <- as.numeric(results$time_sys)
+  results$time_ela <- as.numeric(results$time_ela)
+  results$is_parallel <- as.logical(results$is_parallel)
   class(results) <- c("bench_results",class(results))
   results
 }
@@ -122,4 +127,5 @@ bm.matrix.multiplication <- function(x){
       }
     }
   }
+  out
 }

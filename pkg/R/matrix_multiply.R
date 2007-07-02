@@ -6,21 +6,21 @@
 ##########################################################
 
 ## input validation function
-matrix.mult.validate <- function(X, Y){
+matrix.mult.validate <- function(X, Y, dx, dy){
   if(!(is.matrix(X) && is.matrix(Y)))
     stop("'X' and 'Y' must be matrices.")
   
-  dx <- dim(X) ## dimensions of matrix A
-  dy <- dim(Y) ## dimensions of matrix B
-  if(!(dx[1]==dy[2])&&(dx[2]==dy[1]))
+  if(!((dx[1]==dy[2])&&(dx[2]==dy[1])))
     stop("'X' and 'Y' not compatible")
 }
 
 ## serial version of matrix multiplication
 serial.matrix.mult <- function(X, Y)
 {
+  dx <- dim(X) ## dimensions of matrix A
+  dy <- dim(Y) ## dimensions of matrix B
   ## input validation
-  matrix.mult.validate()
+  matrix.mult.validate(X, Y, dx, dy)
   ## data preparation
   x <- as.vector(X)
   storage.mode(x) <- "double"
@@ -30,19 +30,22 @@ serial.matrix.mult <- function(X, Y)
   out <- .C("Serial_matrix_mult",
             x, as.integer(dx[1]), as.integer(dx[2]),
             y, as.integer(dy[1]), as.integer(dy[2]),
-            z = double(dx[1]*dy[1]),
+            z = double(dx[1]*dy[2]),
             PACKAGE = "paRc")
-  matrix(out$z,ncol=dy[1])
+  matrix(out$z,ncol=dy[2])
 }
 
 
 ## parallel version of matrix multiplication
-omp.matrix.mult <- function(X, Y, n_cpu)
+omp.matrix.mult <- function(X, Y, n_cpu = 1)
 {
+  
+  dx <- dim(X) ## dimensions of matrix A
+  dy <- dim(Y) ## dimensions of matrix B
   ## input validation
-  matrix.mult.validate
+  matrix.mult.validate(X, Y, dx, dy)
   ## set number of cpus to use
-  open_mp_set_num_threads(n_cpu)
+  omp_set_num_threads(n_cpu)
   ## data preparation
   x <- as.vector(X)
   storage.mode(x) <- "double"
@@ -52,9 +55,9 @@ omp.matrix.mult <- function(X, Y, n_cpu)
   out <- .C("OMP_matrix_mult",
             x, as.integer(dx[1]), as.integer(dx[2]),
             y, as.integer(dy[1]), as.integer(dy[2]),
-            z = double(dx[1]*dy[1]),
+            z = double(dx[1]*dy[2]),
             PACKAGE = "paRc")
-  matrix(out$z,ncol=dy[1])
+  matrix(out$z,ncol=dy[2])
 }
 
 

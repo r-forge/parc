@@ -11,7 +11,7 @@ serial.matrix.mult.native <- function(X, Y) {
   X%*%Y
 }
 
-mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
+mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
   ## Input validation
   if(!(is.matrix(X) && is.matrix(Y)))
     stop("'X' and 'Y' must be matrices.")
@@ -57,9 +57,10 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   nrows_on_last <- dx[1] - (n_cpu - 1)*nrows_on_slaves
   mpi.bcast.Robj2slave(nrows_on_slaves)
   mpi.bcast.Robj2slave(nrows_on_last)
-  
-  mpi.bcast.Robj2slave(serial.matrix.mult)
 
+  mpi.bcast.cmd(library("paRc"))
+  mpi.bcast.Robj2slave(serial.matrix.mult)
+  
   mpi.bcast.cmd(if(commrank==(n_cpu - 1)) local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y) else local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y))
   local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
                

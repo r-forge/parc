@@ -28,8 +28,9 @@ bench$is_parallel <- c(FALSE,FALSE,TRUE,TRUE)
 bench$cpu_range <- 1:maxcpu
 bench$task <- "matrix multiplication"
 bench$avail_cpu <- c(1,1,maxcpu,4)
-bench$data1 <- matrix(runif(n*n,-5,5),nrow=n)
-bench$data2 <- matrix(runif(n*n,-5,5),nrow=n)
+bench$data <- list()
+bench$data[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bench$data[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
 class(bench) <- "benchmark"
 
 bm_results <- run.benchmark(bench)

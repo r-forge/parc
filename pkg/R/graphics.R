@@ -41,7 +41,7 @@ plot.bench_results <- function(x, task="all", ... ){
   
   ## define plot region, colorspace and other plot parameters
   xlim <- c(0,max(as.numeric(x$n_cpu))+1)
-  ylim <- c(0,max(x$time_usr)+1)
+  ylim <- c(0,max(x$time_ela)+1)
   ncolors <- count.foo*count.task
   colors <- rainbow_hcl(ncolors, c=80, l=65, start = 20, end = 340)
   ltys <- c(1:6)
@@ -51,14 +51,16 @@ plot.bench_results <- function(x, task="all", ... ){
 
   ## plot reference
   ref <- x$foo[1]
-  plot( x = as.numeric(x$n_cpu)[1], y = x$time_usr[1], col=colors[1], xlim = xlim, ylim = ylim, type = "b", pch = pchs[1], ,xlab = "# of CPUs", ylab = "execution time", main = main)
+  plot( x = as.numeric(x$n_cpu)[1], y = x$time_ela[1], col=colors[1], xlim = xlim, ylim = ylim, type = "b",
+       pch = pchs[1], ,xlab = "# of CPUs", ylab = "execution time", main = main)
 
   ##plot the rest
   results.to.plot <- unique(x$foo)
   results.to.plot <- results.to.plot[-which(results.to.plot==ref)]
   for(i in 1:length(results.to.plot)){
-    lines(x = as.numeric(x$n_cpu[which(x$foo==results.to.plot[i])]), y = x$time_usr[which(x$foo==results.to.plot[i])], col=colors[i+1], type = "b", lty= ltys[i+1], pch = pchs[i+1])
-}
+    lines(x = as.numeric(x$n_cpu[which(x$foo==results.to.plot[i])]), y = x$time_ela[which(x$foo==results.to.plot[i])],
+          col=colors[i+1], type = "b", lty= ltys[i+1], pch = pchs[i+1])
+  }
 
   ## plot speedup
   ##par(new = TRUE)
