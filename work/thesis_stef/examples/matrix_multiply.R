@@ -18,7 +18,7 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
 
   dx <- dim(X) ## dimensions of matrix A
   dy <- dim(Y) ## dimensions of matrix B
-  if(!(dx[1]==dy[2])&&(dx[2]==dy[1]))
+  if(!(dx[2]==dy[1]))
     stop("'X' and 'Y' not compatible")
 
   ## uncomment when code fixed
@@ -62,6 +62,7 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
   mpi.bcast.Robj2slave(serial.matrix.mult)
   
   mpi.bcast.cmd(if(commrank==(n_cpu - 1)) local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y) else local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y))
+  browser()
   local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
                
   mpi.bcast.cmd(mpi.gather.Robj(local_mm,root=0,comm=1))

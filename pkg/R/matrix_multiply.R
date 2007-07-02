@@ -10,7 +10,7 @@ matrix.mult.validate <- function(X, Y, dx, dy){
   if(!(is.matrix(X) && is.matrix(Y)))
     stop("'X' and 'Y' must be matrices.")
   
-  if(!((dx[1]==dy[2])&&(dx[2]==dy[1])))
+  if(!(dx[2]==dy[1]))
     stop("'X' and 'Y' not compatible")
 }
 
