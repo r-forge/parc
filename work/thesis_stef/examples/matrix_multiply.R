@@ -26,8 +26,10 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
     
   if( n_cpu == 1 )
     return(serial.matrix.mult(X, Y))
-  if( spawnRslaves == TRUE )
+  if( spawnRslaves == TRUE ){
     mpi.spawn.Rslaves(nslaves = n_cpu - 1)
+    mpi.bcast.cmd(library("paRc"))
+  }
 
   mpi.bcast.Robj2slave(Y) ## needed on every node
   mpi.bcast.Robj2slave(X) ## not needed when code fixed
@@ -58,9 +60,6 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
   mpi.bcast.Robj2slave(nrows_on_slaves)
   mpi.bcast.Robj2slave(nrows_on_last)
 
-  mpi.bcast.cmd(library("paRc"))
-  mpi.bcast.Robj2slave(serial.matrix.mult)
-  
   mpi.bcast.cmd(if(commrank==(n_cpu - 1)) local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y) else local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y))
   local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
                
@@ -81,4 +80,27 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
   if( spawnRslaves == TRUE )
     mpi.close.Rslaves()
   out
+}
+
+## snow matrix mult based on parMM but uses C implementation
+snow.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
+
+  ## Input validation
+  if(!(is.matrix(X) && is.matrix(Y)))
+    stop("'X' and 'Y' must be matrices.")
+
+  dx <- dim(X) ## dimensions of matrix A
+  dy <- dim(Y) ## dimensions of matrix B
+  if(!(dx[2]==dy[1]))
+    stop("'X' and 'Y' not compatible")
+
+  if( n_cpu == 1 )
+    return(serial.matrix.mult(X, Y))
+  if( spawnRslaves == TRUE ){
+    cl<-makeCluster(4,type="MPI")
+    clusterEvalQ(cl,library("paRc"))
+  }
+  
+  docall(rbind, clusterApply(cl, splitRows(A, length(cl)), get("%*%"),
+    B))
 }
