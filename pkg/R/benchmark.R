@@ -110,7 +110,8 @@ bm.matrix.multiplication <- function(x){
     else {
       parfoos <- benchmark.functions.to.apply(x)[benchmark.is.parallel(x)]
       avail_cpu <- benchmark.avail.cpu(x)[benchmark.is.parallel(x)]
-      for(i in 1:length(parfoos)){
+      parcount <- length(parfoos)
+      for(i in 1:parcount){
         ##mpi.spawn.Rslaves(nslaves = n_cpu - 1)
         if(n_cpu > avail_cpu[i])
           tmp <- c(benchmark.task(x),parfoos[i],n_cpu,
@@ -121,7 +122,7 @@ bm.matrix.multiplication <- function(x){
                    as.vector(system.time(foo(data[[1]], data[[2]],n_cpu)))[1:3],
                    TRUE)
         }
-        out[foocount+n_cpu-2+i,] <- tmp
+        out[foocount+(n_cpu-2)*parcount+i,] <- tmp
                                       
         ##mpi.close.Rslaves()
       }

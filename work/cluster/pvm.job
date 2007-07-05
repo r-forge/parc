@@ -1,8 +1,8 @@
-#$ -N PVM
-#$ -pe pvm 20
+#$ -N pvm-test
+#$ -pe pvm 5
 #$ -q node.q
 
-# Job for using the PVM implementation on 20 Nodes
-# make sure that all the environment variables are declared in your .bashrc
-./pvm-executable 20
+## if shared library not available in standard paths add the following
+export LD_LIBRARY_PATH=/home/stheussl/lib/pvm3/lib/LINUX64/:$LD_LIBRARY_PATH
 
+/path/to/pvm/executable/master-exec
