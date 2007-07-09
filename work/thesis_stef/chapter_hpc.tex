@@ -1,49 +1,73 @@
 \chapter{Parallel Computing}
 \section{Introduction}
 
-
-Massive parallel machines (MPPs) or network of workstations (NOW)
-
+In 1965 a director in the Fairchild Semiconductor division of
+Fairchild Camera and Instrument Corporation predicted: "The complexity
+(of integrated circuits, annotation of the author)
+for minimum costs has increased at a rate of roughly two per year
+[\ldots] over the short term this rate can be expected to continue, if
+not increase." \cite{moore} This soon became known as Moore's Law. And
+indeed for nearly fourty years the advance predicted by Moore has
+taken place (the overall growth of the world's most powerful computers
+has approximately doubled each 18 months).
 
 Furthermore greater speed implicates greater memory, otherwise you have
 the situation that a computer capable of performing trillions of
 operations in each second only has access to a small memory which is
 rather useless for solving data driven calculations.
 
+Now, more than 40 years later "desktop" systems with two to four
+processors and lots of memory are available, which means that they can
+be compared with high performance workstations of just a few years
+ago.
 
-critical problems in the development of parallel computing (see
-pacheco p5-6)
+Factors which constitute this trend are (\cite{architecture}):
 \begin{itemize}
-\item decide on and implement an interconnection network for the
-  processors
-\item design and implement system software for the hardware
-\item devise algorithms and data structures for solving th problem
-\item divide the algorithms and data structures up into subproblems
-\item identify the communications that will be needed among the
-  subproblems, and
-\item assign subproblems to processors and memory modules
+\item a slowdown in uniprocessor performance arising from  diminishing
+  returns in exploiting instruction-level-parallelism
+\item a growth in servers and server performance
+\item a growth in data-intensive applications
+\item the insight that increasing performance on the desktop is less
+  important
+\item an improved understanding of how to use multiprocessors
+  effectively, especially in server environments where there is
+  significant thread-level parallelism
+\item the advantages of leveraging a design investment by replication
+  rather than unique design--all multiprocessor designs provide such leverage
 \end{itemize}
+
+With the need to solve large problems and the availability of adequate
+workstations, large-scale parallel computing has become more and more
+important. Some examples to illustrate this need in science and
+research include:
+\begin{itemize}
+\item data mining for large data sets
+\item algorithms for solving NP-complete problems
+\item climate prediction
+\item computations in biology, chemistry and physics
+\item cryptography
+\item astronomy
+\end{itemize}
+
+The R project for Statistical Computing and Graphics is an open-source
+software environment available for different platforms \cite{R}. With the
+development mentioned above there have some extensions (called
+packages) for High Performance Computing come up.
+
+In this chapter the fundamentals of parallel computing are
+presented. It provides a general overview of the field of High
+Performance Computing and the possibilities to use R in this area.
+
 
 \section{Computer Architecture}
-
-traditionally computers can be  categorized as follows:
-\begin{itemize}
-\item personal computers
-\item workstations
-\item mini computers
-\item mainframe computers
-\item High performance computing servers (super computers)
-\end{itemize}
-
-This has changed rapidly in the last years, as the requirements of
-people went through an interesting process. Not only scientists
-needed more and more computing power but also endusers. 
-
-In this diploma thesis I will have a closer look on the last category
-namely high performance computing servers. I start with a definition
-of what is a HPC server and continue with a taxonomy of such
-machines. I'm closing this section with a short description of the
-Servers I used to produce all the output in this thesis.
+In this section computer architectures are briefly described to
+understand how performance can be maximized when using parallel
+computing. First one need to know how one can make an application fast
+on a single processor and second how can data efficiently supplied to
+these processors. The beginning of this chapter deals with a taxonomy of
+the design alternatives for multiprocessors. After that a brief look
+into processor design and memory hierarchies is given. The section closes with a description of high performance computing
+servers.
 
 \subsection{Beyond Flynn's Taxonomy}
 
@@ -51,22 +75,25 @@ Providing a high-level standard for programming HPC applications is a
 major challenge nowadays. There are a variety of architectures for
 large-scale computing. They all have specific features and 
 therefore there should be a taxonomy in which such architectures can
-be classified. \cite{flynn72sco} classified architectures on the
+be classified. About fourty years ago, \cite{flynn72sco} classified
+architectures on the
 presence of single or multiple either instructions or data streams
 known as Flynn's taxonomy:
 \begin{description}
 \item[Single Instruction Single Data (SISD)]
-  For a long time this type of architecture of CPUs, developed by the
-  mathematician John von Neumann, was the standard. This computers are
-  known as serial computers. 
+  This type of architecture of CPUs (called uniprocessors),
+  developed by the 
+  mathematician John von Neumann, was the standard for a long
+  time. These Computers are also known as serial computers. 
 \item[Multiple Instruction Single Data (MISD)] the theoritical possibility
   of applying multiple instructions on a single datum is generally
   impractical.
 \item[Single Instruction Multiple Data (SIMD)] 
   a single instruction is applied by multiple processors to different
-  data.
+  data in parallel (data-level parallelism). 
 \item[Multiple Instruction Multiple Data (MIMD)] processors apply
-  different instructions on different data. 
+  different instructions on different data (thread-level
+  parallelism). See section \ref{sec:mimd_computers} for details. 
 \end{description}
 
 But these distinctions are insufficient for classifying modern
@@ -114,9 +141,31 @@ concurrent execution:
   dataflow execution.
 \end{description}
 
+\subsection{Processor and memory}
+
+
+
 \subsection{High performance computing server}
 
-These computers have the highest computation power. They are mainly used
+Traditionally computers can be categorized as follows:
+\begin{itemize}
+\item personal computers
+\item workstations
+\item mini computers
+\item mainframe computers
+\item High performance computing servers (super computers)
+\end{itemize}
+
+This has changed rapidly in the last years, as the requirements of
+people went through an interesting process. Microprocessor-based
+computers dominate the market. PCs and workstations have emerged as
+major products in the computer industry. Servers based on
+microprocessors have replaced minicomputers and mainframes have almost
+been replaced with networks of multiprocessor workstations.
+
+We are now interested in the last category namely high performance
+computing servers, because these computers have the highest
+computation power and they are mainly used
 for scientific or technical applications. The number of processors
 such a computer can have reaches from 100 to several thousand (mainly
 64 bit processors).
@@ -165,39 +214,13 @@ with ccNUMA (cache coherent nonuniform memory access) systems (cite hp
 sgi paper and sgi.pdf-luthien) or
 global arrays (see section \ref{globalArrays})
 They have become an important improvement to distributed memory
-paltforms because amongst others it enables compiler driven
+platforms because amongst others it enables compiler driven
 parallelizing techniques like OpenMP (see section \ref{OpenMP})to be
 used on these systems. 
- 
-\subsection{Hardware used}
 
-\textbf{TODO: own section? short description of machines, details in
-  appendix}
+\section{MIMD computers}
+\label{sec:mimd_computers}
 
-The Hardware I used for the applications presented in this thesis is
-going to be described in this section.
-At the Department of Statistics and Mathematics of the Vienna
-University of Economics and Business Administration a high performance
-computing server, a cluster of workstations, is
-available. ... available for other departments ... 
-R-Forge specs
-
-2 x Dual Core AMD Opteron 2.4 GHz
-12 GB RAM
-1.2 TB RAID 5
-
-Cluster specs (node.q, bignode, bignode.q)
-
-4 Nodes (bignodes):
-2 x Dual Core Intel XEON CPU 5140 @ 2.33 GHz
-16 GB RAM
-
-68 Nodes:
-1 x Intel Core 2 Duo CPU 6600 @ 2.4 GHz
-4 GB RAM
-
-
-\section{Distributed Computing}
 
 \textbf{TODO: distributed and shared memeory systems}
 
@@ -212,7 +235,7 @@ the computation involved to a large number of processors. It is
 important that this is done in a way so that each of these computation
 nodes performs roughly the same work. Furthermore, developers have to
 ensure that the data required for the computation is available to the
-processor witch as little delay as possible. Therefore some sort of
+processor with as little delay as possible. Therefore some sort of
 coordination is required for the locality of data in the memory.
 One might think that this could be hard work, and indeed it is. But
 there are programming models for HPC already available which make life
@@ -391,6 +414,39 @@ further information can be found on the following website:
 \subsection{SNOW package}
 \subsection{Building an OpenMP shared library}
 \subsection{Comparison}
+
+\section{Hardware used}
+
+\textbf{TODO: own section? short description of machines, details in
+  appendix}
+
+The Hardware used for the applications presented in this thesis is
+going to be described in this section.
+At the Department of Statistics and Mathematics of the Vienna
+University of Economics and Business Administration a high performance
+computing server, a cluster of workstations, is
+available. Cluster@WU is a shared Platform among several departments
+of the university which are represented through a research institute
+for computational methods. 
+\begin{table}
+
+\end{table}
+R-Forge specs
+
+2 x Dual Core AMD Opteron 2.4 GHz
+12 GB RAM
+1.2 TB RAID 5
+
+Cluster specs (node.q, bignode, bignode.q)
+
+4 Nodes (bignodes):
+2 x Dual Core Intel XEON CPU 5140 @ 2.33 GHz
+16 GB RAM
+
+68 Nodes:
+1 x Intel Core 2 Duo CPU 6600 @ 2.4 GHz
+4 GB RAM
+
 
 \section{Conclusion}
 
