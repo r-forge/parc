@@ -23,13 +23,31 @@ Vienna University of Economics and Business Administration}
 \tableofcontents}
 
 
+\section{Diploma Thesis: Applied HPC using R}
+\subsection{Contents}
+\frame{
+\frametitle{Contents and progress}
+\begin{itemize}
+
+\item Theory: High Performance Computing - 75 \%
+\item Application: Matrix Multiplication - 50 \%
+\item Application: Parallel Monte Carlo Simulation for Option Pricing
+  - 30 \%
+\item Application: The Travelling Salesman Problem - 10 \%
+\item ( Application: Parallel Support Vector Machines - 0 \% ) 
+\item R Package paRc: Parallel Computations in R - 40 \% ) 
+\end{itemize}
+
+}
+
+
 \section{Computer Architecture}
 \frame{\frametitle{Computer Architecture}}
 
 \subsection{Beyond Flynn's Taxonomy}
 
 \frame{
-\frametitle{Flynns Taxonomy}
+\frametitle{Flynn's Taxonomy}
 
 \begin{description}
 \item[Single Instruction Single Data (SISD)]
@@ -50,9 +68,9 @@ see \cite{flynn72sco}
 }
 
 \frame{
-\frametitle{Beyond Flynns Taxonomy}
+\frametitle{Beyond Flynn's Taxonomy}
 
-\cite{duncan90survey} tries to define a taxonomy explicit for parallel
+Ralph Duncan \cite{duncan90survey} tries to define a taxonomy explicit for parallel
 frameworks:
 
 \begin{description}
@@ -83,7 +101,7 @@ frameworks:
 }
 
 \frame{
-\frametitle{platforms@WU}
+\frametitle{platforms available for HPC}
 
 \begin{itemize}
 \item AMD Opteron Server of Stat-Math\newline
@@ -188,8 +206,7 @@ Todo:
 \frame{
 \frametitle{Literature so far}
 
-\begin{thebibliography}{9}
-
+\begin{thebibliography} {9}
 
 \bibitem{hpc} Laurence T. Yang, Minyi Guo:
   \emph{High Performance Computing - Paradigm and Infrastructure},
@@ -207,10 +224,18 @@ Todo:
   \emph{PVM Parallel Virtual Machine},
   The MIT Press, 1994
 
+\bibitem{duncan90survey} Ralph Duncan
+  \emph{A survey of parallel computer architectures},
+  IEEE Computer 23, 1990
+
+\bibitem{flynn72sco} Michael J. Flynn,
+  \emph{Some computer organizations and their effectiveness},
+  IEEE Transactions on Computers 21, 1972
 \end{thebibliography}
 
-
 }
+
+
 
 \begin{frame}
 
@@ -219,6 +244,6 @@ Todo:
 \end{frame}
 
 
-%\bibliographystyle{plainnat}
+\bibliographystyle{plainnat}
 %\bibliography{hpcreferences}
 \end{document}

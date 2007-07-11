@@ -66,8 +66,8 @@ computing. First one need to know how one can make an application fast
 on a single processor and second how can data efficiently supplied to
 these processors. The beginning of this chapter deals with a taxonomy of
 the design alternatives for multiprocessors. After that a brief look
-into processor design and memory hierarchies is given. The section closes with a description of high performance computing
-servers.
+into processor design and memory hierarchies is given. The section
+closes with a description of high performance computing servers.
 
 \subsection{Beyond Flynn's Taxonomy}
 
@@ -221,10 +221,40 @@ used on these systems.
 \section{MIMD computers}
 \label{sec:mimd_computers}
 
+On MIMD architectural based computers one has the highest flexibility
+in parallel computing. Whereas in SIMD based architectures a single
+instruction is applied to multiple data the MIMD paradigm allows to
+apply different instructions to different data at the same time. But
+SIMD architectures have become popular again recently. The Cell
+processor of IBM is one of the promising CPU of its kind. The focus in
+this thesis is on MIMD computers though.
 
-\textbf{TODO: distributed and shared memeory systems}
+There are two different categories in which such a system can be
+classified. The classification is based on how the CPU access
+memory. One possibility is to have distributed memory platforms (DMPs). Each
+processor has its own memory and when it comes to sharing of data, an
+interconnection network is needed. Exchange of data or synchronizing
+is done through message passing.
+
+The other possibility is to have shared memeory platforms (SMPs). All
+processors or computation nodes can access the same memory. The
+advantage is the better performance like in DMPs because you don't
+have to send messages via a slow network. Each processor is able to
+fetch the necessary data directly from data. But this kind of platform
+has a big limitation. The cost of having as much memory as a cluster
+of workstation would provide are enormous. That is why cluster or grid
+computing has become so popular.
+
+A further possibility is to have some sort of a hybrid platform. On
+the one hand you have several shared memory platforms with a few
+computation cores on each and on the other hand they are connected via
+an interconnection network. 
+
+
 
 heterogeneous network computing see geist et al p.2
+
+
 
 \section{Parallel Programming Models}
 \label{sec:programming_models}
@@ -240,6 +270,18 @@ coordination is required for the locality of data in the memory.
 One might think that this could be hard work, and indeed it is. But
 there are programming models for HPC already available which make life
 easier.
+
+But first a fundamental differentiation of parallel programs  is going
+to be explained. Programs by HPC developers can be done either
+as the single program multiple data (SPMD) or multiple program
+multiple data paradigm. With SPMD there is only one program available
+to all computation nodes. Data is distributed equally amongst all
+nodes in the program. Then each node applies the same program on its
+own data. You shouldn't Verwechseln it with the SIMD paradigm as there the
+distribution of the data is done prior execution of the program.
+With MPMD you have a thread like paradigm. On each node it is possible
+to run different programs with either the same or different data. This
+is what one would asume when speaking of MIMD architectures.  
 
 When parallel computing came up there have been a lot of programming
 languages developed. Only few of them experienced any real use. There
