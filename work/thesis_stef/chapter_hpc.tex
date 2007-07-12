@@ -143,6 +143,95 @@ concurrent execution:
 
 \subsection{Processor and memory}
 
+A reduction of the execution time can be achieved with parallel
+computing and this is the most important method for improving
+performance. But a programmer can only achieve best performance when
+he is aware of the underlying hardware. In fact parallelism can be
+exploited at different levels starting with the processor
+itself. Furthermore, processors have to be provided with data
+sufficiently fast. If the memory is too slow having a faster processor
+doesn't pay. Normally memory which delivers good performance is too
+expensive to be economically feasible. This situation has led to the
+development of memory hierarchies.
+
+\subsubsection{Instruction-Level Parallelism}
+A technique called pipelining allows a processor to execute different
+stages of different instructions at the same time.
+For example in the classic von Neumann architecture (SISD), processors
+complete consecutive instructions are completed in a fetch-execute
+cycle: Each instruction is fetched, decoded, then data is fetched and
+the decoded instruction is applied on the data.
+A simple implementation where every instruction takes at most 5 clock
+cycles can be as follows (for details see \cite{CAquant07appendixA}).
+\begin{description}
+\item[Instruction fetch cycle (F)] The current instruction is fetched from
+  memory.
+\item[Instrucion decode/register fetch cycle (D)] Decode instructions and
+  read registers corresponding to register source from the register
+  file.
+\item[Execution/effective address cycle (X)] The arithmetic logic unit
+  (ALU) operates on the operands prepared in the prior cycle.
+\item[Memory access (M)] Load or store instructions.
+\item[Write-back cycle (W)] Write the result into the register file.
+\end{description}
+
+Pipelining allows parallel processing of these
+instructions. I.e. while one instruction is being decoded, another
+instruction may be fetched and so on. On each clock cycle simply a new
+instruction is started. Therefore after 5 cycles the pipe is filled
+and on each subsequent clock cycle an instruction is finished. In table
+\ref{tab:pipelining} the results of this execution pattern is shown.
+
+\begin{tabular}{|c|r@{.}lr@{.}lr@{.}l||r|}
+\label{tab:pipelining}
+	\hline
+\multicolumn{10}{|c|}
+	{\rule[-3mm]{0mm}{8mm} \textbf{Cycle}} \\
+\textbf{Instruction Number}
+	& \multicolumn{2}{c}{1}
+	& \multicolumn{2}{c}{2}
+	& \multicolumn{2}{c}{3}
+	& \multicolumn{2}{c}{4}
+	& \multicolumn{2}{c}{5}
+	& \multicolumn{2}{c}{6}
+	& \multicolumn{2}{c}{7}
+	& \multicolumn{2}{c}{8}
+	& \multicolumn{2}{c}{9}
+        \\ \hline 
+Instruction $i$   & F & D & X & M & W &   &   &   &   \\ \hline
+Instruction $i+1$ &   & F & D & X & M & W &   &   &   \\ \hline
+Instruction $i+2$ &   &   & F & D & X & M & W &   &   \\ \hline
+Instruction $i+3$ &   &   &   & F & D & X & M & W &   \\ \hline
+Instruction $i+4$ &   &   &   &   & F & D & X & M & W \\ \hline
+\end{tabular}
+
+Pipelining only works if every instruction does not depend on its
+predecessor. If so, instructions may completely or partially executed
+in parallel -- instruction-level parallelism.
+Pipelining can be
+exploited either in hardware or in software. In the hardware-based
+approach (the market dominating approach) the hardware helps to
+discover and achieve parallelism dynamically. In the software-based
+approach parallelism is exploited statically at compile time through the
+compiler. 
+
+\subsubsection{Memory hierarchies}
+
+Programs tend to reuse data and instructions they have used
+recently. Therefore one wants to predict what instructions and data a
+program will use in the near future. This is also known as the
+Principle of Locality (\cite{computerarchitecture}). The best way to
+make a program fast would be to take advantage of the fastes memory
+available. But this would make the price of a computer extremely
+high.
+
+Memory hierarchies have become a economical solution in a
+cost-performance sense. Between the processor and the main memory one
+or more levels of fast (smaller in size) memory is inserted -- cache
+memory. Fulfilling the principle of locality cache memory stores the
+instructions and data which are predicted to be used next or in
+subsequent steps. This increases the throughput of the data provided that
+the predictions made were correct.
 
 
 \subsection{High performance computing server}
