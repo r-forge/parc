@@ -221,18 +221,17 @@ Programs tend to reuse data and instructions they have used
 recently. Therefore one wants to predict what instructions and data a
 program will use in the near future. This is also known as the
 Principle of Locality (\cite{computerarchitecture}). The best way to
-make a program fast would be to take advantage of the fastes memory
+make a program fast would be to take advantage of the fastest memory
 available. But this would make the price of a computer extremely
 high.
 
-Memory hierarchies have become a economical solution in a
+Memory hierarchies have become an economical solution in a
 cost-performance sense. Between the processor and the main memory one
 or more levels of fast (smaller in size) memory is inserted -- cache
-memory. Fulfilling the principle of locality cache memory stores the
+memory. Fulfilling the principle of locality, cache memory stores the
 instructions and data which are predicted to be used next or in
 subsequent steps. This increases the throughput of the data provided that
 the predictions made were correct.
-
 
 \subsection{High performance computing server}
 
@@ -327,17 +326,38 @@ is done through message passing.
 
 The other possibility is to have shared memeory platforms (SMPs). All
 processors or computation nodes can access the same memory. The
-advantage is the better performance like in DMPs because you don't
+advantage is the better performance like in DMPs because one don't
 have to send messages via a slow network. Each processor is able to
-fetch the necessary data directly from data. But this kind of platform
+fetch the necessary data directly from memory. But this kind of platform
 has a big limitation. The cost of having as much memory as a cluster
-of workstation would provide are enormous. That is why cluster or grid
-computing has become so popular.
+of workstation would provide are enormous. That is why cluster- or
+grid-computing has become so popular.
 
 A further possibility is to have some sort of a hybrid platform. On
 the one hand you have several shared memory platforms with a few
 computation cores on each and on the other hand they are connected via
 an interconnection network. 
+
+\subsection{Shared Memory Systems}
+
+\subsection{Distributed Memory Systems}
+
+
+\subsubsection{Beowulf clusters}
+In 1995 NASA scientist completed the Beowulf project, which was a
+milestone toward cluster computing.
+
+Beowulf Clusters are scalable performance clusters based on commodity
+hardware, on a private system network, with open source software
+(Linux) infrastructure. The designer can improve performance
+proportionally with added machines. The commodity hardware can be any
+of a number of mass-market, stand-alone compute nodes as simple as two
+networked computers each running Linux and sharing a file system or as
+complex as 1024 nodes with a high-speed, low-latency network (from
+\cite{beowulfHP}).
+
+
+\subsubsection{The Grid}
 
 
 
