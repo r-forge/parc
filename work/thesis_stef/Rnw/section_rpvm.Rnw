@@ -1,0 +1,11 @@
+\subsection{The rpvm package}
+
+Parallel virtual machine uses the message-passing model and makes a
+collection of computer appear as a single virtual machine (see section
+\ref{sec:PVM} for details).
+There is an interface called rpvm which is a high-level implementation
+of PVM-functions in R. It uses most of the facilities provided of the
+PVM system. A good selection of these functions are explained in this
+section to show how PVM and R can be used together.
+
+
