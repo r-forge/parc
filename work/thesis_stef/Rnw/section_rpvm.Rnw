@@ -204,7 +204,7 @@ the slaves are detached from the virtual machine by calling a
 \subsubsection{Other important functions}
 
 To complete the set of important functions supplied by the rpvm
-package the two more functions have to be explained:
+package two more functions have to be explained:
 
 \begin{description}
 \item[\texttt{.PVM.gather(x, count = length(x), msgtag, group,

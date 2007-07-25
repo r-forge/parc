@@ -1,4 +1,6 @@
-\subsection{The Rmpi package}
+\subsection{The snow package}
+
+Simple network of workstations (SNOW) \cite{tierney07snow}
 
 The Message Passing Interface (MPI) is a set of library interface
 standards for message-passing and there are many implementations using
@@ -157,7 +159,7 @@ x <- rep(n,n)
 rows <- mpi.apply(x, runif())
 X <- matrix(unlist(rows), ncol = n, byrow=TRUE)
 X
-mpi.close.Rsalves(nslaves = n)
+mpi.close.Rsalves(nslaves = n)yu06Rmpi
 
 @ 
 
