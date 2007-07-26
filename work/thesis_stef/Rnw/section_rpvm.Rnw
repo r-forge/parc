@@ -1,5 +1,5 @@
 \subsection{The rpvm package}
-
+\label{sec:rpvm}
 Parallel virtual machine uses the message-passing model and makes a
 collection of computers appear as a single virtual machine (see section
 \ref{sec:PVM} for details).

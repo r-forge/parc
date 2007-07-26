@@ -1,5 +1,5 @@
 \subsection{The Rmpi package}
-
+\label{sec:Rmpi}
 The Message Passing Interface (MPI) is a set of library interface
 standards for message-passing and there are many implementations using
 these standards (see also section \cite{sec:MPI}).
