@@ -1,0 +1,7 @@
+#$ -N section-Rmpi
+#$ -pe lam 8
+
+R-g --vanilla <<-EOF 
+	Sweave("/home/stheussl/svn/paRc/work/thesis_stef/Rnw/section-Rmpi.Rnw")
+EOF
+

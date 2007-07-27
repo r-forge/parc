@@ -1,0 +1,7 @@
+#$ -N section-rpvm
+#$ -pe pvm 8
+
+R-g --vanilla <<-EOF 
+	Sweave("/home/stheussl/svn/paRc/work/thesis_stef/Rnw/section-rpvm.Rnw")
+EOF
+

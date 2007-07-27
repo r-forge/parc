@@ -1,9 +1,9 @@
 \subsection{The snow package}
 \label{sec:snow}
 The aim of simple network of workstations (snow --
-\cite{tierney07snow}) is to provide a simple parallel computing
-environment in R. To make up a virtual cluster in R snow is based on
-three different message-passing environments.
+\cite{rossini03snow}, \cite{tierney07snow}) is to provide a simple
+parallel computing environment in R. To make up a virtual cluster in R
+snow is based on three different message-passing environments.
 
 \begin{itemize}
 \item PVM via R package rpvm (see section \ref{sec:rpvm})
@@ -51,7 +51,7 @@ started with the SGE using 8 nodes.
 <<echo=TRUE>>=
 library("snow")
 set.seed(1782)
-## Start a MPI cluster using 8 slaves
+## Start an MPI cluster using 8 slaves
 n <- 8
 cl <- makeCluster(n, type = "MPI")
 
@@ -66,68 +66,55 @@ snow provides a good handful of high-level functions:
 
 %% TODO
 \begin{description}
-\item[\texttt{mpi.apply(x, fun, ..., comm = 1)}] applies a function
+\item[\texttt{clusterEvalQ(cl, expr)}] evaluates an R expression
+  \texttt{expr} on
+  each cluster node provided by \texttt{cl}. 
+\item[\texttt{clusterCall(cl, fun, ...)}] calls a function
+  \texttt{fun} with arguments \ldots on each node found in \texttt{cl}
+  and returns a list of the results.
+\item[\texttt{clusterApply(cl, x, fun, ...)}] applies a function
   \texttt{fun} with additional arguments \ldots to a specific part of
-  a vector \texttt{x}. The return value is of type list. The length of
+  a vector \texttt{x}. The return value is of type list with the same
+  length as of \texttt{x}. The length of
   \texttt{x} must not exceed the 
   number of R slaves spawned as each element of the vector is used
   exactly by one slave. To achieve some sort of load balancing please
   use the corresponding apply functions below.
-\item[\texttt{mpi.applyLB(x, fun, ..., comm = 1)}] applies a function
+\item[\texttt{clusterApplyLB(cl, x, fun, ...)}] is a load balncing
+  version of \texttt{clusterApply()} which applies a function
   \texttt{fun} with additional arguments \ldots to a specific part of
-  a vector \texttt{x}. There are a few more variants explained in
-  \cite{yu06Rmpi}.
-\item[\texttt{mpi.bcast.cmd(cmd = NULL, rank = 0, comm = 1)}]
-  broadcasts a command \texttt{cmd} from the sender \texttt{rank} to
-  all R slaves and evaluates it.
-\item[\texttt{mpi.bcast.Robj(obj, rank = 0,comm = 1)}]
-  broadcasts an R object \texttt{obj} from process rank \texttt{rank}
-  to all other processes (master and slaves).
-\item[\texttt{mpi.bcast.Robj2slave(obj, comm = 1)}] broadcasts an R
-  object \texttt{obj} to all R slaves from the master process. 
-\item[\texttt{mpi.parSim( ... )}] carries out a Monte Carlo simulation
-  in parallel. For details on this function see the package manual
-  (\cite{yu06Rmpi}) and
-  the applications in chapter \ref{chap:options}.
+  a vector \texttt{x} with the difference that the length of
+  \texttt{x} can exceed the number of cluster nodes. If a node
+  finished with the computation the next job is placed on the
+  available node. This is repeated until all jobs have completed.
+\item[\texttt{clusterExport(cl, list)}] broadcasts a list of global
+  variables on the master (\texttt{list}) to all slaves.
+\item[\texttt{parApply(cl, x, fun, ...)}] is one of the parallel
+  versions of the \texttt{apply} functions available in R. I refer to
+  the package documentation (\cite{tierney07snow}) for further details.
+\item[\texttt{parMM(cl, A,B)}] is a simple parallel implementation of
+  matrix multiplication. 
 \end{description}
 
 
-\textbf{Example:} Using mpi.apply\newline
+\textbf{Example:} Using high-level functions of snow\newline
 running on cluster@WU using the node.q -- the parallel environment was
 started with SGE using 8 nodes
 
 <<echo=TRUE>>=
 
-n <- 4
+n <- 8
 # spawn n slaves
-mpi.spawn.Rsalves(nslaves = n)
+cl <- makeCluster(n, type="MPI")
 # build up a n x n matrix in parallel
 x <- rep(n,n)
-rows <- mpi.apply(x, runif())
+rows <- clusterApply(cl, x, runif)
 X <- matrix(unlist(rows), ncol = n, byrow=TRUE)
 X
-mpi.close.Rsalves(nslaves = n)yu06Rmpi
 
 @ 
 
 
-\subsubsection{Other important functions}
-
-To complete the set of important functions supplied by the Rmpi
-package the following functions have to be explained:
-
-\begin{description}
-\item[\texttt{.PVM.gather(x, count = length(x), msgtag, group,
-    rootginst = 0}] gathers data distributed on the nodes (x) to a
-  specific process (mostly the root) into a single array. It performs
-  a send of messages from each member of a group of processes. A
-  specific process (the root) accumulates this messages into a single vector.
-\item[\texttt{.PVM.scatter(x, count, msgtag, group, rootqinst = 0}]
-  sends to each member of a group a partition of  a vector x from a
-  specified member of the group (mostly the root) where \texttt{count}
-  is an integer specifying the number of elements to be sent to each
-  member. 
-\end{description}
 
 \subsubsection{conclusion}
 
@@ -143,6 +130,6 @@ package the following functions have to be explained:
 %flexibility. New parallel functions can be constructed on the basis of
 %the provided interface.
 
-For further interface functions supplied by the Rmpi package, a more detailed
+For further interface functions supplied by the snow package, a more detailed
 description and further examples please consult the package description
-\cite{yu06Rmpi}.
+\cite{tierney07snow}.

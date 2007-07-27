@@ -119,7 +119,8 @@ Rmpi provides the following high level functions (this is only a selection):
 \begin{description}
 \item[\texttt{mpi.apply(x, fun, ..., comm = 1)}] applies a function
   \texttt{fun} with additional arguments \ldots to a specific part of
-  a vector \texttt{x}. The return value is of type list. The length of
+  a vector \texttt{x}. The return value is of type list with the same
+  length as of \texttt{x}. The length of
   \texttt{x} must not exceed the 
   number of R slaves spawned as each element of the vector is used
   exactly by one slave. To achieve some sort of load balancing please
@@ -149,7 +150,7 @@ started with SGE using 8 nodes
 
 <<echo=TRUE>>=
 
-n <- 4
+n <- 8
 # spawn n slaves
 mpi.spawn.Rsalves(nslaves = n)
 # build up a n x n matrix in parallel
