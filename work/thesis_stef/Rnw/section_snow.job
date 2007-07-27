@@ -2,6 +2,6 @@
 #$ -pe lam 8
 
 R-g --vanilla <<-EOF 
-	Sweave("/home/stheussl/svn/paRc/work/thesis_stef/Rnw/section-snow.Rnw")
+	Sweave("/home/stheussl/svn/paRc/work/thesis_stef/Rnw/section_snow.Rnw")
 EOF
 

@@ -53,23 +53,35 @@ Rmpi management and query functions:
 running on cluster@WU using the node.q -- the parallel environment was
 started with the SGE using 8 nodes.
 
-<<echo=TRUE>>=
-library("Rmpi")
-set.seed(1782)
-## Query the configuration of the parallel virtual machine 
-lamhosts()
-
-## how many CPU's are available in the parallel environment
-mpi.universe.size()
-## is this process the master process?
-mpi.is.master()
-## what is the hostname of the master process
-mpi.get.processor.name()
-
-## stop LAM/MPI and exit R 
-## mpi.quit()
-
-@ 
+\begin{Schunk}
+\begin{Sinput}
+> library("Rmpi")
+> set.seed(1782)
+> lamhosts()
+\end{Sinput}
+\begin{Soutput}
+node059 node059 node055 node055 node064 node064 node062 node062 
+      0       1       2       3       4       5       6       7 
+\end{Soutput}
+\begin{Sinput}
+> mpi.universe.size()
+\end{Sinput}
+\begin{Soutput}
+[1] 8
+\end{Soutput}
+\begin{Sinput}
+> mpi.is.master()
+\end{Sinput}
+\begin{Soutput}
+[1] TRUE
+\end{Soutput}
+\begin{Sinput}
+> mpi.get.processor.name()
+\end{Sinput}
+\begin{Soutput}
+[1] "node059"
+\end{Soutput}
+\end{Schunk}
 
 \subsubsection{Process spawning and communication}
 
@@ -97,20 +109,47 @@ In Rmpi it is easy to spawn R slaves and use them as workhorses.
   \texttt{cmd} and return executed results if \texttt{TRUE}.
 \end{description}
 
-<<echo=TRUE>>=
-## spawn as many slaves as CPUs available in the parallel environment
-## minus one representing the already running root process.
-mpi.spawn.Rslaves(nslaves=mpi.universe.size()-1)
-## how many R processes are connected to the communicator?
-mpi.comm.size()
-## execute mpi.comm.rank() on the slaves
-mpi.remote.exec(mpi.comm.rank())
-## rank of master process
-mpi.comm.rank()
-## close Rslaves
-mpi.close.Rslaves()
-
-@ 
+\begin{Schunk}
+\begin{Sinput}
+> mpi.spawn.Rslaves(nslaves = mpi.universe.size() - 1)
+\end{Sinput}
+\begin{Soutput}
+	7 slaves are spawned successfully. 0 failed.
+master (rank 0, comm 1) of size 8 is running on: node059 
+slave1 (rank 1, comm 1) of size 8 is running on: node059 
+slave2 (rank 2, comm 1) of size 8 is running on: node059 
+slave3 (rank 3, comm 1) of size 8 is running on: node055 
+slave4 (rank 4, comm 1) of size 8 is running on: node055 
+slave5 (rank 5, comm 1) of size 8 is running on: node064 
+slave6 (rank 6, comm 1) of size 8 is running on: node064 
+slave7 (rank 7, comm 1) of size 8 is running on: node062 
+\end{Soutput}
+\begin{Sinput}
+> mpi.comm.size()
+\end{Sinput}
+\begin{Soutput}
+[1] 8
+\end{Soutput}
+\begin{Sinput}
+> mpi.remote.exec(mpi.comm.rank())
+\end{Sinput}
+\begin{Soutput}
+  X1 X2 X3 X4 X5 X6 X7
+1  1  2  3  4  5  6  7
+\end{Soutput}
+\begin{Sinput}
+> mpi.comm.rank()
+\end{Sinput}
+\begin{Soutput}
+[1] 0
+\end{Soutput}
+\begin{Sinput}
+> mpi.close.Rslaves()
+\end{Sinput}
+\begin{Soutput}
+[1] 1
+\end{Soutput}
+\end{Schunk}
 
 \subsubsection{Built-in high level functions}
 
@@ -148,19 +187,56 @@ Rmpi provides the following high level functions (this is only a selection):
 running on cluster@WU using the node.q -- the parallel environment was
 started with SGE using 8 nodes
 
-<<echo=TRUE>>=
-
-n <- 8
-# spawn n slaves
-mpi.spawn.Rslaves(nslaves = n)
-# build up a n x n matrix in parallel
-x <- rep(n,n)
-rows <- mpi.apply(x, runif)
-X <- matrix(unlist(rows), ncol = n, byrow=TRUE)
-X
-mpi.close.Rslaves()
-
-@ 
+\begin{Schunk}
+\begin{Sinput}
+> n <- 8
+> mpi.spawn.Rslaves(nslaves = n)
+\end{Sinput}
+\begin{Soutput}
+	8 slaves are spawned successfully. 0 failed.
+master (rank 0, comm 1) of size 9 is running on: node059 
+slave1 (rank 1, comm 1) of size 9 is running on: node059 
+slave2 (rank 2, comm 1) of size 9 is running on: node059 
+slave3 (rank 3, comm 1) of size 9 is running on: node055 
+slave4 (rank 4, comm 1) of size 9 is running on: node055 
+slave5 (rank 5, comm 1) of size 9 is running on: node064 
+slave6 (rank 6, comm 1) of size 9 is running on: node064 
+slave7 (rank 7, comm 1) of size 9 is running on: node062 
+slave8 (rank 8, comm 1) of size 9 is running on: node062 
+\end{Soutput}
+\begin{Sinput}
+> x <- rep(n, n)
+> rows <- mpi.apply(x, runif)
+> X <- matrix(unlist(rows), ncol = n, byrow = TRUE)
+> X
+\end{Sinput}
+\begin{Soutput}
+          [,1]      [,2]      [,3]       [,4]      [,5]     [,6]      [,7]
+[1,] 0.6775106 0.2118004 0.6072327 0.03405821 0.9282862 0.969057 0.6612636
+[2,] 0.6775106 0.2118004 0.6072327 0.03405821 0.9282862 0.969057 0.6612636
+[3,] 0.6775106 0.2118004 0.6072327 0.03405821 0.9282862 0.969057 0.6612636
+[4,] 0.6775106 0.2118004 0.6072327 0.03405821 0.9282862 0.969057 0.6612636
+[5,] 0.6775106 0.2118004 0.6072327 0.03405821 0.9282862 0.969057 0.6612636
+[6,] 0.6775106 0.2118004 0.6072327 0.03405821 0.9282862 0.969057 0.6612636
+[7,] 0.6775106 0.2118004 0.6072327 0.03405821 0.9282862 0.969057 0.6612636
+[8,] 0.6775106 0.2118004 0.6072327 0.03405821 0.9282862 0.969057 0.6612636
+          [,8]
+[1,] 0.2767014
+[2,] 0.2767014
+[3,] 0.2767014
+[4,] 0.2767014
+[5,] 0.2767014
+[6,] 0.2767014
+[7,] 0.2767014
+[8,] 0.2767014
+\end{Soutput}
+\begin{Sinput}
+> mpi.close.Rslaves()
+\end{Sinput}
+\begin{Soutput}
+[1] 1
+\end{Soutput}
+\end{Schunk}
 
 
 \subsubsection{Other important functions}

@@ -1,7 +1,10 @@
 #$ -N section-rpvm
 #$ -pe pvm 8
 
+## if shared library not available in standard paths add the following
+export LD_LIBRARY_PATH=/home/stheussl/lib/pvm3/lib/LINUX64/:$LD_LIBRARY_PATH
+
 R-g --vanilla <<-EOF 
-	Sweave("/home/stheussl/svn/paRc/work/thesis_stef/Rnw/section-rpvm.Rnw")
+	Sweave("/home/stheussl/svn/paRc/work/thesis_stef/Rnw/section_rpvm.Rnw")
 EOF
 

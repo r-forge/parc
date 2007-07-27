@@ -42,28 +42,54 @@ appendix \ref{app:gridengine} on how to do this).
 running on cluster@WU using the node.q -- the parallel environment was
 started with SGE using 8 nodes
 
-<<echo=TRUE>>=
-library("rpvm")
-set.seed(1782)
-## Query the configuration of the parallel virtual machine 
-.PVM.config()
-## as we have Intel core2 duo CPUs only 4 hosts are visible to PVMD
+\begin{Schunk}
+\begin{Sinput}
+> library("rpvm")
+> set.seed(1782)
+> .PVM.config()
+\end{Sinput}
+\begin{Soutput}
+  host.id    name    arch speed
+1  262144 node057 LINUX64  1000
+2  524288 node044 LINUX64  1000
+3  786432 node002 LINUX64  1000
+4 1048576 node053 LINUX64  1000
+\end{Soutput}
+\begin{Sinput}
+> mytid <- .PVM.mytid()
+> .PVM.tasks()
+\end{Sinput}
+\begin{Soutput}
+$tid
+[1] 262146
 
-## Query the task id of this process.
-mytid <- .PVM.mytid()
+$parent
+[1] 0
 
-## Query information about the tasks running on the virtual machine
-.PVM.tasks()
-## only the master process is running on the PVM
+$host
+[1] 262144
 
-## Query the status of the specified PVM process
-.PVM.pstats(mytid)
-.PVM.pstats(mytid+9)
+$status
+[1] "Unknown"
 
-## stop PVMD and exit R (not run)
-#.PVM.halt()
-
-@ 
+$name
+[1] ""
+\end{Soutput}
+\begin{Sinput}
+> .PVM.pstats(mytid)
+\end{Sinput}
+\begin{Soutput}
+262146 
+  "OK" 
+\end{Soutput}
+\begin{Sinput}
+> .PVM.pstats(mytid + 9)
+\end{Sinput}
+\begin{Soutput}
+       262155 
+"Not Running" 
+\end{Soutput}
+\end{Schunk}
 
 
 \subsubsection{Built-in high level functions}
@@ -83,70 +109,106 @@ rpvm provides two high level functions:
 running on cluster@WU using the node.q -- the parallel environment was
 started with SGE using 8 nodes
 
-<<echo=TRUE>>=
-n <- 8
-X <- matrix(rnorm(n*n), nrow = n)
-round(X,3)
-# PVM.rapply(X, sum, 3) Troubles on Grid Engine
-
-@ 
+\begin{Schunk}
+\begin{Sinput}
+> n <- 8
+> X <- matrix(rnorm(n * n), nrow = n)
+> round(X, 3)
+\end{Sinput}
+\begin{Soutput}
+       [,1]   [,2]   [,3]   [,4]   [,5]   [,6]   [,7]   [,8]
+[1,] -0.200 -0.183  0.560  1.286  0.468  0.502  0.874 -0.778
+[2,] -1.371  0.484 -0.498  1.788  0.534 -0.566  0.152 -1.307
+[3,]  1.041  0.484  0.399  0.580  0.586 -0.660  1.833 -1.405
+[4,] -1.117 -0.893  0.408 -1.612  0.486  0.644  0.422 -1.639
+[5,]  1.397 -0.237 -1.287 -0.122 -1.076  0.225 -0.047  0.020
+[6,] -0.046  0.537 -1.287 -0.089  0.564  2.671 -0.715 -0.901
+[7,]  1.085  0.706 -0.034  0.929  0.057 -2.402 -1.233  1.135
+[8,]  0.605 -0.076 -0.554  1.385 -0.436  0.249  0.338  1.369
+\end{Soutput}
+\end{Schunk}
 
 Let us examine the function to see how parallel execution of rpvm
 functions should be done. 
 
-<<echo=TRUE>>=
-PVM.rapply
-@ 
+\begin{Schunk}
+\begin{Sinput}
+> PVM.rapply
+\end{Sinput}
+\begin{Soutput}
+function (X, FUN = mean, NTASK = 1) 
+{
+    WORKTAG <- 22
+    RESULTAG <- 33
+    if (!is.matrix(X)) {
+        stop("X must be a matrix!")
+    }
+    if (NTASK == 0) {
+        return(apply(X, 1, FUN))
+    }
+    end <- nrow(X)
+    chunk <- end%/%NTASK + 1
+    start <- 1
+    mytid <- .PVM.mytid()
+    children <- .PVM.spawnR(ntask = NTASK, slave = "slapply")
+    if (all(children < 0)) {
+        cat("Failed to spawn any task: ", children, "\n")
+        .PVM.exit()
+    }
+    else if (any(children < 0)) {
+        cat("Failed to spawn some tasks.  Successfully spawned ", 
+            sum(children > 0), "tasks\n")
+        children <- children[children > 0]
+    }
+    for (id in 1:length(children)) {
+        .PVM.initsend()
+        range <- c(start, ifelse((start + chunk - 1) > end, end, 
+            start + chunk - 1))
+        work <- X[(range[1]):(range[2]), , drop = F]
+        start <- start + chunk
+        .PVM.pkstr(deparse(substitute(FUN)))
+        .PVM.pkint(id)
+        .PVM.pkdblmat(work)
+        .PVM.send(children[id], WORKTAG)
+        cat("Work sent to ", children[id], "\n")
+    }
+    partial.results <- list()
+    for (child in children) {
+        .PVM.recv(-1, RESULTAG)
+        order <- .PVM.upkint()
+        partial.results[[order]] <- .PVM.upkdblvec()
+    }
+    .PVM.exit()
+    return(unlist(partial.results))
+}
+\end{Soutput}
+\end{Schunk}
 
 The corresponding slave R script looks as follows.
 
-<<echo=TRUE,eval=FALSE>>=
-# $Id: slapply.R,v 1.2 2001/08/31 05:03:51 snake Exp $
-
-### Slave R script for the PVM apply.
-### Receive an 'order' and a matrix.  Process the matrix with apply()
-### and return the resulted vector and order.
-
-### To do: accept a string as the name of the function to be applied
-### on each row.  This way, this script can be more generic. 
-
-library (rpvm)
-WORKTAG <- 22
-RESULTAG <- 33
-
-mytid  <- .PVM.mytid ()
-myparent  <- .PVM.parent ()
-
-## Receive work from parent (a matrix)
-buf <- .PVM.recv (myparent, WORKTAG)
-
-## Function to apply
-func  <- .PVM.upkstr ()
-
-cat ("Function to apply: ", func, "\n")
-
-## Order
-order <- .PVM.upkint ()
-partial.work <- .PVM.upkdblmat ()
-
-print (partial.work)
-
-## actually work, take the mean of the rows
-partial.result <- apply (partial.work, 1, func)
-
-print (partial.result)
-
-## Send result back
-.PVM.initsend ()
-.PVM.pkint (order)
-.PVM.pkdblvec (partial.result)
-.PVM.send (myparent, RESULTAG)
-
-## Exit PVM
-.PVM.exit ()
-## Exit R
-q (save="no")
-@ 
+\begin{Schunk}
+\begin{Sinput}
+> library(rpvm)
+> WORKTAG <- 22
+> RESULTAG <- 33
+> mytid <- .PVM.mytid()
+> myparent <- .PVM.parent()
+> buf <- .PVM.recv(myparent, WORKTAG)
+> func <- .PVM.upkstr()
+> cat("Function to apply: ", func, "\n")
+> order <- .PVM.upkint()
+> partial.work <- .PVM.upkdblmat()
+> print(partial.work)
+> partial.result <- apply(partial.work, 1, func)
+> print(partial.result)
+> .PVM.initsend()
+> .PVM.pkint(order)
+> .PVM.pkdblvec(partial.result)
+> .PVM.send(myparent, RESULTAG)
+> .PVM.exit()
+> q(save = "no")
+\end{Sinput}
+\end{Schunk}
 
 
 New rpvm functions used in \texttt{PVM.rapply()}:

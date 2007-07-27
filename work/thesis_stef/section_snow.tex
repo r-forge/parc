@@ -48,16 +48,23 @@ snow management functions:
 running on cluster@WU using the node.q -- the parallel environment was
 started with the SGE using 8 nodes.
 
-<<echo=TRUE>>=
-library("snow")
-set.seed(1782)
-## Start an MPI cluster using 8 slaves
-n <- 8
-cl <- makeCluster(n, type = "MPI")
-## Stop cluster
-stopCluster(cl)
-
-@ 
+\begin{Schunk}
+\begin{Sinput}
+> library("snow")
+> set.seed(1782)
+> n <- 8
+> cl <- makeCluster(n, type = "MPI")
+\end{Sinput}
+\begin{Soutput}
+	8 slaves are spawned successfully. 0 failed.
+\end{Soutput}
+\begin{Sinput}
+> stopCluster(cl)
+\end{Sinput}
+\begin{Soutput}
+[1] 1
+\end{Soutput}
+\end{Schunk}
 
 
 \subsubsection{Built-in high-level functions}
@@ -102,18 +109,41 @@ snow provides a good handful of high-level functions:
 running on cluster@WU using the node.q -- the parallel environment was
 started with SGE using 8 nodes
 
-<<echo=TRUE>>=
-
-n <- 8
-# spawn n slaves
-cl <- makeCluster(n, type="MPI")
-# build up a n x n matrix in parallel
-x <- rep(n,n)
-rows <- clusterApply(cl, x, runif)
-X <- matrix(unlist(rows), ncol = n, byrow=TRUE)
-X
-
-@ 
+\begin{Schunk}
+\begin{Sinput}
+> n <- 8
+> cl <- makeCluster(n, type = "MPI")
+\end{Sinput}
+\begin{Soutput}
+	8 slaves are spawned successfully. 0 failed.
+\end{Soutput}
+\begin{Sinput}
+> x <- rep(n, n)
+> rows <- clusterApply(cl, x, runif)
+> X <- matrix(unlist(rows), ncol = n, byrow = TRUE)
+> X
+\end{Sinput}
+\begin{Soutput}
+          [,1]    [,2]      [,3]      [,4]      [,5]      [,6]      [,7]
+[1,] 0.7579264 0.64806 0.2317366 0.7676759 0.7091064 0.6417853 0.5890989
+[2,] 0.7579264 0.64806 0.2317366 0.7676759 0.7091064 0.6417853 0.5890989
+[3,] 0.7579264 0.64806 0.2317366 0.7676759 0.7091064 0.6417853 0.5890989
+[4,] 0.7579264 0.64806 0.2317366 0.7676759 0.7091064 0.6417853 0.5890989
+[5,] 0.7579264 0.64806 0.2317366 0.7676759 0.7091064 0.6417853 0.5890989
+[6,] 0.7579264 0.64806 0.2317366 0.7676759 0.7091064 0.6417853 0.5890989
+[7,] 0.7579264 0.64806 0.2317366 0.7676759 0.7091064 0.6417853 0.5890989
+[8,] 0.7579264 0.64806 0.2317366 0.7676759 0.7091064 0.6417853 0.5890989
+          [,8]
+[1,] 0.2661573
+[2,] 0.2661573
+[3,] 0.2661573
+[4,] 0.2661573
+[5,] 0.2661573
+[6,] 0.2661573
+[7,] 0.2661573
+[8,] 0.2661573
+\end{Soutput}
+\end{Schunk}
 
 
 
