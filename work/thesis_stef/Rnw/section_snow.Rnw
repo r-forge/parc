@@ -1,4 +1,4 @@
-\subsection{The snow package}
+\section{The snow package}
 \label{sec:snow}
 The aim of simple network of workstations (snow --
 \cite{rossini03snow}, \cite{tierney07snow}) is to provide a simple
@@ -15,7 +15,7 @@ When using snow one can rely on a good handful of high-level
 functions. Indeed snow uses existing interfaces to R and solely
 provides one new possibilty of message-passing namely TCP sockets. 
 
-\subsubsection{Initializing and process spawning}
+\subsection{Initializing and process spawning}
 
 Initializing a snow cluster is rather easy if the system is prepared
 accordingly. When using MPI (achieved through Rmpi) a LAM/MPI
@@ -60,7 +60,7 @@ stopCluster(cl)
 @ 
 
 
-\subsubsection{Built-in high-level functions}
+\subsection{Built-in high-level functions}
 
 snow provides a good handful of high-level functions: 
 
@@ -117,7 +117,7 @@ X
 
 
 
-\subsubsection{conclusion}
+\subsection{conclusion}
 
 %The \texttt{PVM.rapply()} example shown in this section followed the Single Program
 %Multiple Data (SPMD) paradigm. Data is splitted into different parts

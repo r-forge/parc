@@ -8,6 +8,8 @@
 \usepackage{amsmath,amssymb}
 \usepackage{ifpdf}
 \usepackage{url}
+\usepackage{/usr/share/R/share/texmf/Sweave}
+\usepackage[round]{natbib}
 
 % Seitenlayout
 % DIV# gibt den Divisor für die Layoutberechnung an.
@@ -35,12 +37,19 @@
   \tableofcontents
   % show page headings now
   \pagestyle{headings}
-
+  
+  \setcounter{page}{1}
     %% Chapter Introduction to Parallel Computing 
     \input{chapter_intro.tex}
 
-    %% Chapter High Performance Computing
+    %% Chapter High Performance Computing - overview
     \input{chapter_hpc.tex}
+
+    %% Chapter High Performance Computing and R
+    \input{chapter_Rhpc.tex}
+
+    %% Chapter Parallel Matrix Multiplication 
+    \input{chapter_matrix.tex}
 
     %% Chapter GRASP: The Travelling Salesman Problem
     \input{chapter_tsp.tex}

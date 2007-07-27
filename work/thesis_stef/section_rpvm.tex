@@ -1,4 +1,4 @@
-\subsection{The rpvm package}
+\section{The rpvm package}
 \label{sec:rpvm}
 Parallel virtual machine uses the message-passing model and makes a
 collection of computers appear as a single virtual machine (see section
@@ -10,7 +10,7 @@ facilities provided by the PVM system. A good selection of these
 functions are explained in this section to show how PVM and R can be
 used together.
 
-\subsubsection{Initializing and Status queries}
+\subsection{Initializing and Status queries}
 
 At first for using the PVM system \textit{pvmd3} has to be
 booted. This can done via the command
@@ -92,7 +92,7 @@ $name
 \end{Schunk}
 
 
-\subsubsection{Built-in high level functions}
+\subsection{Built-in high level functions}
 
 rpvm provides two high level functions: 
 
@@ -263,7 +263,7 @@ send is initialized to provide the results to the parent process and
 the slaves are detached from the virtual machine by calling a
 \texttt{.PVM.exit()}. 
 
-\subsubsection{Other important functions}
+\subsection{Other important functions}
 
 To complete the set of important functions supplied by the rpvm
 package two more functions have to be explained:
@@ -281,7 +281,7 @@ package two more functions have to be explained:
   member. 
 \end{description}
 
-\subsubsection{conclusion}
+\subsection{conclusion}
 
 The \texttt{PVM.rapply()} example shown in this section followed the Single Program
 Multiple Data (SPMD) paradigm. Data is splitted into different parts

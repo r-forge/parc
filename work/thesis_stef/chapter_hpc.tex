@@ -1,4 +1,5 @@
 \chapter{Parallel Computing}
+\label{chap:parallelcomputing}
 \section{Introduction}
 
 In 1965 a director in the Fairchild Semiconductor division of
@@ -182,21 +183,20 @@ instruction is started. Therefore after 5 cycles the pipe is filled
 and on each subsequent clock cycle an instruction is finished. In table
 \ref{tab:pipelining} the results of this execution pattern is shown.
 
-\begin{tabular}{|c|r@{.}lr@{.}lr@{.}l||r|}
-\label{tab:pipelining}
-	\hline
-\multicolumn{10}{|c|}
-	{\rule[-3mm]{0mm}{8mm} \textbf{Cycle}} \\
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
+\hline
+%%\label{tab:pipelining}
+\multicolumn{10}{|c|} \textbf{Cycle} \\
 \textbf{Instruction Number}
-	& \multicolumn{2}{c}{1}
-	& \multicolumn{2}{c}{2}
-	& \multicolumn{2}{c}{3}
-	& \multicolumn{2}{c}{4}
-	& \multicolumn{2}{c}{5}
-	& \multicolumn{2}{c}{6}
-	& \multicolumn{2}{c}{7}
-	& \multicolumn{2}{c}{8}
-	& \multicolumn{2}{c}{9}
+	& 1
+	& 2
+	& 3
+	& 4
+	& 5
+	& 6
+	& 7
+	& 8
+	& 9
         \\ \hline 
 Instruction $i$   & F & D & X & M & W &   &   &   &   \\ \hline
 Instruction $i+1$ &   & F & D & X & M & W &   &   &   \\ \hline
@@ -314,7 +314,7 @@ in parallel computing. Whereas in SIMD based architectures a single
 instruction is applied to multiple data the MIMD paradigm allows to
 apply different instructions to different data at the same time. But
 SIMD architectures have become popular again recently. The Cell
-processor of IBM is one of the promising CPU of its kind. The focus in
+processor of IBM is one of the promising CPUs of its kind. The focus in
 this thesis is on MIMD computers though.
 
 There are two different categories in which such a system can be
@@ -329,7 +329,7 @@ processors or computation nodes can access the same memory. The
 advantage is the better performance like in DMPs because one don't
 have to send messages via a slow network. Each processor is able to
 fetch the necessary data directly from memory. But this kind of platform
-has a big limitation. The cost of having as much memory as a cluster
+has a big limitation. The costs of having as much memory as a cluster
 of workstation would provide are enormous. That is why cluster- or
 grid-computing has become so popular.
 
@@ -346,7 +346,7 @@ technology. A big limitation of this machine is that though they have
 a fast connection to the shared memory, saturation of the bandwidth can
 hardly be avoided. Therefore scaling shared memory architectures to
 more than 32 processors is rather difficult. Recently this type of
-architecture has become important again. Consumer PCs with two to four
+architecture has gained more attention again. Consumer PCs with two to four
 processors have become common since the last year. High-end parallel
 computers use 16 up to 64 processors. Recent developments try to
 achieve easy parallelization of existing applications through
@@ -354,7 +354,7 @@ parallelizing compilers (ie. OpenMP see section \ref{sec:OpenMP}).
 
 \subsection{Distributed Memory Systems}
 
-Since the developments done by the NASA (section \ref{sec:beowlf})
+Since the developments done by the NASA (see below)
 this kind of MIMD architecure has become really popular since the 1990's.
 Distributed memory system can
 entirely be build out of stock hardware and therefore give cheap
@@ -379,7 +379,7 @@ proportionally with added machines. The commodity hardware can be any
 of a number of mass-market, stand-alone compute nodes as simple as two
 networked computers each running Linux and sharing a file system or as
 complex as 1024 nodes with a high-speed, low-latency network (from
-\cite{beowulfHP}).
+\url{http://www.beowulf.org/}.
 
 Since then building an efficient low-cost distributed memory computer
 has not been difficult anymore. Indeed it has become the way to build
@@ -387,9 +387,10 @@ MIMD computers.
 
 \subsubsection{The Grid}
 
-A new type of achieving high performance computing is to use a
+Another (new) type of achieving high performance computing is to use a
 Grid. In a Grid, computer which participate are connected to each other
-via the internet. These distributed resources are shared via a
+via the internet (or other wide area networks). These distributed
+resources are shared via a 
 Grid-software. The software monitors separate resources and if
 necessary supplies them with jobs. The research project SETI@home can
 be said to be the first grid-like computing endeavor. Over 3 million
@@ -398,18 +399,20 @@ telescope, searching for extraterrestial signals. Most of the power is
 gained by utilizing unused computers (ie. with a screen saver).
 
 The idea behind it is that computers connected to a grid can combine
-their computational power with other available in the
+their computational power with other available computing resources in the
 Grid. Then, researchers or customers are able to use the combined
 resources for their project. The aim of development of Grid computing
 is to find certain standards so that Grid computing becomes popular
 not only in certain academic institutes but also in industry. Today
-there exist several initiatives in europe. For example D-Grid funded
+there exist several initiatives in europe. For example D-Grid
+(\url{http://www.d-grid.de}) funded
 by by BMBF, the Federal Ministry of Education and Research of Germany
-or the Austrian Grid funded by the bm:bwk, the Federal Ministry for
-Education, Science and Culture of Austria. 
+or the Austrian Grid (\url{http://www.austriangrid.at}) funded by the
+bm:bwk, the Federal Ministry for Education, Science and Culture of
+Austria.
 
 In a grid more attention has to be made on heterogeneous network
-computing than in smaller DMP. Computers connected to a grid are made
+computing than in smaller DMPs. Computers connected to a grid are made
 from different vendors, have different architectures and different
 compilers. All in all they may differ in the following areas:
 
@@ -422,7 +425,8 @@ compilers. All in all they may differ in the following areas:
 \item data format
 \end{itemize}
 
-A grid middleware software interconnects all the (heterogenous)
+A grid middleware software like the open-source software ``globus
+toolkit'' (\url{http://www.globus.org/}) interconnects all the (heterogenous)
 distributed resources in a network.  
 All interfaces between these heterogeneous components have to be standardized
 and thus enable full interoperability between them.
@@ -442,17 +446,26 @@ One might think that this could be hard work, and indeed it is. But
 there are programming models for HPC already available which make life
 easier.
 
-But first a fundamental differentiation of parallel programs  is going
+But first a fundamental differentiation of parallel programs is going
 to be explained. Programs by HPC developers can be done either
 as the single program multiple data (SPMD) or multiple program
-multiple data paradigm. With SPMD there is only one program available
+multiple data paradigm (MPMD).
+
+\subsubsection{Single Program Multiple Data}
+
+With SPMD there is only one program available
 to all computation nodes. Data is distributed equally amongst all
 nodes in the program. Then each node applies the same program on its
-own data. You shouldn't Verwechseln it with the SIMD paradigm as there the
+own data. You shouldn't confuse SPMD with the SIMD paradigm as in the
+latter case the
 distribution of the data is done prior execution of the program.
+
+\subsubsection{Multiple Program Multiple Data}
+
 With MPMD you have a thread like paradigm. On each node it is possible
 to run different programs with either the same or different data. This
 is what one would asume when speaking of MIMD architectures.  
+
 
 When parallel computing came up there have been a lot of programming
 languages developed. Only few of them experienced any real use. There
@@ -476,7 +489,7 @@ used. Starting with the first generation the Message Passing Interface
 are going to be described. The second generation of HPC programming
 models involve OpenMP (see \cite{openMP05}) and Global Arrays (GA - see
 \cite{nieplocha96gan}). These programming models are not the only ones
-but are commonly used. 
+but are, as mentioned above, commonly used. 
 
 \subsection{The Message Passing Interface (MPI)}
 \label{sec:MPI}
@@ -488,7 +501,7 @@ organizations participated in the discussion which started in
 message-passing programs. The standard was called the Message Passing
 Interface (see \cite{forum94:MPI}).
 
-As mentioned in section \ref{sec:programming_models} before there
+As mentioned in section \ref{sec:programming_models} there
 were a lot of different programming models and languages for high
 performance computing available. With MPI a standard was established
 that should be practical, portable, efficient and flexible. After
@@ -496,13 +509,15 @@ releasing Version 1.0 in 1994 the MPIF continued to correct errors and
 made clarifications in the MPI document so that in June 1995 Version
 1.1 of MPI had been released.
 
-Further corrections and clarifications have been made Version 1.2 of
+Further corrections and clarifications have been made to version 1.2 of
 MPI and with Version 2 completely new types of functionality has been
 added (see \cite{forum94:MPI-2} for details).
 
 MPI is now a library which can be called from various programming
 languages like C or Fortran. It contains all the infrastructure for
-inter process communication.
+inter process communication. Last but not least an intercace wrapper
+exist in R. MPI communication can be set up using the R extension
+``Rmpi'' (see section \ref{sec:Rmpi} for details).
 
 \textbf{TODO: Advantages/Disadvantages}
 
@@ -510,7 +525,7 @@ inter process communication.
 \label{sec:why_m-p}
 
 If one uses a distributed memory machine (DMP) as platform for
-carrying out computations in parallel, data hs to be transmitted from
+carrying out computations in parallel, data has to be transmitted from
 one computation node to the other. With MPI there are higher level
 routines and abstractions available which build upon lower level
 message-passing routines.
@@ -617,60 +632,6 @@ further information can be found on the following website:
 
 \section{Performance Analysis}
 \label{sec:perf_analysis}
-
-
-
-\section{Extensions for HPC in R}
-\label{sec:parallel_R}
-
-In this section an overview of the capabilities of R in the area of
-high performance computing is being provided. I start with a short
-description of what R is. After that extensions to the base
-environment which provide HPC functionality to R are being
-explained. Among these extensions there is the package called 'paRc',
-which has been developed in the course of this thesis.
-
-\section{The R environment}
-
-R is an integrated suite of software facilities for data manipulation,
-calculation and graphical display. Among other things it has (\cite{IntrotoR})
-\begin{itemize}
-\item an effective data handling and storage facility,
-\item a suite of operators for calculations on arrays, in particular matrices,
-\item a large, coherent, integrated collection of intermediate tools
-  for data analysis,
-\item graphical facilities for data analysis and display either
-  directly at the computer or on hardcopy, and
-\item a well developed, simple and effective programming language
-  (called `S') which includes conditionals, loops, user defined
-  recursive functions and input and output facilities. (Indeed most of
-  the system supplied functions are themselves written in the S
-  language.)
-
-R is not only an environment for statistical computing and graphics
-but also a freely available high-level language for programming. It
-can be extended by standardized collections of code called
-`packages'. So developers and statisticians around the world can
-participate and provide optional code to base R and therefore makes R
-the platform of choice for developing new methods of data analysis. 
-
-As datasets grow bigger and bigger and algorithms become more and more
-complex, R has to join the high performance computing hype. Indeed, R
-is already prepared through a few extensions explained in the
-subsequent chapters.
-
-%% \subsection{Example: Matrix multiplication} own chapter
-
-%% subsection: The Rmpi package 
-\input{section_Rmpi.tex}
-
-%% subsection: The rpvm package 
-\input{section_rpvm.tex}
-
-%% subsection: The snow package 
-\input{section_snow.tex}
-
-\subsection{The paRc package}
 
 \section{Hardware and Software used}
 

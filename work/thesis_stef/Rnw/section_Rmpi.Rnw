@@ -1,4 +1,4 @@
-\subsection{The Rmpi package}
+\section{The Rmpi package}
 \label{sec:Rmpi}
 The Message Passing Interface (MPI) is a set of library interface
 standards for message-passing and there are many implementations using
@@ -17,7 +17,7 @@ A windows implementation of this package (which uses MPICH2)
 can also be obtained, but the Microsoft operating system is not in the
 scope of this thesis.
 
-\subsubsection{Initializing and Status queries}
+\subsection{Initializing and Status queries}
 
 The LAM/MPI environment has to be booted prior to using any
 message-passing library functions. One possibility is to use the
@@ -71,7 +71,7 @@ mpi.get.processor.name()
 
 @ 
 
-\subsubsection{Process spawning and communication}
+\subsection{Process spawning and communication}
 
 In Rmpi it is easy to spawn R slaves and use them as workhorses.
 
@@ -112,7 +112,7 @@ mpi.close.Rslaves()
 
 @ 
 
-\subsubsection{Built-in high level functions}
+\subsection{Built-in high level functions}
 
 Rmpi provides the following high level functions (this is only a selection): 
 
@@ -163,7 +163,7 @@ mpi.close.Rslaves()
 @ 
 
 
-\subsubsection{Other important functions}
+\subsection{Other important functions}
 
 To complete the set of important functions supplied by the Rmpi
 package the following functions have to be explained:
@@ -181,7 +181,7 @@ package the following functions have to be explained:
   member. 
 \end{description}
 
-\subsubsection{conclusion}
+\subsection{conclusion}
 
 %The \texttt{PVM.rapply()} example shown in this section followed the Single Program
 %Multiple Data (SPMD) paradigm. Data is splitted into different parts
