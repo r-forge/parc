@@ -7,34 +7,38 @@ Fairchild Camera and Instrument Corporation predicted: "The complexity
 (of integrated circuits, annotation of the author)
 for minimum costs has increased at a rate of roughly two per year
 [\ldots] over the short term this rate can be expected to continue, if
-not increase." \cite{moore} This soon became known as Moore's Law. And
+not increase."~\cite{moore65integratedcircuits} This soon became known
+as Moore's Law. And 
 indeed for nearly fourty years the advance predicted by Moore has
 taken place (the overall growth of the world's most powerful computers
 has approximately doubled each 18 months).
 
-Furthermore greater speed implicates greater memory, otherwise you have
+Furthermore, with greater speed more memory is needed, otherwise you have
 the situation that a computer capable of performing trillions of
 operations in each second only has access to a small memory which is
-rather useless for solving data driven calculations.
+rather useless for solving data driven calculations. In addition to
+that the amount of data being available to analysts today has rapidly
+increased. Data-collection and -mining is done nearly everywhere. This
+bulk of data implicates that enough memory is available to process it.
 
 Now, more than 40 years later "desktop" systems with two to four
 processors and lots of memory are available, which means that they can
 be compared with high performance workstations of just a few years
 ago.
 
-Factors which constitute this trend are (\cite{architecture}):
+Factors which constitute this trend are~(\cite{C1quant07}):
 \begin{itemize}
 \item a slowdown in uniprocessor performance arising from  diminishing
-  returns in exploiting instruction-level-parallelism
-\item a growth in servers and server performance
-\item a growth in data-intensive applications
+  returns in exploiting instruction-level-parallelism,
+\item a growth in servers and server performance,
+\item a growth in data-intensive applications,
 \item the insight that increasing performance on the desktop is less
-  important
+  important,
 \item an improved understanding of how to use multiprocessors
   effectively, especially in server environments where there is
-  significant thread-level parallelism
+  significant thread-level parallelism,
 \item the advantages of leveraging a design investment by replication
-  rather than unique design--all multiprocessor designs provide such leverage
+  rather than unique design--all multiprocessor designs provide such leverage.
 \end{itemize}
 
 With the need to solve large problems and the availability of adequate
@@ -42,29 +46,31 @@ workstations, large-scale parallel computing has become more and more
 important. Some examples to illustrate this need in science and
 research include:
 \begin{itemize}
-\item data mining for large data sets
-\item algorithms for solving NP-complete problems
-\item climate prediction
-\item computations in biology, chemistry and physics
-\item cryptography
-\item astronomy
+\item data mining for large data sets,
+\item algorithms for solving NP-complete problems,
+\item climate prediction,
+\item computations in biology, chemistry and physics,
+\item cryptography,
+\item and astronomy.
 \end{itemize}
 
 The R project for Statistical Computing and Graphics is an open-source
-software environment available for different platforms \cite{R}. With the
-development mentioned above there have some extensions (called
-packages) for High Performance Computing come up.
+software environment available for different
+platforms~\cite{Rcore07R}. With the 
+development mentioned above there have come up some extensions (called
+packages) for High Performance Computing.
 
 In this chapter the fundamentals of parallel computing are
 presented. It provides a general overview of the field of High
-Performance Computing and the possibilities to use R in this area.
-
+Performance Computing and how performance of applications can be
+analyzed in this field.
 
 \section{Computer Architecture}
-In this section computer architectures are briefly described to
+In this section computer architectures are briefly described. This
+knowledge is of great advantage to
 understand how performance can be maximized when using parallel
-computing. First one need to know how one can make an application fast
-on a single processor and second how can data efficiently supplied to
+computing. First it is important to know how to make an application fast
+on a single processor and second how to supply data efficiently to
 these processors. The beginning of this chapter deals with a taxonomy of
 the design alternatives for multiprocessors. After that a brief look
 into processor design and memory hierarchies is given. The section
@@ -73,10 +79,10 @@ closes with a description of high performance computing servers.
 \subsection{Beyond Flynn's Taxonomy}
 
 Providing a high-level standard for programming HPC applications is a
-major challenge nowadays. There are a variety of architectures for
+major challenge nowadays. There is a variety of architectures for
 large-scale computing. They all have specific features and 
 therefore there should be a taxonomy in which such architectures can
-be classified. About fourty years ago, \cite{flynn72sco} classified
+be classified. About fourty years ago, \cite{flynn72sco}~classified
 architectures on the
 presence of single or multiple either instructions or data streams
 known as Flynn's taxonomy:
@@ -86,23 +92,23 @@ known as Flynn's taxonomy:
   developed by the 
   mathematician John von Neumann, was the standard for a long
   time. These Computers are also known as serial computers. 
-\item[Multiple Instruction Single Data (MISD)] the theoritical possibility
+\item[Multiple Instruction Single Data (MISD)] The theoritical possibility
   of applying multiple instructions on a single datum is generally
   impractical.
 \item[Single Instruction Multiple Data (SIMD)] 
-  a single instruction is applied by multiple processors to different
+  A single instruction is applied by multiple processors to different
   data in parallel (data-level parallelism). 
-\item[Multiple Instruction Multiple Data (MIMD)] processors apply
+\item[Multiple Instruction Multiple Data (MIMD)] Processors apply
   different instructions on different data (thread-level
-  parallelism). See section \ref{sec:mimd_computers} for details. 
+  parallelism). See section~\ref{sec:mimd_computers} for details. 
 \end{description}
 
 But these distinctions are insufficient for classifying modern
-computers according to \cite{duncan90survey}. For example there are
+computers according to~\cite{duncan90survey}. There are e.g.
 pipelined vector processors capable of concurrent arithmetic execution and
 manipulating hundreds of vector elements in parallel.
 
-Therefore \cite{duncan90survey} defines that a parallel architecture
+Therefore,~\cite{duncan90survey} defines that a parallel architecture
 provides an explicit, high-level framework for 
 the development of parallel programming solutions by providing
 multiple processors that cooperate to solve problems through
@@ -115,7 +121,7 @@ concurrent execution:
   (characterized by multiple, pipelined functional units, which
   implement arithmetic and Boolean operations), SIMD architectures
   (typically a control unit broadcasting a single instruction to
-  all processors executing the instruction on local data) and Systolic
+  all processors executing the instruction on local data) and systolic
   architectures (pipelined multiprocessors in which data flows from
   memory through a network of processors back to memory synchronized
   by a global clock. 
@@ -126,8 +132,8 @@ concurrent execution:
   data in a shared memory). The advantage is the possibility of
   executing largely independent subcalculations. These architectures
   can further be classified in distributed or shared memory systems
-  whereas the first achieves interprocess communication via an
-  interconnection network and the last via a global memory each
+  whereas the first achieves interprocess communication via 
+  interconnection network and the last via global memory each
   processor can address.
 \item[MIMD-based architectural paradigms] involve MIMD/SIMD hybrids,
   dataflow architectures, reduction machines, and wavefront arrays. A
@@ -159,7 +165,7 @@ development of memory hierarchies.
 A technique called pipelining allows a processor to execute different
 stages of different instructions at the same time.
 For example in the classic von Neumann architecture (SISD), processors
-complete consecutive instructions are completed in a fetch-execute
+complete consecutive instructions in a fetch-execute
 cycle: Each instruction is fetched, decoded, then data is fetched and
 the decoded instruction is applied on the data.
 A simple implementation where every instruction takes at most 5 clock
@@ -180,13 +186,15 @@ Pipelining allows parallel processing of these
 instructions. I.e. while one instruction is being decoded, another
 instruction may be fetched and so on. On each clock cycle simply a new
 instruction is started. Therefore after 5 cycles the pipe is filled
-and on each subsequent clock cycle an instruction is finished. In table
-\ref{tab:pipelining} the results of this execution pattern is shown.
+and on each subsequent clock cycle an instruction is finished. The
+results of this execution pattern is shown in table
+\ref{tab:pipelining}.
 
+\begin{table}[h!b!p!]
+\caption{Pipelining}
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline
-%%\label{tab:pipelining}
-\multicolumn{10}{|c|} \textbf{Cycle} \\
+\multicolumn{9}{|c|} \textbf{Cycle} \\
 \textbf{Instruction Number}
 	& 1
 	& 2
@@ -204,6 +212,8 @@ Instruction $i+2$ &   &   & F & D & X & M & W &   &   \\ \hline
 Instruction $i+3$ &   &   &   & F & D & X & M & W &   \\ \hline
 Instruction $i+4$ &   &   &   &   & F & D & X & M & W \\ \hline
 \end{tabular}
+\label{tab:pipelining}
+\end{table}
 
 Pipelining only works if every instruction does not depend on its
 predecessor. If so, instructions may completely or partially executed
@@ -220,7 +230,7 @@ compiler.
 Programs tend to reuse data and instructions they have used
 recently. Therefore one wants to predict what instructions and data a
 program will use in the near future. This is also known as the
-Principle of Locality (\cite{computerarchitecture}). The best way to
+Principle of Locality (\cite{C1quant07}). The best way to
 make a program fast would be to take advantage of the fastest memory
 available. But this would make the price of a computer extremely
 high.
@@ -241,7 +251,7 @@ Traditionally computers can be categorized as follows:
 \item workstations
 \item mini computers
 \item mainframe computers
-\item High performance computing servers (super computers)
+\item high performance computing servers (super computers)
 \end{itemize}
 
 This has changed rapidly in the last years, as the requirements of
@@ -259,18 +269,18 @@ such a computer can have reaches from 100 to several thousand (mainly
 64 bit processors).
 You can divide this category of computers in ``vector computers'' or ``parallel
 computers''. The amount of memory they have varies according to the type of
-these servers or application, which is running on them. The maximum
+these servers or applications, which is running on them. The maximum
 amount of memory can absolutely be beyond several tera bytes.  
 
-This development started in the 1990's where parallel programming has
-become more and more important. With the increasing need of powerful
+This development started in the 1990's where parallel programming 
+became more and more important. With the increasing need of powerful
 hardware computer vendors started to build supercomputers capable of
 executing more and more instructions in parallel. In the beginning
 vector supercomputing system using a single shared memory were widely
 used to run large-scale applications. Due to the fact that vector
 systems were rather expensive in both purchasing and operation and
 bus-based shared-memory parallel systems were technologically bounded
-to smaller CPU counts the first distributed-memory parallel platforms (DMPs)
+to smaller CPU counts, the first distributed-memory parallel platforms (DMPs)
 came up. The big advantage was that they were inexpensive and could be
 built in many different sizes. DMPs could be rather small like a
 connection of workstations connected via a network to form a cluster of
@@ -278,32 +288,33 @@ workstations (COW) or arbitrarily large. In fact individual
 organizations could buy clusters of a size that suited their
 budgets. The big disadvantage DMPs have is the higher transportation
 time of messages passing through a network in comparison to a shared
-memory system. Although the technology has improved (Infiniband) there
+memory system. Although the technology has improved (Infiniband), there
 is still space for improvements. 
 
 Current HPC systems are still formed of vector supercomputers
 (providing highest level of performance, but only for certain
 applications), SMPs with two to over 100 hundred CPUs and DMPs. As
-more than one CPU has become commonplace in desktop machines clusters
+more than one CPU has become commonplace in desktop machines, clusters
 can nowadays provide both small SMPs and big DMPs. When it comes to a
-decition which architecture to buy companies, laboratories or
+decition which architecture to buy, companies, laboratories or
 universities often choose to use a cluster of workstations because the
-cost of networking has decreased as I mentioned before and performance
+cost of networking has decreased as mentioned before and performance
 has increased since systems of this kind already dominate the Top500
 list. Furthermore, COWs are so successful because they can be
-configured from commodity chips and network and built the open-source
+configured from commodity chips and network and set up with the open-source
 Linux operating system and therefore offer high performance for a
-really good price.
+reasonable price.
 
 New developments show that there are interesting alternatives. Some
 HPC platforms offer a global addressing scheme and therefore enables
 CPUs to directly access the entire system's memory. This can be done
-with ccNUMA (cache coherent nonuniform memory access) systems (cite hp
-sgi paper and sgi.pdf-luthien) or
-global arrays (see section \ref{globalArrays})
+with ccNUMA (cache coherent nonuniform memory access) systems
+(CITATION MISSING) or
+%cite hp sgi paper and sgi.pdf-luthien)
+global arrays~(\cite{nieplocha96gan}). %(see section \ref{globalArrays}).
 They have become an important improvement to distributed memory
 platforms because amongst others it enables compiler driven
-parallelizing techniques like OpenMP (see section \ref{OpenMP})to be
+parallelizing techniques like OpenMP (see section~\ref{sec:OpenMP})to be
 used on these systems. 
 
 \section{MIMD computers}
@@ -324,10 +335,10 @@ processor has its own memory and when it comes to sharing of data, an
 interconnection network is needed. Exchange of data or synchronizing
 is done through message passing.
 
-The other possibility is to have shared memeory platforms (SMPs). All
+The other possibility is to have shared memory platforms (SMPs). All
 processors or computation nodes can access the same memory. The
-advantage is the better performance like in DMPs because one don't
-have to send messages via a slow network. Each processor is able to
+advantage is the better performance like in DMPs because messages doesn't
+have to send via a slow network. Each processor is able to
 fetch the necessary data directly from memory. But this kind of platform
 has a big limitation. The costs of having as much memory as a cluster
 of workstation would provide are enormous. That is why cluster- or
@@ -342,7 +353,7 @@ an interconnection network.
 \label{sec:sharedmemorysystems}
 In a shared memory system multiple processors share one global
 memory. They are connected to this global memory mostly via bus
-technology. A big limitation of this machine is that though they have
+technology. A big limitation of this type of machine is that though they have
 a fast connection to the shared memory, saturation of the bandwidth can
 hardly be avoided. Therefore scaling shared memory architectures to
 more than 32 processors is rather difficult. Recently this type of
@@ -354,8 +365,8 @@ parallelizing compilers (ie. OpenMP see section \ref{sec:OpenMP}).
 
 \subsection{Distributed Memory Systems}
 
-Since the developments done by the NASA (see below)
-this kind of MIMD architecure has become really popular since the 1990's.
+Since the developments done by the NASA in the 1990's (see below),
+this kind of MIMD architecure has become really popular.
 Distributed memory system can
 entirely be build out of stock hardware and therefore give cheap
 computational power. Furthermore, a big advantage is that this
@@ -379,7 +390,7 @@ proportionally with added machines. The commodity hardware can be any
 of a number of mass-market, stand-alone compute nodes as simple as two
 networked computers each running Linux and sharing a file system or as
 complex as 1024 nodes with a high-speed, low-latency network (from
-\url{http://www.beowulf.org/}.
+\url{http://www.beowulf.org/}).
 
 Since then building an efficient low-cost distributed memory computer
 has not been difficult anymore. Indeed it has become the way to build
@@ -404,14 +415,14 @@ Grid. Then, researchers or customers are able to use the combined
 resources for their project. The aim of development of Grid computing
 is to find certain standards so that Grid computing becomes popular
 not only in certain academic institutes but also in industry. Today
-there exist several initiatives in europe. For example D-Grid
+there are several initiatives in europe. For example D-Grid
 (\url{http://www.d-grid.de}) funded
 by by BMBF, the Federal Ministry of Education and Research of Germany
 or the Austrian Grid (\url{http://www.austriangrid.at}) funded by the
 bm:bwk, the Federal Ministry for Education, Science and Culture of
 Austria.
 
-In a grid more attention has to be made on heterogeneous network
+In a Grid more attention has to be made on heterogeneous network
 computing than in smaller DMPs. Computers connected to a grid are made
 from different vendors, have different architectures and different
 compilers. All in all they may differ in the following areas:
@@ -425,7 +436,7 @@ compilers. All in all they may differ in the following areas:
 \item data format
 \end{itemize}
 
-A grid middleware software like the open-source software ``globus
+A Grid middleware software like the open-source software ``globus
 toolkit'' (\url{http://www.globus.org/}) interconnects all the (heterogenous)
 distributed resources in a network.  
 All interfaces between these heterogeneous components have to be standardized
@@ -466,7 +477,7 @@ With MPMD you have a thread like paradigm. On each node it is possible
 to run different programs with either the same or different data. This
 is what one would asume when speaking of MIMD architectures.  
 
-
+\subsubsection{History}
 When parallel computing came up there have been a lot of programming
 languages developed. Only few of them experienced any real use. There
 have also been many implementations of computer vendors for their own
@@ -482,13 +493,14 @@ computing had been understood better. Since then libraries and certain
 implementations as well as compiler driven parallelizer have been
 developed.
 
+
 The programming models presented in this section are common and widely
 used. Starting with the first generation the Message Passing Interface
-(MPI - see \cite{forum94:MPI}) and Parallel Virtual Machine (PVM - see
-\cite{geist94pvm})
+(MPI - see~\cite{forum94:MPI}) and Parallel Virtual Machine (PVM -
+see~\cite{geist94pvm})
 are going to be described. The second generation of HPC programming
-models involve OpenMP (see \cite{openMP05}) and Global Arrays (GA - see
-\cite{nieplocha96gan}). These programming models are not the only ones
+models involve OpenMP (see~\cite{openMP05}) among others. These
+programming models are not the only ones 
 but are, as mentioned above, commonly used. 
 
 \subsection{The Message Passing Interface (MPI)}
@@ -515,11 +527,11 @@ added (see \cite{forum94:MPI-2} for details).
 
 MPI is now a library which can be called from various programming
 languages like C or Fortran. It contains all the infrastructure for
-inter process communication. Last but not least an intercace wrapper
-exist in R. MPI communication can be set up using the R extension
+inter process communication. Last but not least an interface wrapper
+is available for R. MPI communication can be set up using the R extension
 ``Rmpi'' (see section \ref{sec:Rmpi} for details).
 
-\textbf{TODO: Advantages/Disadvantages}
+\textbf{TODO: Advantages/Disadvantages and fundamentals of message passing}
 
 \subsubsection{Why using message-passing?}
 \label{sec:why_m-p}
@@ -546,32 +558,32 @@ message-passing anymore.
   the Internet. On each node runs one UNIX daemon which is a
   micro-kernel plus a dozen system processes responsible for network
   communication among other things. The micro-kernel is
-  responsible for the communication between local processes (see
-  \cite{burns94lam}). The LAM/MPI implementation includes all of the
-  MPI-1.2 but not everything of the MPI-2 standard. LAM/MPI is
-  available at \url{http://www.lam-mpi.org/}.
+  responsible for the communication between local processes
+  (see~\cite{burns94lam}). The LAM/MPI implementation includes all of
+  the MPI-1.2 but not everything of the MPI-2 standard. LAM/MPI is
+  available at~\url{http://www.lam-mpi.org/}.
 \item[MPICH] is a freely available complete implementation of the MPI
   specification (MPICH1 includes all MPI-1.2 and MPICH2 all MPI-2
   specifications). The main goal was to deliver high performance with
   respect to portability. ``CH'' in MPICH stands for ``Chameleon''
   which means adaptability to one's environment and high performance
-  as chameleons are fast (see \cite{gropp96mpich}). MPICH had been
+  as chameleons are fast (see~\cite{gropp96mpich}). MPICH had been
   developed during the discussion process of the MPIF and had immediately been
   available to the community after the standard had been
   confirmed. There are many other implementaions of MPI based on MPICH
   available because of its high and easy portability. Sources and
-  Windows binaries are available from
-  \url{http://www-unix.mcs.anl.gov/mpi/mpich/}.
+  Windows binaries are available
+  from~\url{http://www-unix.mcs.anl.gov/mpi/mpich/}.
 \item[Open MPI] has been build upon three MPI Implementations like
   LAM/MPI among the others. It is a new open-source MPI-2
   Implementation. The goal of Open MPI is to implement the full
   MPI-1.2 and MPI-2 specifications focusing on production-quality and
-  performance (see \cite{gabriel04:_open_mpi}). Open MPI can be
-  downloaded from  \url{http://www.open-mpi.org/}.
+  performance (see~\cite{gabriel04:_open_mpi}). Open MPI can be
+  downloaded from~\url{http://www.open-mpi.org/}.
 \end{description}
 
-for setting up these implementations in Debian GNU Linux and cluster
-jobscripts see Appendix \ref{app:mpi_imp}. 
+For setting up these implementations in Debian GNU Linux and cluster
+jobscripts see Appendix~\ref{app:mpi_imp}. 
 
 \subsection{Parallel Virtual Machine (PVM)}
 \label{sec:PVM}
@@ -584,10 +596,10 @@ seemed to be the paradigm of choice in the late 80's the PVM project
 was created in 1989 to allow developers to exploit distributed
 computing across a wide variety of computer types. A key concept in
 PVM is that it makes a collection of computers appear as one large
-\textit{virtual} machine, hence its name \cite{geist94pvm}. The PVM
-system can be found on \url{http://www.csm.ornl.gov/pvm/}. In Appendix
-\ref{app:mpi_imp} one can find on how to setup this system on a linux
-machine and how to start a PVM job on a cluster.
+\textit{virtual} machine, hence its name~(\cite{geist94pvm}). The PVM
+system can be found on~\url{http://www.csm.ornl.gov/pvm/}. How to
+setup this system on a linux machine and how to start a PVM job on a
+cluster is shown in Appendix~\ref{app:mpi_imp}.
 
 \textbf{TODO: Advantages/Disadvantages}
 
@@ -597,8 +609,9 @@ machine and how to start a PVM job on a cluster.
 
 A completely other approach in the parallel programming model context
 is the use of shared memory. Message-passing is built upon this shared
-memory model that means every processor has direct access to the
-memory of every other processor in the system (section \ref{sec:sharedmemorysystems}). This class of
+memory model which means that every processor has direct access to the
+memory of every other processor in the system
+(see section~\ref{sec:sharedmemorysystems}). This class of
 multiprocessor is also called Scalable Shared Memory Multiprocessor
 (SSMP). Like the development of the MPI specifications the development
 of OpenMP started for one simple reason: portability. Prior the
@@ -606,12 +619,13 @@ introduction of OpenMP as an industry standard every vendor of shared
 memory systems has created its own proprietary extension for
 developers. Therefore a lot of people interested in parallel
 programming used portabel message-passing models like MPI (see
-Section \ref{sec:MPI}) or PVM (see Section \ref{sec:PVM}). As there
+section~\ref{sec:MPI}) or PVM (see section~\ref{sec:PVM}). As there
 was an increasing demand for a simple and scalable programming model and
 the desire to begin parallelizing existing code without having to
 completely rewrite it, the OpenMP Architecture Review Board released a
 set of compiler directives and callable runtime library routines
-called the OpenMP API (see \cite{openMP05}). This directives and routines extend the
+called the OpenMP API (see~\cite{openMP05}). This directives and
+routines extend the
 programming languages Fortran and C or C++ respectively to express
 shared memory parallelism.
 Furthermore this programming model is based on the fork/join execution
@@ -620,7 +634,7 @@ program. Therefore unlike in message-passing the program or algorithm
 need not to be completely decomposed for parallel execution. Given a
 working sequential program it is not difficult to incrementally
 parallelize individual loops and thereby realize a performance gain in
-a multiprocessor system (\cite{dagum1997opi}). The specification and
+a multiprocessor system~(\cite{dagum1997opi}). The specification and
 further information can be found on the following website:
 \url{http://www.openmp.org/}.
 
@@ -635,9 +649,6 @@ further information can be found on the following website:
 
 \section{Hardware and Software used}
 
-\textbf{TODO: own section? short description of machines, details in
-  appendix}
-
 \subsection{Hardware}
 The Hardware used for the applications presented in this thesis is
 going to be described in this section.
@@ -646,25 +657,29 @@ University of Economics and Business Administration a high performance
 computing server, a cluster of workstations, is
 available. Cluster@WU is a shared Platform among several departments
 of the university which are represented through a research institute
-for computational methods. 
-\begin{table}
+for computational methods (FIRM~--~\url{http://www.wu-wien.ac.at/firm}). 
 
-\end{table}
-R-Forge specs
+\textbf{Work in progress }
 
-2 x Dual Core AMD Opteron 2.4 GHz
-12 GB RAM
-1.2 TB RAID 5
 
-Cluster specs (node.q, bignode, bignode.q)
+Cluster@WU (node.q, bignode, bignode.q)\newline
 
-4 Nodes (bignodes):
-2 x Dual Core Intel XEON CPU 5140 @ 2.33 GHz
-16 GB RAM
+4 Nodes (bignodes):\newline
+2 x Dual Core Intel XEON CPU 5140 @ 2.33 GHz\newline
+16 GB RAM\newline
 
-68 Nodes:
-1 x Intel Core 2 Duo CPU 6600 @ 2.4 GHz
-4 GB RAM
+
+68 Nodes:\newline
+1 x Intel Core 2 Duo CPU 6600 @ 2.4 GHz\newline
+4 GB RAM\newline
+
+
+AMD SMP specs\newline
+
+2 x Dual Core AMD Opteron 2.4 GHz\newline
+12 GB RAM\newline
+1.2 TB RAID 5\newline
+
 
 \subsection{Software}
 
@@ -677,12 +692,3 @@ Cluster specs (node.q, bignode, bignode.q)
 \end{description}
 
 \section{Conclusion}
-
-TODO: performance in a closer sense
-
-      benchmarks
-
-      LINPACK benchmark (implement LINPACK Java in R
-      http://www.top500.org/about/linpack
-
-      performance in a wider sense

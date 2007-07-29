@@ -3,7 +3,7 @@
 %% Surveys
 
 @article{mcbryan94overview,
-    author = "Oliver A. McBryan",
+    author = "Oliver McBryan",
     title = "An overview of message passing environments",
     journal = "Parallel Computing",
     volume = 20,
@@ -33,7 +33,7 @@
 
 @article{gropp01mpilessons,
   title={{Learning from the success of MPI}},
-  author={Gropp, W.D.},
+  author={William Gropp},
   journal={International Conference on High Performance Computing (HiPC 2001)},
   year={2001},
   publisher={Springer}
@@ -51,14 +51,14 @@
 
 @book{pacheco97parallelprog,
   title={{Parallel Programming with MPI}},
-  author={Peter S. Pacheco},
+  author={Peter Pacheco},
   year={1997},
   publisher={Morgan Kaufmann}
 }
 
 @article{flynn72sco,
   title={{Some computer organizations and their effectiveness}},
-  author={Michael J. Flynn},
+  author={Michael Flynn},
   journal={IEEE Transactions on Computers},
   volume={21},
   number={9},
@@ -74,14 +74,30 @@
   year = 	 2007,
 }
 
+@InBook{C1quant07,
+  editor =	 {John Hennessy and David Patterson},
+  title = 	 {Computer Architecture -- A Quantitative Approach},
+  chapter = 	 1,
+  publisher = 	 {Morgan Kaufmann},
+  year = 	 2007,
+}
 
+
+@Article{moore65integratedcircuits,
+  author = 	 {Gordon Moore},
+  title = 	 {Cramming More Components Onto Integrated Circuits},
+  journal = 	 {Electronics},
+  year = 	 1965,
+  volume =	 38,
+  number =	 8
+}
 
 %% Standards
 
 %% PVM
 
 @book{geist94pvm,
-  title={{Pvm: Parallel Virtual Machine-A Users' Guide and Tutorial for Networked Parallel Computing}},
+  title={{PVM: Parallel Virtual Machine-A Users' Guide and Tutorial for Networked Parallel Computing}},
   author={Al Geist and Adam Beguelin and Jack Dongarra and Weicheng Jiang and Robert Manchek and Vaidy Sunderam},
   year={1994},
   publisher={MIT Press}
@@ -92,13 +108,13 @@
 
 @Manual{forum94:MPI,
   title = 	 {MPI: A Message-Passing Interface Standard},
-  author =	 {Message Passing Interface Forum},
+  author =	 {{Message Passing Interface Forum}},
   year =	 1994
 }
 
 @Manual{forum94:MPI-2,
   title = 	 {MPI-2: Extensions to the Message-Passing Interface},
-  author =	 {Message Passing Interface Forum},
+  author =	 {{Message Passing Interface Forum}},
   year =	 2003
 }
 
@@ -138,7 +154,7 @@
 
 @Manual{openMP05,
   title = 	 {OpenMP Application Program Interface Version 2.5},
-  author =	 {OpenMP Architecture Review Board},
+  author =	 {{OpenMP Architecture Review Board}},
   year =	 2005
 }
 
@@ -164,6 +180,20 @@
 }
 
 
+%%
+
+@Manual{Rcore07R,
+  title = {R: A Language and Environment for Statistical Computing},
+  author = {{R Development Core Team}},
+  organization = {R Foundation for Statistical Computing},
+  address = {Vienna, Austria},
+  year = 2007,
+  note = {{ISBN} 3-900051-07-0},
+  url = {http://www.R-project.org},
+}
+
+
+
 %% R packages
 
 
@@ -176,6 +206,17 @@
   url = {http://www.r-project.org/},
 }
 
+
+@Article{li01:rpvm,
+  author = 	 {Na Li and A.J. Rossini},
+  title = 	 {RPVM: Cluster Statistical Computing in R},
+  journal = 	 {R News},
+  year = 	 2001,
+  volume =	 1,
+  number =	 3,
+  pages =	 {4--7}
+}
+
 %% Rmpi
 @Manual{yu06Rmpi,
   title = {Rmpi: Interface (Wrapper) to MPI (Message-Passing Interface)},
@@ -183,6 +224,16 @@
   year = 2006,
   note = {R package version 0.5-3},
   url = {http://www.stats.uwo.ca/faculty/yu/Rmpi},
+}
+
+@Article{yu02Rmpi,
+  author = 	 {Hao Yu},
+  title = 	 {Rmpi: Parallel Statistical Computing in R},
+  journal = 	 {R News},
+  year = 	 2002,
+  volume =	 2,
+  number =	 2,
+  pages =	 {10--14}
 }
 
 %% snow
