@@ -7,7 +7,7 @@ Fairchild Camera and Instrument Corporation predicted: "The complexity
 (of integrated circuits, annotation of the author)
 for minimum costs has increased at a rate of roughly two per year
 [\ldots] over the short term this rate can be expected to continue, if
-not increase."~\cite{moore65integratedcircuits} This soon became known
+not increase."(~\cite{moore65integratedcircuits}) This soon became known
 as Moore's Law. And 
 indeed for nearly fourty years the advance predicted by Moore has
 taken place (the overall growth of the world's most powerful computers
@@ -194,7 +194,8 @@ results of this execution pattern is shown in table
 \caption{Pipelining}
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline
-\multicolumn{9}{|c|} \textbf{Cycle} \\
+%\multicolumn{9}{|c|} \textbf{Cycle} \\
+ & \textbf{Cycle} \\
 \textbf{Instruction Number}
 	& 1
 	& 2
@@ -364,7 +365,7 @@ achieve easy parallelization of existing applications through
 parallelizing compilers (ie. OpenMP see section \ref{sec:OpenMP}).
 
 \subsection{Distributed Memory Systems}
-
+\label{sec:distributedmemorysystems}
 Since the developments done by the NASA in the 1990's (see below),
 this kind of MIMD architecure has become really popular.
 Distributed memory system can
@@ -503,6 +504,26 @@ models involve OpenMP (see~\cite{openMP05}) among others. These
 programming models are not the only ones 
 but are, as mentioned above, commonly used. 
 
+\subsection{Fundamentals of message-passing}
+\label{sec:messagepassing}
+
+On a distributed memory machine
+(section~\ref{sec:distributedmemorysystems})data has to be transmitted
+from one computation node to the other to carry out computations in
+parallel. The most commonly used method for distributing data among
+the nodes is message-passing.
+  
+A message-passing function is a function which explicitly transmits
+data from one process to another. With these
+functions, creating parallel programs can be extremely
+efficient. Developers don't have to care about low level
+message-passing anymore.
+
+\subsubsection{Buffering}
+\subsubsection{Blocking and non-blocking communication}
+\subsubsection{Load balancing}
+\subsubsection{Collective Communication}
+
 \subsection{The Message Passing Interface (MPI)}
 \label{sec:MPI}
 
@@ -525,32 +546,47 @@ Further corrections and clarifications have been made to version 1.2 of
 MPI and with Version 2 completely new types of functionality has been
 added (see \cite{forum94:MPI-2} for details).
 
-MPI is now a library which can be called from various programming
+MPI is now a library providing higher level
+routines and abstractions built upon lower level message-passing
+routines which can be called from various programming
 languages like C or Fortran. It contains all the infrastructure for
 inter process communication. Last but not least an interface wrapper
 is available for R. MPI communication can be set up using the R extension
 ``Rmpi'' (see section \ref{sec:Rmpi} for details).
 
-\textbf{TODO: Advantages/Disadvantages and fundamentals of message passing}
+\subsubsection{Advantages}
+\begin{itemize}
+\item portability through clearly defined sets of routines -- a lot of
+  implementations are available for many different platforms
+\item better performance compared to PVM as MPI's implementations are
+  adapted to the underlying architecture.
+\item interoperability within the same implementation of MPI
+\item dynamic process creation since MPI-1.2
+\item good scalability
+\end{itemize} 
 
-\subsubsection{Why using message-passing?}
-\label{sec:why_m-p}
+\subsubsection{Disadvantages}
+\begin{itemize}
+\item MPI isn't a self contained software package
+\item development of parallel programs is difficult
+\item no resource management like PVM 
+\item heterogeneity only within an architecture
+\end{itemize}
 
-If one uses a distributed memory machine (DMP) as platform for
-carrying out computations in parallel, data has to be transmitted from
-one computation node to the other. With MPI there are higher level
-routines and abstractions available which build upon lower level
-message-passing routines.
-  
-A message-passing function is a function which explicitly transmits
-data from one process to another. With these
-functions, creating parallel programs can be extremely
-efficient. Developers don't have to care about low level
-message-passing anymore.
+
+For a detailed comparison of PVM and MPI see~\cite{geist96pam}
+and~\cite{gropp02ggd}.
 
 \subsubsection{Implementations of the MPI standard}
 
-\textbf{TODO: introduction to implementations}
+As MPI is only a standard, specific implemenations are needed to use
+message-passing routines as library calls in programming languages
+like C or Fortran. There has been great effort to provide good
+implementations and indeed there are a lot of them available. But
+only a few of them are widely used. This is because of the fact that
+the primary goal was portability. A lot of different platforms are now
+supported. What follows is a description of commonly used and well
+known MPI implementations.
 
 \begin{description}
 \item[LAM/MPI] is an open-source implementation of MPI. It runs on a
@@ -601,8 +637,29 @@ system can be found on~\url{http://www.csm.ornl.gov/pvm/}. How to
 setup this system on a linux machine and how to start a PVM job on a
 cluster is shown in Appendix~\ref{app:mpi_imp}.
 
-\textbf{TODO: Advantages/Disadvantages}
+\subsubsection{Advantages}
+\begin{itemize}
+\item virtual machine concept
+\item good support of heterogenous NOWs
+\item high portability -- available for many different platforms
+\item resource management, load balancing and process control
+\item self-contained software package
+\item dynamic process creation
+\item support for fault tolerant programming
+\item good scalability
+\end{itemize}
 
+\subsubsection{Disadvantages}
+\begin{itemize}
+\item more overhead because of portability
+\item development of parallel programs is difficult
+\item not as flexible as MPI as PVM is a specific implementation
+\item not as many message-passing functionality as MPI has
+\end{itemize}
+
+
+For a detailed comparison of PVM and MPI see~\cite{geist96pam}
+and~\cite{gropp02ggd}.
 
 \subsection{OpenMP}
 \label{sec:OpenMP}
@@ -613,7 +670,9 @@ memory model which means that every processor has direct access to the
 memory of every other processor in the system
 (see section~\ref{sec:sharedmemorysystems}). This class of
 multiprocessor is also called Scalable Shared Memory Multiprocessor
-(SSMP). Like the development of the MPI specifications the development
+(SSMP).
+
+Like the development of the MPI specifications the development
 of OpenMP started for one simple reason: portability. Prior the
 introduction of OpenMP as an industry standard every vendor of shared
 memory systems has created its own proprietary extension for
@@ -628,6 +687,7 @@ called the OpenMP API (see~\cite{openMP05}). This directives and
 routines extend the
 programming languages Fortran and C or C++ respectively to express
 shared memory parallelism.
+
 Furthermore this programming model is based on the fork/join execution
 model which makes it easy to get parallelism out of a sequential
 program. Therefore unlike in message-passing the program or algorithm
@@ -638,7 +698,30 @@ a multiprocessor system~(\cite{dagum1997opi}). The specification and
 further information can be found on the following website:
 \url{http://www.openmp.org/}.
 
-\textbf{TODO: Advantages/Disadvantages}
+\subsubsection{Advantages}
+
+\begin{itemize}
+\item writing parallel programs with OpenMP is easy -- incrementally
+  parallelizing of sequential code is possible
+\item dynamic creation of threads
+\item unified code -- if OpenMP is not available directives are
+  treaten as comments 
+\item 
+\end{itemize}
+
+\subsubsection{Disadvantages}
+
+\begin{itemize}
+\item requires a compiler which supports OpenMP
+\item a shared memory platform is needed for efficient programs
+\item a lot more overhead compared to message-passing function because
+  of implicit programming
+\item the use of OpenMP depends on the availabilty of a corresponding
+  compiler
+\item scalability is limited by the architecture
+
+\end{itemize}
+
 
 %%\subsection{Global Arrays}
 %%\label{globalArrays}
@@ -647,39 +730,79 @@ further information can be found on the following website:
 \section{Performance Analysis}
 \label{sec:perf_analysis}
 
+
+
 \section{Hardware and Software used}
+\label{sec:hardwaresoftware}
 
 \subsection{Hardware}
 The Hardware used for the applications presented in this thesis is
 going to be described in this section.
 At the Department of Statistics and Mathematics of the Vienna
 University of Economics and Business Administration a high performance
-computing server, a cluster of workstations, is
-available. Cluster@WU is a shared Platform among several departments
-of the university which are represented through a research institute
-for computational methods (FIRM~--~\url{http://www.wu-wien.ac.at/firm}). 
+computing server, a cluster of Intel workstations (called cluster@WU), is
+available.
+Furthermore, for experimenting and interactive testing an AMD Opteron
+server with four computation cores has been used.   
 
-\textbf{Work in progress }
+\subsubsection{Cluster@WU}
+Cluster@WU is a shared platform among several departments
+of the university which are represented through an research institute
+called research institute for computational methods
+(FIRM~--~\url{http://www.wu-wien.ac.at/firm}). All of the programs
+have been tested as well as benchmarked on this cluster of
+workstations running the Sun Grid 
+Engine (see section~\ref{app:gridengine} for more information on the
+grid engine). With a total of 152 64-bit computation nodes and a total
+of 336 gigabytes of RAM, Cluster@WU is by now amongst the fastest
+supercomputers in Austria.
 
+The cluster consists of four workstation with four cores each and 16
+gigabytes of RAM. They are called ``bignodes'' as they offer more
+power to the grid user. The queue for running applications on these
+bignodes is called \texttt{bignode.q}. If a shared memory program is
+to be run (i.e. an OpenMP program), bignodes are the computers of choice.
+The other nodes consist of dual core cpus and lesser
+memory. They are combined in the queue
+\texttt{node.q}. Table~\ref{tab:clusterWU} provides detailed
+information about the specs of the queues.
 
-Cluster@WU (node.q, bignode, bignode.q)\newline
+\begin{table}[h!b!p!]
+\caption{cluster@WU specification}
+\label{tab:clusterWU}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{bignode.q -- 4 nodes}\\
+\hline
+2  & Dual Core Intel XEON CPU 5140 @ 2.33 GHz\\
+16 & GB RAM\\
+\hline
+\textbf{node.q -- 68 nodes}\\
+\hline
+1 & Intel Core 2 Duo CPU 6600 @ 2.4 GHz\\
+4 & GB RAM\\
+\hline
+\end{tabular}
+\end{table}
 
-4 Nodes (bignodes):\newline
-2 x Dual Core Intel XEON CPU 5140 @ 2.33 GHz\newline
-16 GB RAM\newline
+\subsubsection{AMD Opteron Server}
+The Opteron machine has four cores which
+have access to a total of 12 gigabytes of shared memory. The
+specification of this machine shows table~\ref{tab:opteronserver}.
 
-
-68 Nodes:\newline
-1 x Intel Core 2 Duo CPU 6600 @ 2.4 GHz\newline
-4 GB RAM\newline
-
-
-AMD SMP specs\newline
-
-2 x Dual Core AMD Opteron 2.4 GHz\newline
-12 GB RAM\newline
-1.2 TB RAID 5\newline
-
+\begin{table}[h!b!p!]
+\caption{Opteron server specification}
+\label{tab:opteronserver}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Opteron server -- 1 machine}\\
+\hline
+2  & Dual Core AMD Opteron @ 2.4 GHz\\
+12 & GB RAM\\
+1.2& TB RAID 5 storage\\
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{Software}
 
