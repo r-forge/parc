@@ -149,7 +149,7 @@ concurrent execution:
 \end{description}
 
 \subsection{Processor and memory}
-
+\label{sec:processorandmemory}
 A reduction of the execution time can be achieved with parallel
 computing and this is the most important method for improving
 performance. But a programmer can only achieve best performance when
@@ -194,8 +194,7 @@ results of this execution pattern is shown in table
 \caption{Pipelining}
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline
-%\multicolumn{9}{|c|} \textbf{Cycle} \\
- & \textbf{Cycle} \\
+ & \multicolumn{9}{|c|} \textbf{Cycle} \\
 \textbf{Instruction Number}
 	& 1
 	& 2
@@ -310,7 +309,7 @@ New developments show that there are interesting alternatives. Some
 HPC platforms offer a global addressing scheme and therefore enables
 CPUs to directly access the entire system's memory. This can be done
 with ccNUMA (cache coherent nonuniform memory access) systems
-(CITATION MISSING) or
+(\textbf{CITATION MISSING}) or
 %cite hp sgi paper and sgi.pdf-luthien)
 global arrays~(\cite{nieplocha96gan}). %(see section \ref{globalArrays}).
 They have become an important improvement to distributed memory
@@ -507,7 +506,7 @@ but are, as mentioned above, commonly used.
 \subsection{Fundamentals of message-passing}
 \label{sec:messagepassing}
 
-On a distributed memory machine
+On a distributed memory platform
 (section~\ref{sec:distributedmemorysystems})data has to be transmitted
 from one computation node to the other to carry out computations in
 parallel. The most commonly used method for distributing data among
@@ -519,10 +518,49 @@ functions, creating parallel programs can be extremely
 efficient. Developers don't have to care about low level
 message-passing anymore.
 
+identifier MPI rank PVM TaskID
+
+
 \subsubsection{Buffering}
+
+Communication can be buffered which means that i.e. the sending
+process can continue executing and need not wait for the receiving
+process signaling it is ready to receive. Otherwise you have a synchronous
+communication. 
+
 \subsubsection{Blocking and non-blocking communication}
+
+A communication is blocking if a receiving process has to wait if the
+message from the sending process is not available. That means the
+receiving process remains idle until the sending process starts
+sending. In non-blocking communication the receiving process sends a
+request to another process and continues executing. At a later time
+the process checks if the message has arrived in the meantime. 
+
 \subsubsection{Load balancing}
-\subsubsection{Collective Communication}
+
+To distribute data as evenly as possible to among the processes load
+balancing is a good method. This can be achieved either through data
+decomposition (identical programs or functions operate on different
+portions of the date) or function decomposition (different programs or
+functions perform different operations). For more details on workload
+allocation see Section 4.2 in~\cite{geist94pvm} 
+
+\subsubsection{Collective communication}
+
+In a parallel program we don't want that only one process does most of
+the work. This is an issue if it comes to sending of data. Assume that
+all of the data is available to one process (A) and it wants to send it to
+all of the other. The last receiving process remains idle until
+process A has send data to all of the other processes. This can be
+avoided when involving more than one process in sending of data. This
+is called a broadcast.
+A broadcast is a collective communication in which a single process
+sends the same data to every other process. Depending on the topology
+of the system normally there is an optimized broadcast available
+(i.e. tree-structured communication). See Chapter 5
+in~\cite{pacheco97mpi} for more details on collective communication in
+MPI.
 
 \subsection{The Message Passing Interface (MPI)}
 \label{sec:MPI}
@@ -578,6 +616,7 @@ For a detailed comparison of PVM and MPI see~\cite{geist96pam}
 and~\cite{gropp02ggd}.
 
 \subsubsection{Implementations of the MPI standard}
+\label{sec:mpi-implementations}
 
 As MPI is only a standard, specific implemenations are needed to use
 message-passing routines as library calls in programming languages
@@ -730,6 +769,100 @@ further information can be found on the following website:
 \section{Performance Analysis}
 \label{sec:perf_analysis}
 
+In high performance computing one of the most important method of
+improving performance is taking advantage of parallelism. As explained
+in Section~\ref{sec:processorandmemory} there are other possibilities
+to make a program run faster like following the principle of locality
+or making use of pipelining. This is somehow architecture
+dependent and therefore developers should try to parallelize their
+code. A rule of thumb is to make the frequent case fast (that means
+parallelizing of this case). How this improvements can be analyzed is
+discussed in this section.
+
+\subsection{Execution time and speedup}
+
+The best way to analyze the performance of an application is to
+measure the execution time. Therefore an application can be compared
+with an improved version through their execution times.
+The performance gain can be then expressed as shown in
+equation~\ref{eq:speedup}. 
+
+\begin{equation}
+\label{eq:speedup}
+Speedup = \frac{t_s}{t_e}
+\end{equation}
+
+where
+\begin{description}
+\item[$t_s$] denotes the execution time for a program without
+  enhancements (serial version)
+\item[$t_e$] denotes the execution time for a program using the
+  enhancements (enhanced version)
+\end{description}
+
+\subsection{Amdahl's Law}
+
+If we have a program running on a classical von Neumann machine with a
+total execution time $t_s$ and the possibility to port this program to
+a multiprocessor system with $p$ processors we would expect that the
+parallel execution time $t_p$ would be as in equation~\ref{eq:naive_t}
+\begin{equation}
+\label{eq:naive_t}
+t_p = \frac{t_s}{p}
+\end{equation}
+
+and consequently the speedup would equal be to the number of
+processors $p$.
+But this is an ideal scenario. Linear speedup can hardly be achieved
+because not every part of a program can be parallelized in the same
+way. In general different parts of an application are executed with
+different speeds and/or use different resources.
+
+To find an estimate of good quality the program has to be separated in its
+different parts which in turn can be subject to
+enhancements. \cite{amdahl67vsp} made significant initial work in this
+topic.
+
+If we asume that a fraction $f$ of an algorithm can be ideally
+parallelized using $p$ processors whereas the remaining fraction $1 -
+f$ cannot be 
+parallelized the total execution time of the enhanced algorithm would
+be as shown in equation~\ref{eq:t_amdahl}.
+
+\begin{equation}
+\label{eq:t_amdahl}
+t_p = f /frac{t_s}{p} + (1 - f) t_s = \frac{t_s ( f + ( 1 - f) p )}{p}
+\end{equation}
+
+\textit{The speedup of an algorithm that results from increasing the speed of
+its fraction $f$ is inversely proportional to the size of the fraction
+that has to be executed at the slower speed} (interpration from
+Section 1.5 of \cite{kontoghiorghes06handbookpcstat}).
+
+Equation~\ref{eq:amdahl_speedup} shows the corresponding speedup that
+can be achieved. If $f$ equals one (the program can be ideally
+parallelized) the speedup would equal the amount of processors $p$. If
+$f$ is zero (the program can't be parallelized) the speedup would be
+one. 
+
+\begin{equation}
+\label{eq:amdahl_speedup}
+speedup = \frac{p}{f + (1 - f)p}
+\end{equation}
+
+Normally, as $f < 1$ inequality~\ref{eq:amdahl_parallel} is true. It
+has became known as \textit{Amdahl's Law for parallel computing}.
+
+\begin{equation}
+\label{eq:amdahl_parallel}
+speedup < \frac{1}{1 - f}
+\end{equation}
+
+
+\input{speedup.tex}
+
+\subsection{Gustavson}
+\cite{gustafson88ras}
 
 
 \section{Hardware and Software used}
@@ -772,12 +905,12 @@ information about the specs of the queues.
 \label{tab:clusterWU}
 \begin{tabular}{|l|l|}
 \hline
-\textbf{bignode.q -- 4 nodes}\\
+\multicolumn{2}{|c|}\textbf{bignode.q -- 4 nodes}\\
 \hline
 2  & Dual Core Intel XEON CPU 5140 @ 2.33 GHz\\
 16 & GB RAM\\
 \hline
-\textbf{node.q -- 68 nodes}\\
+\multicolumn{2}{|c|}\textbf{node.q -- 68 nodes}\\
 \hline
 1 & Intel Core 2 Duo CPU 6600 @ 2.4 GHz\\
 4 & GB RAM\\
@@ -795,7 +928,7 @@ specification of this machine shows table~\ref{tab:opteronserver}.
 \label{tab:opteronserver}
 \begin{tabular}{|l|l|}
 \hline
-\textbf{Opteron server -- 1 machine}\\
+\multicolumn{2}{|c|} \textbf{Opteron server -- 1 machine}\\
 \hline
 2  & Dual Core AMD Opteron @ 2.4 GHz\\
 12 & GB RAM\\
@@ -806,12 +939,30 @@ specification of this machine shows table~\ref{tab:opteronserver}.
 
 \subsection{Software}
 
+The software presented in this section is used for developing and
+running code of this thesis. The operating system is Debian GNU
+Linux~(\url{http://www.debian.org}).
+ 
 \begin{description}
-\item[Sun Grid Engine]
-\item[Compiler] gcc icc
-\item[R] gcc icc
-\item[pvm]
-\item[lam]
+\item[Sun Grid Engine] is an open-source cluster resource management
+  and scheduling software. On cluster@WU version 6.0 of the Grid
+  Engine manages the remote execution of cluster jobs. It can be obtained
+  from~\url{http://gridengine.sunsource.net/}, the commercial version
+  Sun N1 Grid Engine can be found
+  on~\url{http://www.sun.com/software/gridware/}. See
+  Appendix~\ref{app:gridengine} how to use the Grid Engine with
+  parallel environments.
+\item[Compiler] used in this thesis are the Intel Compiler version 9.1 (
+  and the GNU Compiler Collection 4.1.2. For compiling OpenMP code the
+  Intel compiler is being used since the GNU compiler supports this
+  parallelizing techniques as of version 4.2.
+\item[R] is a free software environment for statistical computing and
+  graphics. R-patched 2.5.1 is used in this thesis. There is an own
+  chapter (Chapter~\ref{chap:Rhpc}) about R and high performance computing.
+\item[PVM] version 3.4 is used for running the corresponding programs
+  (see Section~\ref{sec:PVM}).
+\item[LAM/MPI] version 7.1.3 is used for running MPI programs (see~
+  Section~\ref{sec:mpi-implementations}). 
 \end{description}
 
 \section{Conclusion}

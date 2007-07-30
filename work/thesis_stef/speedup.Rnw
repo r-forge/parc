@@ -1,0 +1,33 @@
+
+
+<<echo=false, figure=true>>=
+
+library("vcd")
+
+colors <- rainbow_hcl(4, c=80, l=65, start = 20, end = 340)
+
+speedup <- function(p, f){
+  p/( f + (1 - f)*p)
+}
+
+max_cpu <- 10
+
+vec <- seq(from=1, to=max_cpu, by=0.01)
+
+plot(vec, speedup(vec, 1), type = "l", col = colors[1],
+     main = "Amdahl's Law for parallel computing",
+     xlab = "number of processors",
+     ylab = "speedup")
+
+col <- 2
+
+frac <- c(0.9,0.75,0.5)
+for(i in frac){
+  lines(vec,speedup(vec,i),col=colors[col])
+  col <- col+1
+}  
+
+legend("topleft", paste("f =",c(1,frac)), col=colors,
+bty = "n", lty=1)
+
+@ 
