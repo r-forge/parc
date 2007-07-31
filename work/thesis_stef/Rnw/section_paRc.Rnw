@@ -1,0 +1,88 @@
+\section{paRc -- PARallel Computations in R}
+\label{sec:paRc}
+
+The package paRc contains high-level functions to OpenMP compiled
+parallel functions.
+Furthermore, it supplies a benchmark environment for performance
+evaluation of parallel programs.
+
+
+\subsection{OpenMP interface functions}
+
+\begin{description}
+\item[\texttt{omp.get.num.procs()}] returns the number of threads
+  available to the program.
+\item[\texttt{omp.set.num.threads()}] sets the number of threads to be
+  used in subsequent parallel executions.
+\item[\texttt{omp.get.max.threads()}] gets the number of threads to be
+  used in subsequent parallel executions.
+\end{description}
+
+
+\subsubsection{OpenMP specific environment variables}
+
+Certain environment variables affect the runtime behaviour of OpenMP
+programs. These environment variables are as
+follows~(\cite{openMP05}):
+
+\begin{description}
+\item[\texttt{OMP_NUM_THREADS}] sets the number of threads to use in
+  parallel regions of OpenMP programs. 
+\item[\texttt{OMP_SCHEDULE}] sets the runtime schedule type and
+  chunk size.
+\item[\texttt{OMP_DYNAMIC}] defines wether dynamic adjustments of threads
+  should be used in parallel regions.
+\item[\texttt{OMP_NESTED}] enables or disables nested parallelism.
+\end{description}
+
+
+
+\textbf{Example:} OpenMP function calls using paRc \newline
+running on cluster@WU using a bignode which provides 4 cores.
+
+<<echo=TRUE>>=
+library("paRc")
+
+omp.get.num.procs()
+
+omp.set.num.threads(2)
+
+omp.get.max.threads()
+
+@ 
+
+\subsection{Built-in high level functions}
+
+Rmpi provides the following high level functions (this is only a selection): 
+
+\begin{description}
+\item[\texttt{omp.matrix.mult(X, Y, ncpu = 1)}] multiplies the matrix
+  \texttt{X} with matrix \texttt{Y} using \texttt{n_cpu} numbers of
+  processors.
+\end{description}
+
+
+\subsection{Benchmark functions}
+
+\subsection{Other important functions}
+
+To complete the set of important functions supplied by the paRc
+package the following functions have to be explained:
+
+\subsection{Conclusion}
+
+%The \texttt{PVM.rapply()} example shown in this section followed the Single Program
+%Multiple Data (SPMD) paradigm. Data is splitted into different parts
+%which are sent to different processes. I/O is handled by a master
+%process. When loading rpvm in an R session this session becomes the
+%master process. Slaves can easily be spawned provided that there are
+%working slave scripts available. A major disadvantage is that the rpvm
+%package only has two higher-level function. One of them can be used
+%for calculations. That means when using this package for HPC one has
+%to deal with low-level message-passing which in turn provides high
+%flexibility. New parallel functions can be constructed on the basis of
+%the provided interface.
+
+%For further interface functions supplied by the paRc package, a more detailed
+%description and further examples please consult the package description
+%\cite{yu06Rmpi}.

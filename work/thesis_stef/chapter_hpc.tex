@@ -192,6 +192,7 @@ results of this execution pattern is shown in table
 
 \begin{table}[h!b!p!]
 \caption{Pipelining}
+\centering
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline
  & \multicolumn{9}{|c|} \textbf{Cycle} \\
@@ -782,9 +783,9 @@ discussed in this section.
 \subsection{Execution time and speedup}
 
 The best way to analyze the performance of an application is to
-measure the execution time. Therefore an application can be compared
-with an improved version through their execution times.
-The performance gain can be then expressed as shown in
+measure the execution time. Consequently an application can be compared
+with an improved version through the execution times.
+The performance gain can then be expressed as shown in
 equation~\ref{eq:speedup}. 
 
 \begin{equation}
@@ -811,7 +812,7 @@ parallel execution time $t_p$ would be as in equation~\ref{eq:naive_t}
 t_p = \frac{t_s}{p}
 \end{equation}
 
-and consequently the speedup would equal be to the number of
+and consequently the speedup would be equal to the number of
 processors $p$.
 But this is an ideal scenario. Linear speedup can hardly be achieved
 because not every part of a program can be parallelized in the same
@@ -851,18 +852,22 @@ speedup = \frac{p}{f + (1 - f)p}
 \end{equation}
 
 Normally, as $f < 1$ inequality~\ref{eq:amdahl_parallel} is true. It
-has became known as \textit{Amdahl's Law for parallel computing}.
+has became known as \textit{Amdahl's Law for parallel
+  computing}. Figure~\ref{fig:amdahl} shows the speedup possible for 1
+to 10 processors if
+the fraction of parallelizable code is 100\% (linear speedup), 90\%,
+75\% and 50\%
 
 \begin{equation}
 \label{eq:amdahl_parallel}
 speedup < \frac{1}{1 - f}
 \end{equation}
 
-
+% Figure: Amdahl's law
 \input{speedup.tex}
 
-\subsection{Gustavson}
-\cite{gustafson88ras}
+%%\subsection{Gustavson}
+%%\cite{gustafson88ras}
 
 
 \section{Hardware and Software used}
@@ -902,6 +907,7 @@ information about the specs of the queues.
 
 \begin{table}[h!b!p!]
 \caption{cluster@WU specification}
+\centering
 \label{tab:clusterWU}
 \begin{tabular}{|l|l|}
 \hline
@@ -924,6 +930,7 @@ have access to a total of 12 gigabytes of shared memory. The
 specification of this machine shows table~\ref{tab:opteronserver}.
 
 \begin{table}[h!b!p!]
+\centering
 \caption{Opteron server specification}
 \label{tab:opteronserver}
 \begin{tabular}{|l|l|}
@@ -966,3 +973,4 @@ Linux~(\url{http://www.debian.org}).
 \end{description}
 
 \section{Conclusion}
+

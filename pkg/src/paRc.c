@@ -8,8 +8,12 @@
  * OpenMP function wrappers
  */
 
-void OMP_get_num_procs(int *n) {
+void OMP_get_num_procs() {
   *n = omp_get_num_procs();
+}
+
+void OMP_get_max_threads() {
+  *n = omp_get_max_threads();
 }
 
 void OMP_set_num_threads(int *n) {

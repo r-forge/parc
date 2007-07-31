@@ -1,8 +1,9 @@
 useDynLib("paRc")
 
 export(## OpenMP function wrappers
-       "omp_get_num_procs",
-       "omp_set_num_threads",
+       "omp.get.num.procs",
+       "omp.set.num.threads",
+       "omp.get.max.threads",
 
        ## Application: Matrix Multiplication 
        "serial.matrix.mult",

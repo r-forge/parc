@@ -1,12 +1,17 @@
 ## OpenMP function wrappers
 
-## print number of available processors
-omp_get_num_procs <- function(){
-  out <- .C("OMP_get_num_procs",n <- integer(1), PACKAGE = "paRc")
+## print number of available processors in the current team
+omp.get.num.procs <- function(){
+  out <- .C("OMP_get_num_procs", PACKAGE = "paRc")
   out[[1]]
 }
 
-omp_set_num_threads <- function(x){
+omp.get.max.threads <- function(){
+  out <- .C("OMP_get_max_threads", PACKAGE = "paRc")
+  out[[1]]
+}
+
+omp.set.num.threads <- function(x){
   max.procs <- omp_get_num_procs()
   if(x < 1)
     stop("'x' must be greater than or equal 1")
