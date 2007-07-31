@@ -1,6 +1,47 @@
 \chapter{Parallel Matrix Multiplication}
 \label{chap:matrix}
 \section{Introduction}
+
+If we think of applications in parallel computing matrix
+multiplication comes into mind. Because of its nature it is prime
+example for data parallelism. There are many algorithms for
+parallelizing matrix multiplication available.
+
+
+In this chapter a short introduction to matrix multiplication is
+given. Subsequently implementations of a selection of parallel
+algorithms are presented. Eventually results of the comparison are
+presented.
+
+
+\section{Theory}
+
+\subsection{Notation}
+
+$ \mathbf{R} $ denotes the set of real numbers and $ \mathbf{R}^{m
+  \times n} $ the vector space of all m-by-n real matrices.
+
+$$ A \in \mathbf{R}^{m \times n} \Longleftrightarrow A = (a_{ij}) = 
+\left( \begin{array}{ccc}
+a_{11} & \ldots & a_{1n} \\
+\vdots &        & \vdots \\
+a_{m1} & \ldots & a_{mn}
+\end{array} \right)
+a_{ij} \in \mathbf{R}
+ $$
+
+The lower case letter of the letter which denotes the matrix with
+subsripts $ij$ refers to the entry in the matrix. 
+
+matrix-matrix multiplication ($\mathbf{R}^{m \times r} \times
+\mathbf{R}^{r \times n} \to \mathbf{R}^{m \times n}$)
+
+$$ C = AB \Longrightarrow c_{ij} = \sum_{k=1}^r a_{ik}b_{kj} $$
+
+
 \section{Implementation}
+
+
+
 \section{Results}
 
