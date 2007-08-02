@@ -2,5 +2,56 @@
 \section{Setting up MPI implementations on Debian}
 \label{app:mpi_imp}
 
+In this appendix it is shown how to set up an appropriate message
+passing environment and how this environment can be handled.
+
+\subsection{LAM/MPI}
+
+For installing LAM/MPI on a workstation or a cluster
+either the source code or pre-compiled binaries can be downloaded from
+the project website (\url{http://www.lam-mpi.org/}).
+The source code can be compiled as follows (jobscript for SGE):
+
+\begin{verbatim}
+#$ -N compile-lam-gcc
+
+## change to the source directory of downloaded LAM/MPI
+cd /home/stheussl/src/lam-7.1.3/
+echo "#### clean ####"
+make clean
+echo "#### configure ####"
+## configure - enable shared library support
+./configure CC=gcc CXX=g++  FC=gfortran --prefix=/home/stheussl/lib/lam-gcc --enable-shared
+echo "#### make ####"
+make all
+echo "#### install ####"
+make install
+echo "#### finished ####"
+\end{verbatim}
+
+If Debian Etch is used LAM/MPI can be installed using \code{apt-get
+  install} followed by the packages
+
+\begin{Description}
+\item[lam-runtime] LAM runtime environment for executing parallel programs,
+\item[lam4-dev] Development of parallel programs using LAM,
+\item[lam4c2] Shared libraries used by LAM parallel programs.
+\end{Description}
+
 lamboot lamwipe etc.
 
+
+
+
+\subsection{PVM}
+
+
+
+If Debian Etch is used PVM can be installed using \code{apt-get
+  install} followed by the packages
+
+\begin{Description}
+\item[pvm] Parallel Virtual Machine - binaries 
+\item[pvm-dev] Parallel Virtual Machine - development files
+\item[libpvm3] Parallel Virtual Machine - shared libraries
+\end{Description}

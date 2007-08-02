@@ -3,8 +3,9 @@
 \section{Introduction}
 
 This chapter provides an overview of the capabilities of R in the area
-of high performance computing. I start with a short description of the
-software package R. Subsequently extensions to the base environment
+of high performance computing. A short description of the
+software package R is given at the beginning of this
+chapter. Subsequently extensions to the base environment 
 (packages) which provide high performance computation functionality to
 R are going to be explained. Among these extensions there is the
 package called ``paRc'', which has been developed in the course of
@@ -12,13 +13,45 @@ this thesis.
 
 \section{The R environment}
 
+R is an integrated suite of software facilities for data manipulation,
+calculation and graphical display. Among other things it has (\cite{IntrotoR})
+\begin{itemize}
+\item an effective data handling and storage facility,
+\item a suite of operators for calculations on arrays, in particular matrices,
+\item a large, coherent, integrated collection of intermediate tools
+  for data analysis,
+\item graphical facilities for data analysis and display either
+  directly at the computer or on hardcopy, and
+\item a well developed, simple and effective programming language
+  (called `S') which includes conditionals, loops, user defined
+  recursive functions and input and output facilities. (Indeed most of
+  the system supplied functions are themselves written in the S
+  language.)
+\end{itemize}
+
+R is not only an environment for statistical computing and graphics
+but also a freely available high-level language for programming. It
+can be extended by standardized collections of code called
+`packages'. So developers and statisticians around the world can
+participate and provide optional code to base R and therefore makes R
+the platform of choice for developing new methods of data analysis. 
+
+As datasets grow bigger and bigger and algorithms become more and more
+complex, R has to join the high performance computing hype. Indeed, R
+is already prepared through a few extensions explained in the
+subsequent chapters.
+
+%% subsection: The Rmpi package 
 \input{section_Rmpi.tex}
 
+%% subsection: The rpvm package 
 \input{section_rpvm.tex}
 
+%% subsection: The snow package 
 \input{section_snow.tex}
 
-\input{section_paRc.tex}
+%% subsection: The paRc package 
+%\input{section_paRc.tex}
 
 \section{Conclusion}
 

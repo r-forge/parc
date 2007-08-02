@@ -40,7 +40,7 @@ follows~(\cite{openMP05}):
 \textbf{Example:} OpenMP function calls using paRc \newline
 running on cluster@WU using a bignode which provides 4 cores.
 
-<<echo=TRUE>>=
+<<eval=FALSE, echo=TRUE>>=
 library("paRc")
 
 omp.get.num.procs()

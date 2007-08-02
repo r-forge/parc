@@ -1,31 +1,55 @@
-\documentclass[12pt,a4paper,twoside]{report}
+\documentclass[12pt,a4paper]{report}
 % zur Kontrolle des Umbruchs Klassenoption draft verwenden
 %\usepackage[ngerman]{babel}
 \usepackage[latin1]{inputenc}
 %\usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage{latexsym}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb,amsfonts}
 \usepackage{ifpdf}
 \usepackage{url}
-\usepackage{/usr/share/R/share/texmf/Sweave}
+%% \usepackage{/usr/share/R/share/texmf/Sweave} see below new environment
 \usepackage[round]{natbib}
+
 
 % Seitenlayout
 % DIV# gibt den Divisor für die Layoutberechnung an.
 % Vergrößern des Divisors vergrößert den Textbereich.
 % BCOR#cm gibt die Breite des Bundstegs an.
-\usepackage[DIV11,BCOR2cm]{typearea}
+%\usepackage[DIV11,BCOR2cm]{typearea}
 
 % Abstand obere Blattkante zur Kopfzeile ist 2.54cm - 15mm
 \setlength{\topmargin}{-5mm}
 
-% Umgebungen für Definitionen, Sätze, usw.
-\newtheorem{Definition}{Definition}[chapter]
-%\newtheorem{Satz}{Satz}[chapter]
-\newtheorem{Lemma}{Lemma}[chapter]
-\newenvironment{Proof}{\noindent{Proof:}}{%
-  \hspace*{\fill}$\Box$\par\vskip2ex}
+
+%% commands, environments, etc.
+\let\code=\texttt
+\newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\newcommand{\proglang}[1]{\textsf{#1}}
+\newcommand{\class}[1]{`\code{#1}'}
+
+
+\newtheorem{Example}{Example}[chapter]
+
+%% example for newenvironment
+%% \newenvironment{Proof}{\noindent{Proof:}}{%
+%%    \hspace*{\fill}$\Box$\par\vskip2ex}
+
+\RequirePackage{fancyvrb}
+\RequirePackage{color}
+
+\newenvironment{Schunk}{\par\begin{minipage}{\textwidth}}{\end{minipage}}
+
+\definecolor{Sinput}{rgb}{0,0,0.56}
+\definecolor{Scode}{rgb}{0,0,0.56}
+\definecolor{Soutput}{rgb}{0.56,0,0}
+
+\DefineVerbatimEnvironment{Sinput}{Verbatim}
+{formatcom={\color{Sinput}},fontsize=\small}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}
+{formatcom={\color{Soutput}},fontsize=\small}
+\DefineVerbatimEnvironment{Scode}{Verbatim}
+{formatcom={\color{Scode}},fontsize=\small}
 
 
 \begin{document}

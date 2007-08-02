@@ -3,42 +3,42 @@
 \section{Introduction}
 
 In 1965 a director in the Fairchild Semiconductor division of
-Fairchild Camera and Instrument Corporation predicted: "The complexity
+Fairchild Camera and Instrument Corporation predicted: ``The complexity
 (of integrated circuits, annotation of the author)
 for minimum costs has increased at a rate of roughly two per year
 [\ldots] over the short term this rate can be expected to continue, if
-not increase."(~\cite{moore65integratedcircuits}) This soon became known
+not increase.''(~\cite{moore65integratedcircuits}) This soon became known
 as Moore's Law. And 
 indeed for nearly fourty years the advance predicted by Moore has
 taken place (the overall growth of the world's most powerful computers
-has approximately doubled each 18 months).
+has approximately doubled every 18 months).
 
 Furthermore, with greater speed more memory is needed, otherwise you have
 the situation that a computer capable of performing trillions of
-operations in each second only has access to a small memory which is
-rather useless for solving data driven calculations. In addition to
+operations in every second only has access to a small memory which is
+rather useless for performing data driven calculations. In addition to
 that the amount of data being available to analysts today has rapidly
-increased. Data-collection and -mining is done nearly everywhere. This
-bulk of data implicates that enough memory is available to process it.
+increased. Data collection and mining is done nearly everywhere. This
+bulk of data implies that enough memory is available to process it.
 
-Now, more than 40 years later "desktop" systems with two to four
+Now, more than 40 years later desktop systems with two to four
 processors and lots of memory are available, which means that they can
 be compared with high performance workstations of just a few years
 ago.
 
 Factors which constitute this trend are~(\cite{C1quant07}):
 \begin{itemize}
-\item a slowdown in uniprocessor performance arising from  diminishing
-  returns in exploiting instruction-level-parallelism,
+\item a slowdown in uniprocessor performance arising from diminishing
+  returns in exploiting instruction level parallelism,
 \item a growth in servers and server performance,
-\item a growth in data-intensive applications,
+\item a growth in data intensive applications,
 \item the insight that increasing performance on the desktop is less
   important,
 \item an improved understanding of how to use multiprocessors
   effectively, especially in server environments where there is
-  significant thread-level parallelism,
+  significant thread level parallelism,
 \item the advantages of leveraging a design investment by replication
-  rather than unique design--all multiprocessor designs provide such leverage.
+  rather than unique design---all multiprocessor designs provide such leverage.
 \end{itemize}
 
 With the need to solve large problems and the availability of adequate
@@ -47,7 +47,7 @@ important. Some examples to illustrate this need in science and
 research include:
 \begin{itemize}
 \item data mining for large data sets,
-\item algorithms for solving NP-complete problems,
+\item algorithms for solving $\mathcal{NP}$-complete problems,
 \item climate prediction,
 \item computations in biology, chemistry and physics,
 \item cryptography,
@@ -91,7 +91,7 @@ known as Flynn's taxonomy:
   This type of architecture of CPUs (called uniprocessors),
   developed by the 
   mathematician John von Neumann, was the standard for a long
-  time. These Computers are also known as serial computers. 
+  time. These computers are also known as serial computers. 
 \item[Multiple Instruction Single Data (MISD)] The theoritical possibility
   of applying multiple instructions on a single datum is generally
   impractical.
@@ -100,7 +100,7 @@ known as Flynn's taxonomy:
   data in parallel (data-level parallelism). 
 \item[Multiple Instruction Multiple Data (MIMD)] Processors apply
   different instructions on different data (thread-level
-  parallelism). See section~\ref{sec:mimd_computers} for details. 
+  parallelism). See Section~\ref{sec:mimd_computers} for details. 
 \end{description}
 
 But these distinctions are insufficient for classifying modern
@@ -124,7 +124,7 @@ concurrent execution:
   all processors executing the instruction on local data) and systolic
   architectures (pipelined multiprocessors in which data flows from
   memory through a network of processors back to memory synchronized
-  by a global clock. 
+  by a global clock). 
 \item[MIMD architectures] consist of multiple processors applying
   different instructions on local (different) data. The MIMD models
   are asynchronous computers although they may be synchronized by
@@ -148,7 +148,7 @@ concurrent execution:
   dataflow execution.
 \end{description}
 
-\subsection{Processor and memory}
+\subsection{Processor and Memory}
 \label{sec:processorandmemory}
 A reduction of the execution time can be achieved with parallel
 computing and this is the most important method for improving
@@ -161,7 +161,7 @@ doesn't pay. Normally memory which delivers good performance is too
 expensive to be economically feasible. This situation has led to the
 development of memory hierarchies.
 
-\subsubsection{Instruction-Level Parallelism}
+\subsubsection{Instruction Level Parallelism}
 A technique called pipelining allows a processor to execute different
 stages of different instructions at the same time.
 For example in the classic von Neumann architecture (SISD), processors
@@ -169,7 +169,7 @@ complete consecutive instructions in a fetch-execute
 cycle: Each instruction is fetched, decoded, then data is fetched and
 the decoded instruction is applied on the data.
 A simple implementation where every instruction takes at most 5 clock
-cycles can be as follows (for details see \cite{CAquant07appendixA}).
+cycles can be as follows (for details see~\cite{CAquant07appendixA}).
 \begin{description}
 \item[Instruction fetch cycle (F)] The current instruction is fetched from
   memory.
@@ -183,7 +183,7 @@ cycles can be as follows (for details see \cite{CAquant07appendixA}).
 \end{description}
 
 Pipelining allows parallel processing of these
-instructions. I.e. while one instruction is being decoded, another
+instructions. I.e., while one instruction is being decoded, another
 instruction may be fetched and so on. On each clock cycle simply a new
 instruction is started. Therefore after 5 cycles the pipe is filled
 and on each subsequent clock cycle an instruction is finished. The
@@ -195,7 +195,7 @@ results of this execution pattern is shown in table
 \centering
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline
- & \multicolumn{9}{|c|} \textbf{Cycle} \\
+ & \multicolumn{9}{|c|}{\textbf{Cycle}} \\
 \textbf{Instruction Number}
 	& 1
 	& 2
@@ -218,15 +218,15 @@ Instruction $i+4$ &   &   &   &   & F & D & X & M & W \\ \hline
 
 Pipelining only works if every instruction does not depend on its
 predecessor. If so, instructions may completely or partially executed
-in parallel -- instruction-level parallelism.
+in parallel---instruction level parallelism.
 Pipelining can be
-exploited either in hardware or in software. In the hardware-based
+exploited either in hardware or in software. In the hardware based
 approach (the market dominating approach) the hardware helps to
-discover and achieve parallelism dynamically. In the software-based
+discover and achieve parallelism dynamically. In the software based
 approach parallelism is exploited statically at compile time through the
 compiler. 
 
-\subsubsection{Memory hierarchies}
+\subsubsection{Memory Hierarchies}
 
 Programs tend to reuse data and instructions they have used
 recently. Therefore one wants to predict what instructions and data a
@@ -244,7 +244,7 @@ instructions and data which are predicted to be used next or in
 subsequent steps. This increases the throughput of the data provided that
 the predictions made were correct.
 
-\subsection{High performance computing server}
+\subsection{High Performance Computing Server}
 
 Traditionally computers can be categorized as follows:
 \begin{itemize}
@@ -264,12 +264,14 @@ been replaced with networks of multiprocessor workstations.
 
 We are now interested in the last category namely high performance
 computing servers, because these computers have the highest
-computation power and they are mainly used
+computational power and they are mainly used
 for scientific or technical applications. The number of processors
-such a computer can have reaches from 100 to several thousand (mainly
-64 bit processors).
-You can divide this category of computers in ``vector computers'' or ``parallel
-computers''. The amount of memory they have varies according to the type of
+such a computer can have reaches from 100 to several thousand. The
+trend is to use 64 bit processors as allow addressing more memory (and
+they have become commonplace now). 
+This category of computers can be devided into the following
+categories: ``vector computers'' or ``parallel computers''.
+The amount of memory they have varies according to the type of
 these servers or applications, which is running on them. The maximum
 amount of memory can absolutely be beyond several tera bytes.  
 
@@ -312,13 +314,13 @@ CPUs to directly access the entire system's memory. This can be done
 with ccNUMA (cache coherent nonuniform memory access) systems
 (\textbf{CITATION MISSING}) or
 %cite hp sgi paper and sgi.pdf-luthien)
-global arrays~(\cite{nieplocha96gan}). %(see section \ref{globalArrays}).
+global arrays~(\cite{nieplocha96gan}). %(see Section \ref{globalArrays}).
 They have become an important improvement to distributed memory
 platforms because amongst others it enables compiler driven
-parallelizing techniques like OpenMP (see section~\ref{sec:OpenMP})to be
+parallelizing techniques like OpenMP (see Section~\ref{sec:OpenMP})to be
 used on these systems. 
 
-\section{MIMD computers}
+\section{MIMD Computers}
 \label{sec:mimd_computers}
 
 On MIMD architectural based computers one has the highest flexibility
@@ -338,12 +340,12 @@ is done through message passing.
 
 The other possibility is to have shared memory platforms (SMPs). All
 processors or computation nodes can access the same memory. The
-advantage is the better performance like in DMPs because messages doesn't
+advantage is the better performance like in DMPs because messages do not
 have to send via a slow network. Each processor is able to
 fetch the necessary data directly from memory. But this kind of platform
 has a big limitation. The costs of having as much memory as a cluster
-of workstation would provide are enormous. That is why cluster- or
-grid-computing has become so popular.
+of workstation would provide are enormous. That is why cluster or
+grid computing has become so popular.
 
 A further possibility is to have some sort of a hybrid platform. On
 the one hand you have several shared memory platforms with a few
@@ -362,11 +364,11 @@ architecture has gained more attention again. Consumer PCs with two to four
 processors have become common since the last year. High-end parallel
 computers use 16 up to 64 processors. Recent developments try to
 achieve easy parallelization of existing applications through
-parallelizing compilers (ie. OpenMP see section \ref{sec:OpenMP}).
+parallelizing compilers (ie. OpenMP see Section~\ref{sec:OpenMP}).
 
 \subsection{Distributed Memory Systems}
 \label{sec:distributedmemorysystems}
-Since the developments done by the NASA in the 1990's (see below),
+Since the developments done by the NASA in the 1990's (the Beowulf project),
 this kind of MIMD architecure has become really popular.
 Distributed memory system can
 entirely be build out of stock hardware and therefore give cheap
@@ -377,10 +379,10 @@ communication between the nodes is achieved through common network
 technology. Therefore sending messages is rather expensive in terms of
 latency and bandwidth. Another disadvantage is the complexity of
 programming parallel applications. There exist several implementations
-or standards which assist the developer in achieving message-passing
-(for MPI see section \ref{sec:MPI} or PVM see section \ref{sec:PVM}).
+or standards which assist the developer in achieving message passing
+(for MPI see Section~\ref{sec:MPI} or PVM see Section~\ref{sec:PVM}).
 
-\subsubsection{Beowulf clusters}
+\subsubsection{Beowulf Clusters}
 In 1995 NASA scientist completed the Beowulf project, which was a
 milestone toward cluster computing.
 
@@ -468,7 +470,7 @@ multiple data paradigm (MPMD).
 With SPMD there is only one program available
 to all computation nodes. Data is distributed equally amongst all
 nodes in the program. Then each node applies the same program on its
-own data. You shouldn't confuse SPMD with the SIMD paradigm as in the
+own data. One should not confuse SPMD with the SIMD paradigm as in the
 latter case the
 distribution of the data is done prior execution of the program.
 
@@ -497,39 +499,39 @@ developed.
 
 The programming models presented in this section are common and widely
 used. Starting with the first generation the Message Passing Interface
-(MPI - see~\cite{forum94:MPI}) and Parallel Virtual Machine (PVM -
-see~\cite{geist94pvm})
+(MPI---see~\cite{forum94:MPI}) and Parallel Virtual Machine
+(PVM---see~\cite{geist94pvm})
 are going to be described. The second generation of HPC programming
 models involve OpenMP (see~\cite{openMP05}) among others. These
 programming models are not the only ones 
 but are, as mentioned above, commonly used. 
 
-\subsection{Fundamentals of message-passing}
+\subsection{Fundamentals of Message Passing}
 \label{sec:messagepassing}
 
 On a distributed memory platform
-(section~\ref{sec:distributedmemorysystems})data has to be transmitted
+(Section~\ref{sec:distributedmemorysystems})data has to be transmitted
 from one computation node to the other to carry out computations in
 parallel. The most commonly used method for distributing data among
-the nodes is message-passing.
+the nodes is message passing.
   
-A message-passing function is a function which explicitly transmits
+A message passing function is a function which explicitly transmits
 data from one process to another. With these
 functions, creating parallel programs can be extremely
 efficient. Developers don't have to care about low level
-message-passing anymore.
+message passing anymore.
 
 identifier MPI rank PVM TaskID
 
 
 \subsubsection{Buffering}
 
-Communication can be buffered which means that i.e. the sending
+Communication can be buffered which means that i.e., the sending
 process can continue executing and need not wait for the receiving
 process signaling it is ready to receive. Otherwise you have a synchronous
 communication. 
 
-\subsubsection{Blocking and non-blocking communication}
+\subsubsection{Blocking and Non-blocking Communication}
 
 A communication is blocking if a receiving process has to wait if the
 message from the sending process is not available. That means the
@@ -538,16 +540,16 @@ sending. In non-blocking communication the receiving process sends a
 request to another process and continues executing. At a later time
 the process checks if the message has arrived in the meantime. 
 
-\subsubsection{Load balancing}
+\subsubsection{Load Balancing}
 
 To distribute data as evenly as possible to among the processes load
 balancing is a good method. This can be achieved either through data
 decomposition (identical programs or functions operate on different
 portions of the date) or function decomposition (different programs or
 functions perform different operations). For more details on workload
-allocation see Section 4.2 in~\cite{geist94pvm} 
+allocation see Section~4.2 in~\cite{geist94pvm} 
 
-\subsubsection{Collective communication}
+\subsubsection{Collective Communication}
 
 In a parallel program we don't want that only one process does most of
 the work. This is an issue if it comes to sending of data. Assume that
@@ -559,7 +561,7 @@ is called a broadcast.
 A broadcast is a collective communication in which a single process
 sends the same data to every other process. Depending on the topology
 of the system normally there is an optimized broadcast available
-(i.e. tree-structured communication). See Chapter 5
+(i.e., tree-structured communication). See Chapter~5
 in~\cite{pacheco97mpi} for more details on collective communication in
 MPI.
 
@@ -570,28 +572,28 @@ In 1994 the Message Passing Interface Forum (MPIF) has defined a set
 of library interface standards for message passing. Over 40
 organizations participated in the discussion which started in
 1993. The aim was to develop a widely standard for writing
-message-passing programs. The standard was called the Message Passing
-Interface (see \cite{forum94:MPI}).
+message passing programs. The standard was called the Message Passing
+Interface (see~\cite{forum94:MPI}).
 
-As mentioned in section \ref{sec:programming_models} there
+As mentioned in Section~\ref{sec:programming_models} there
 were a lot of different programming models and languages for high
 performance computing available. With MPI a standard was established
 that should be practical, portable, efficient and flexible. After
 releasing Version 1.0 in 1994 the MPIF continued to correct errors and
 made clarifications in the MPI document so that in June 1995 Version
-1.1 of MPI had been released.
+1.1 of MPI was released.
 
 Further corrections and clarifications have been made to version 1.2 of
 MPI and with Version 2 completely new types of functionality has been
-added (see \cite{forum94:MPI-2} for details).
+added (see~\cite{forum94:MPI-2} for details).
 
 MPI is now a library providing higher level
-routines and abstractions built upon lower level message-passing
+routines and abstractions built upon lower level message passing
 routines which can be called from various programming
 languages like C or Fortran. It contains all the infrastructure for
 inter process communication. Last but not least an interface wrapper
 is available for R. MPI communication can be set up using the R extension
-``Rmpi'' (see section \ref{sec:Rmpi} for details).
+``Rmpi'' (see Section~\ref{sec:Rmpi} for details).
 
 \subsubsection{Advantages}
 \begin{itemize}
@@ -616,12 +618,12 @@ is available for R. MPI communication can be set up using the R extension
 For a detailed comparison of PVM and MPI see~\cite{geist96pam}
 and~\cite{gropp02ggd}.
 
-\subsubsection{Implementations of the MPI standard}
+\subsubsection{Implementations of the MPI Standard}
 \label{sec:mpi-implementations}
 
-As MPI is only a standard, specific implemenations are needed to use
-message-passing routines as library calls in programming languages
-like C or Fortran. There has been great effort to provide good
+As MPI is only a standard, specific implementations are needed to use
+message passing routines as library calls in programming languages
+like C or Fortran. There has been huge effort to provide good
 implementations and indeed there are a lot of them available. But
 only a few of them are widely used. This is because of the fact that
 the primary goal was portability. A lot of different platforms are now
@@ -664,10 +666,10 @@ jobscripts see Appendix~\ref{app:mpi_imp}.
 \subsection{Parallel Virtual Machine (PVM)}
 \label{sec:PVM}
 
-The PVM system is another but own implementation of a functionally
-complete message-passing model. It is designed to link computing
+The PVM system is another implementation of a functionally
+complete message passing model. It is designed to link computing
 resources for example in a heterogenous network and to provide
-developers with a parallel platform. As the message-passing model
+developers with a parallel platform. As the message passing model
 seemed to be the paradigm of choice in the late 80's the PVM project
 was created in 1989 to allow developers to exploit distributed
 computing across a wide variety of computer types. A key concept in
@@ -694,7 +696,7 @@ cluster is shown in Appendix~\ref{app:mpi_imp}.
 \item more overhead because of portability
 \item development of parallel programs is difficult
 \item not as flexible as MPI as PVM is a specific implementation
-\item not as many message-passing functionality as MPI has
+\item not as many message passing functionality as MPI has
 \end{itemize}
 
 
@@ -705,10 +707,10 @@ and~\cite{gropp02ggd}.
 \label{sec:OpenMP}
 
 A completely other approach in the parallel programming model context
-is the use of shared memory. Message-passing is built upon this shared
+is the use of shared memory. message passing is built upon this shared
 memory model which means that every processor has direct access to the
 memory of every other processor in the system
-(see section~\ref{sec:sharedmemorysystems}). This class of
+(see Section~\ref{sec:sharedmemorysystems}). This class of
 multiprocessor is also called Scalable Shared Memory Multiprocessor
 (SSMP).
 
@@ -717,8 +719,8 @@ of OpenMP started for one simple reason: portability. Prior the
 introduction of OpenMP as an industry standard every vendor of shared
 memory systems has created its own proprietary extension for
 developers. Therefore a lot of people interested in parallel
-programming used portabel message-passing models like MPI (see
-section~\ref{sec:MPI}) or PVM (see section~\ref{sec:PVM}). As there
+programming used portabel message passing models like MPI (see
+Section~\ref{sec:MPI}) or PVM (see Section~\ref{sec:PVM}). As there
 was an increasing demand for a simple and scalable programming model and
 the desire to begin parallelizing existing code without having to
 completely rewrite it, the OpenMP Architecture Review Board released a
@@ -730,7 +732,7 @@ shared memory parallelism.
 
 Furthermore this programming model is based on the fork/join execution
 model which makes it easy to get parallelism out of a sequential
-program. Therefore unlike in message-passing the program or algorithm
+program. Therefore unlike in message passing the program or algorithm
 need not to be completely decomposed for parallel execution. Given a
 working sequential program it is not difficult to incrementally
 parallelize individual loops and thereby realize a performance gain in
@@ -754,7 +756,7 @@ further information can be found on the following website:
 \begin{itemize}
 \item requires a compiler which supports OpenMP
 \item a shared memory platform is needed for efficient programs
-\item a lot more overhead compared to message-passing function because
+\item a lot more overhead compared to message passing functions because
   of implicit programming
 \item the use of OpenMP depends on the availabilty of a corresponding
   compiler
@@ -780,7 +782,7 @@ code. A rule of thumb is to make the frequent case fast (that means
 parallelizing of this case). How this improvements can be analyzed is
 discussed in this section.
 
-\subsection{Execution time and speedup}
+\subsection{Execution Time and Speedup}
 
 The best way to analyze the performance of an application is to
 measure the execution time. Consequently an application can be compared
@@ -838,7 +840,7 @@ t_p = f /frac{t_s}{p} + (1 - f) t_s = \frac{t_s ( f + ( 1 - f) p )}{p}
 \textit{The speedup of an algorithm that results from increasing the speed of
 its fraction $f$ is inversely proportional to the size of the fraction
 that has to be executed at the slower speed} (interpration from
-Section 1.5 of \cite{kontoghiorghes06handbookpcstat}).
+Section~1.5 of \cite{kontoghiorghes06handbookpcstat}).
 
 Equation~\ref{eq:amdahl_speedup} shows the corresponding speedup that
 can be achieved. If $f$ equals one (the program can be ideally
@@ -876,21 +878,21 @@ speedup < \frac{1}{1 - f}
 \subsection{Hardware}
 The Hardware used for the applications presented in this thesis is
 going to be described in this section.
-At the Department of Statistics and Mathematics of the Vienna
-University of Economics and Business Administration a high performance
-computing server, a cluster of Intel workstations (called cluster@WU), is
-available.
+
+At the Vienna University of Economics and Business Administration (WU)
+a research institute called Research Institute for Computational
+Methods (FIRM---\url{http://www.wu-wien.ac.at/firm}) hosts a high
+performance computing server, a cluster of Intel workstations, known
+as cluster@WU.
 Furthermore, for experimenting and interactive testing an AMD Opteron
-server with four computation cores has been used.   
+server with four computation cores has been available at the
+Department of Statistics and Mathematics. 
 
 \subsubsection{Cluster@WU}
-Cluster@WU is a shared platform among several departments
-of the university which are represented through an research institute
-called research institute for computational methods
-(FIRM~--~\url{http://www.wu-wien.ac.at/firm}). All of the programs
+All of the programs
 have been tested as well as benchmarked on this cluster of
 workstations running the Sun Grid 
-Engine (see section~\ref{app:gridengine} for more information on the
+Engine (see Appendix~\ref{app:gridengine} for more information on the
 grid engine). With a total of 152 64-bit computation nodes and a total
 of 336 gigabytes of RAM, Cluster@WU is by now amongst the fastest
 supercomputers in Austria.
@@ -899,8 +901,8 @@ The cluster consists of four workstation with four cores each and 16
 gigabytes of RAM. They are called ``bignodes'' as they offer more
 power to the grid user. The queue for running applications on these
 bignodes is called \texttt{bignode.q}. If a shared memory program is
-to be run (i.e. an OpenMP program), bignodes are the computers of choice.
-The other nodes consist of dual core cpus and lesser
+to be run (i.e., an OpenMP program), bignodes are the computers of choice.
+The other nodes consist of dual core CPUs and lesser
 memory. They are combined in the queue
 \texttt{node.q}. Table~\ref{tab:clusterWU} provides detailed
 information about the specs of the queues.
@@ -911,12 +913,12 @@ information about the specs of the queues.
 \label{tab:clusterWU}
 \begin{tabular}{|l|l|}
 \hline
-\multicolumn{2}{|c|}\textbf{bignode.q -- 4 nodes}\\
+\multicolumn{2}{|c|}{\textbf{bignode.q -- 4 nodes}}\\
 \hline
 2  & Dual Core Intel XEON CPU 5140 @ 2.33 GHz\\
 16 & GB RAM\\
 \hline
-\multicolumn{2}{|c|}\textbf{node.q -- 68 nodes}\\
+\multicolumn{2}{|c|}{\textbf{node.q -- 68 nodes}}\\
 \hline
 1 & Intel Core 2 Duo CPU 6600 @ 2.4 GHz\\
 4 & GB RAM\\
@@ -935,7 +937,7 @@ specification of this machine shows table~\ref{tab:opteronserver}.
 \label{tab:opteronserver}
 \begin{tabular}{|l|l|}
 \hline
-\multicolumn{2}{|c|} \textbf{Opteron server -- 1 machine}\\
+\multicolumn{2}{|c|}{\textbf{Opteron server -- 1 machine}}\\
 \hline
 2  & Dual Core AMD Opteron @ 2.4 GHz\\
 12 & GB RAM\\
@@ -965,7 +967,7 @@ Linux~(\url{http://www.debian.org}).
   parallelizing techniques as of version 4.2.
 \item[R] is a free software environment for statistical computing and
   graphics. R-patched 2.5.1 is used in this thesis. There is an own
-  chapter (Chapter~\ref{chap:Rhpc}) about R and high performance computing.
+  chapter about R and high performance computing (Chapter~\ref{chap:Rhpc}).
 \item[PVM] version 3.4 is used for running the corresponding programs
   (see Section~\ref{sec:PVM}).
 \item[LAM/MPI] version 7.1.3 is used for running MPI programs (see~
