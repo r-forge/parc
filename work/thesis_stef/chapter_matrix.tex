@@ -18,30 +18,125 @@ presented.
 
 \subsection{Notation}
 
-$ \mathbf{R} $ denotes the set of real numbers and $ \mathbf{R}^{m
+$ \mathbb{R} $ denotes the set of real numbers and $ \mathbb{R}^{m
   \times n} $ the vector space of all m-by-n real matrices.
 
-$$ A \in \mathbf{R}^{m \times n} \Longleftrightarrow A = (a_{ij}) = 
+$$ A \in \mathbb{R}^{m \times n} \Longleftrightarrow A = (a_{ij}) = 
 \left( \begin{array}{ccc}
 a_{11} & \ldots & a_{1n} \\
 \vdots &        & \vdots \\
 a_{m1} & \ldots & a_{mn}
 \end{array} \right)
-a_{ij} \in \mathbf{R}
+a_{ij} \in \mathbb{R}
  $$
 
 The lower case letter of the letter which denotes the matrix with
 subsripts $ij$ refers to the entry in the matrix. 
 
-matrix-matrix multiplication ($\mathbf{R}^{m \times r} \times
-\mathbf{R}^{r \times n} \to \mathbf{R}^{m \times n}$)
+\subsubsection{Column and Row Partitioning}
+
+A matrix $A$ can be accessed through its rows as it is a stack of row
+vectors:
+$$ A \in \mathbb{R}^{m \times n} \Longleftrightarrow A = 
+\left( \begin{array}{c}
+a_{1}^T \\
+\vdots \\
+a_{m}^T 
+\end{array} \right)
+a_{k} \in \mathbb{R}^n 
+ $$
+
+This is called a \textit{row partition} of $A$.
+
+
+If $A \in \mathbb{R}^{m \times n}$ the $k$th row of $A$ can be notated
+as $A(k,)$ (according to the row access in R). I.e.,
+
+$$ A(k,) = \left( \begin{array}{ccc}
+a_{k1}, & \ldots, & a_{kn}
+\end{array} \right)
+$$
+
+
+The other alternative is to see a matrix as a collection of column
+vectors:
+
+$$ A \in \mathbb{R}^{m \times n} \Longleftrightarrow A = 
+\left( \begin{array}{ccc}
+a_{1}, & \ldots, & a_{n}
+\end{array} \right)
+a_{k} \in \mathbb{R}^m 
+ $$
+
+This is called a \textit{column partition} of $A$.
+
+
+If $A \in \mathbb{R}^{m \times n}$ the $k$th column of $A$ can be notated
+as $A(,k)$ (according to the row access in R). I.e.,
+
+$$ A(,k) = \left( \begin{array}{c}
+a_{1k} \\
+\vdots \\
+a_{mk} 
+\end{array} \right)
+ $$
+
+\subsubsection{Block Notation}
+
+Block matrices are central in many algorithms. They have become very
+important in high performance computing because it enables
+easy distributing of data. 
+
+In general a $m$ by $n$ matrix $A$ can be partitioned to obtain
+
+$$ 
+A = \left( \begin{array}{ccc}
+A_{11} & \ldots & A_{1q} \\
+\vdots &        & \vdots \\
+A_{p1} & \ldots & A_{pq}
+\end{array} \right)
+$$
+
+$A_{ij}$ is the $(i,j)$ block or submatrix with dimensions $m_i$ by
+$n_j$ of $A$. $\sum_{i=1}^p m_i = m$ and $\sum_{j=1}^q n_j = n$. 
+We can say that $A = A_{ij}$ is a $p$ by $q$ block
+matrix.   
+
+Now we can see that column and row partitionings are special cases of
+block matrices.
+
+\subsection{Algorithms}
+
+\subsubsection{Basic Algorithm}
+
+In the usual matrix multiplication procedure the array $C$ is computed
+through dot products one at a time from left to right and top to
+bottom order.
+
+ ($\mathbb{R}^{m \times r} \times
+\mathbb{R}^{r \times n} \to \mathbb{R}^{m \times n}$)
 
 $$ C = AB \Longrightarrow c_{ij} = \sum_{k=1}^r a_{ik}b_{kj} $$
 
 
+\subsubsection{Gaxpy Matrix Multiply}
+
+\subsubsection{Outer Product MAtrix Multiply}
+
+
 \section{Implementation}
 
+\subsection{Naive Parallel Algorithm}
 
+\subsubsection{MPI}
+\subsubsection{PVM}
+\subsubsection{OpenMP}
+
+\subsection{Fox or other}
+
+\subsubsection{MPI}
+\subsubsection{PVM}
+\subsubsection{OpenMP}
 
 \section{Results}
 
