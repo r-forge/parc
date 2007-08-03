@@ -45,7 +45,7 @@ omp.matrix.mult <- function(X, Y, n_cpu = 1)
   ## input validation
   matrix.mult.validate(X, Y, dx, dy)
   ## set number of cpus to use
-  omp_set_num_threads(n_cpu)
+  omp.set.num.threads(n_cpu)
   ## data preparation
   x <- as.vector(X)
   storage.mode(x) <- "double"

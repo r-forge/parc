@@ -2,17 +2,17 @@
 
 ## print number of available processors in the current team
 omp.get.num.procs <- function(){
-  out <- .C("OMP_get_num_procs", PACKAGE = "paRc")
+  out <- .C("OMP_get_num_procs", n = integer(1), PACKAGE = "paRc")
   out[[1]]
 }
 
 omp.get.max.threads <- function(){
-  out <- .C("OMP_get_max_threads", PACKAGE = "paRc")
+  out <- .C("OMP_get_max_threads", n = integer(1), PACKAGE = "paRc")
   out[[1]]
 }
 
 omp.set.num.threads <- function(x){
-  max.procs <- omp_get_num_procs()
+  max.procs <- omp.get.num.procs()
   if(x < 1)
     stop("'x' must be greater than or equal 1")
   if(x > max.procs)

@@ -1,7 +1,7 @@
 \section{paRc -- PARallel Computations in R}
 \label{sec:paRc}
 
-The package paRc contains high-level functions to OpenMP compiled
+The package paRc (\cite{theussl07paRc}) contains high-level functions to OpenMP compiled
 parallel functions.
 Furthermore, it supplies a benchmark environment for performance
 evaluation of parallel programs.
@@ -40,7 +40,7 @@ follows~(\cite{openMP05}):
 \textbf{Example:} OpenMP function calls using paRc \newline
 running on cluster@WU using a bignode which provides 4 cores.
 
-<<eval=FALSE, echo=TRUE>>=
+<<echo=TRUE>>=
 library("paRc")
 
 omp.get.num.procs()
@@ -53,7 +53,7 @@ omp.get.max.threads()
 
 \subsection{Built-in high level functions}
 
-Rmpi provides the following high level functions (this is only a selection): 
+paRc provides the following high level OpenMP functions: 
 
 \begin{description}
 \item[\texttt{omp.matrix.mult(X, Y, ncpu = 1)}] multiplies the matrix
@@ -62,7 +62,28 @@ Rmpi provides the following high level functions (this is only a selection):
 \end{description}
 
 
-\subsection{Benchmark functions}
+\subsection{Benchmark}
+
+handle benchmark objects
+
+\begin{description}
+\item[\code{benchmark.avail.cpu}]
+\item[\code{benchmark.cpu.range}]
+\item[\code{benchmark.data}]
+\item[\code{benchmark.functions.to.apply}]
+\item[\code{benchmark.is.parallel}]
+\item[\code{benchmark.task}]
+\item[\code{run.benchmark}]
+\end{description}
+
+S3 methods
+
+\begin{description}
+\item[\code{print.benchmark}]
+\item[\code{ }]
+\item[\code{ }]
+\item[\code{ }]
+\end{description}
 
 \subsection{Other important functions}
 
