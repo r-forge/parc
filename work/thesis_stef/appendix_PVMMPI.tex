@@ -55,3 +55,15 @@ If Debian Etch is used PVM can be installed using \code{apt-get
 \item[pvm-dev] Parallel Virtual Machine - development files
 \item[libpvm3] Parallel Virtual Machine - shared libraries
 \end{description}
+
+
+\subsection{Intel Compiler}
+
+on AMD64 Debian systems install ia32-libs package to use the intel
+compiler.
+
+an R Installation can be build via
+
+./configure --prefix=/home/stefan/lib/R-i --enable-R-shlib CC=icc
+CXX=icpc F77=ifort FC=ifort
+

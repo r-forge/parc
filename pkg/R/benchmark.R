@@ -1,28 +1,81 @@
 ## FIXME: we need a reference in a benchmark: most of the time serial version
 ## defined in benchmark object -> the reference in a task is in the first line
 
+## creates a benchmark object
+
+create.benchmark <- function(task, data, type="normal", parallel=FALSE, cpu_range=1){
+  out <- list()
+  tasks <- c(
+             "matrix multiplication",
+             "Monte Carlo Simulation"
+             )
+  if(is.null(task)) stop("No task chosen to benchmark")
+  else taskNr <- pmatch(tolower(task), tolower(tasks))
+  if(is.na(taskNr)) stop (paste("Unknown task:",sQuote(task)))
+
+  out$task <- taskNr
+  out$tasks <- tasks
+  
+  types <- c(
+             "normal",
+             "native-BLAS",
+             "goto-BLAS",
+             "MKL-BLAS",
+             "OpenMP",
+             "MPI",
+             "PVM",
+             "snow-MPI",
+             "snow-PVM")
+
+  typeNr <- pmatch(tolower(type), tolower(types))
+  if(is.na(typeNr)) stop (paste("Unknown type:",sQuote(type)))
+
+  out$type <- typeNr
+  out$types <- types
+  
+  if(!is.logical(parallel))
+    stop("'parallel' must be either TRUE or FALSE")
+  out$is_parallel <- parallel
+  if(!(all(cpu_range > 0) && is.numeric(cpu_range)))
+    stop("'cpu_range' must be a vector of positive integers")
+  out$cpu_range <- as.integer(cpu_range)
+  
+  if(!is.list(data))
+    stop("'data' must be of type list")
+  out$data <- data
+  
+  class(out) <- "benchmark"
+  out
+}
+
+
 
 ## extractor functions
 
 benchmark.task <- function(x){
   if(class(x) != "benchmark")
     stop("'x' not of class 'benchmark'")
-  x$task
-}  
+  x$tasks[x$task]
+}
 
-benchmark.functions.to.apply <- function(x){
+bm.tasks <- function(x){
   if(class(x) != "benchmark")
     stop("'x' not of class 'benchmark'")
-  x$functions_to_be_applied
-}  
+  x$tasks
+}
+
+benchmark.type <- function(x){
+  if(class(x) != "benchmark")
+    stop("'x' not of class 'benchmark'")
+  x$types[x$type]
+}
+
 
 ## TODO: generic
 benchmark.is.parallel <- function(x) {
   if(class(x) != "benchmark")
     stop("'x' not of class 'benchmark'")
-  out <- x$is_parallel
-  names(out) <- x$functions_to_be_applied
-  out
+  x$is_parallel
 }
 
 benchmark.cpu.range <- function(x) {
@@ -31,17 +84,12 @@ benchmark.cpu.range <- function(x) {
   x$cpu_range
 }
 
-benchmark.avail.cpu <- function(x) {
-  if(class(x) != "benchmark")
-    stop("'x' not of class 'benchmark'")
-  x$avail_cpu
-}
-
 benchmark.data <- function(x) {
   if(class(x) != "benchmark")
     stop("'x' not of class 'benchmark'")
   x$data
 }
+
 ## replacement functions
 
 
@@ -49,9 +97,10 @@ benchmark.data <- function(x) {
 print.benchmark <- function(x){
   if(class(x) != "benchmark")
     stop("'x' not of class 'benchmark'")
-  type <- ifelse(any(benchmark.is.parallel(x))==TRUE,"parallel","serial")
+  run <- ifelse(benchmark.is.parallel(x),"parallel","serial")
   task <- benchmark.task(x)
-  writeLines(paste("A", type, "benchmark running task:", task))
+  type <- benchmark.type(x)
+  writeLines(paste("A", run, "benchmark running task:", task, "-", type))
 }
 
 ## main benchmark function
@@ -59,20 +108,8 @@ run.benchmark <- function(x){
   ## input validation
   if(class(x)!="benchmark")
     stop("'x' not of class 'benchmark'")
-  if(!is.integer(benchmark.cpu.range(x)))
-    stop("all values in 'cpu_range' must be of type integer")
-  if(!all(benchmark.cpu.range(x) > 0))
-    stop("all values in 'cpu_range' must be greater than 0")
 
-  task <- benchmark.task(x)
-  tasks <- c(
-             "matrix multiplication",
-             "task2"
-             )
-
-  if(is.null(task)) stop("No task chosen to benchmark")
-  else taskNr <- pmatch(tolower(task), tolower(tasks))
-  if(is.na(taskNr)) stop (paste("Unknown task:",sQuote(task)))
+  taskNr <- pmatch(benchmark.task(x), bm.tasks(x))
 
   if(taskNr == 1) {
     results <- bm.matrix.multiplication(x)
@@ -80,6 +117,7 @@ run.benchmark <- function(x){
     writeLines("Not implemented yet")
     results <- NULL
   }
+
   ## format data.frame accordingly
   results$time_usr <- as.numeric(results$time_usr)
   results$time_sys <- as.numeric(results$time_sys)
@@ -89,43 +127,50 @@ run.benchmark <- function(x){
   results
 }
 
+bm.data.frame <- function(){
+  data.frame(task=NA, type=NA, n_cpu=NA, time_usr=NA, time_sys=NA,
+                    time_ela=NA, is_parallel=NA)
+}
+
+
+bm.function.to.apply <- function(x){
+  if(class(x) != "benchmark")
+    stop("'x' not of class 'benchmark'")
+
+  taskNr <- pmatch(benchmark.task(x), bm.tasks(x))
+  type <- benchmark.type(x)
+  
+  if(taskNr==1)
+    foo <- switch(type,
+                  "normal" = function(X,Y){X%*%Y},
+                  stop("no such type")
+                  )
+  else
+    stop("no such task")
+  foo
+}  
 
 bm.matrix.multiplication <- function(x){
-
   ## build dataframe for results
-  out <- data.frame(task=NA,foo=NA,n_cpu=NA,time_usr=NA,time_sys=NA,time_ela=NA,
-                    is_parallel=NA)
-
-  foocount <- length(benchmark.functions.to.apply(x))
+  out <- bm.data.frame()
+  
   data <- benchmark.data(x)
+  if(!length(data)==2)
+    stop("'data' supplied must be a list containing two matrices")
+  foo <- bm.function.to.apply(x)  
   for( n_cpu in benchmark.cpu.range(x)){
-    if(n_cpu == 1){
-      for(i in 1:foocount){
-        foo <- match.fun(benchmark.functions.to.apply(x)[i])
-        out[i,] <- c(benchmark.task(x),benchmark.functions.to.apply(x)[i],n_cpu,
-                     as.vector(system.time(foo(data[[1]],data[[2]])))[1:3],
-                     benchmark.is.parallel(x)[i])
-      }
-    }
+    if(n_cpu == 1)
+      out[n_cpu,] <- c(benchmark.task(x),benchmark.type(x),n_cpu,
+                   as.vector(system.time(foo(data[[1]],data[[2]])))[1:3],
+                   benchmark.is.parallel(x))
     else {
-      parfoos <- benchmark.functions.to.apply(x)[benchmark.is.parallel(x)]
-      avail_cpu <- benchmark.avail.cpu(x)[benchmark.is.parallel(x)]
-      parcount <- length(parfoos)
-      for(i in 1:parcount){
-        ##mpi.spawn.Rslaves(nslaves = n_cpu - 1)
-        if(n_cpu > avail_cpu[i])
-          tmp <- c(benchmark.task(x),parfoos[i],n_cpu,
-                   c(NA,NA,NA),TRUE)
-        else {
-          foo <- match.fun(parfoos[i])        
-          tmp <- c(benchmark.task(x),parfoos[i],n_cpu,
-                   as.vector(system.time(foo(data[[1]], data[[2]],n_cpu)))[1:3],
-                   TRUE)
-        }
-        out[foocount+(n_cpu-2)*parcount+i,] <- tmp
-                                      
-        ##mpi.close.Rslaves()
-      }
+      ##mpi.spawn.Rslaves(nslaves = n_cpu - 1)
+      tmp <- c(benchmark.task(x), benchmark.type(x), n_cpu,
+               as.vector(system.time(foo(data[[1]], data[[2]], n_cpu)))[1:3],
+               TRUE)
+      out[n_cpu] <- tmp
+      
+      ##mpi.close.Rslaves()
     }
   }
   out
