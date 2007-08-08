@@ -1,0 +1,37 @@
+#$ -N MM-BLAS
+#$ -q bignode.q@bignode002
+#$ -pe simple 4
+
+## libGoTo BLAS
+/home/stheussl/lib/R/R-2.5.1-icc-GOTO/bin/R --vanilla <<-EOF
+set.seed(1782)
+n <- 1000;A<-matrix(runif(n*n),ncol=n);B<-matrix(runif(n*n),ncol=n)
+a <- rep(system.time(A%*%B),4)
+a
+n <- 5000;A<-matrix(runif(n*n),ncol=n);B<-matrix(runif(n*n),ncol=n)
+b <- rep(system.time(A%*%B),4)
+b
+EOF
+
+## libmkl BLAS
+/home/stheussl/lib/R/R-2.5.1-icc-MKL/bin/R --vanilla <<-EOF
+set.seed(1782)
+n <- 1000;A<-matrix(runif(n*n),ncol=n);B<-matrix(runif(n*n),ncol=n)
+a <- rep(system.time(A%*%B),4)
+a
+n <- 5000;A<-matrix(runif(n*n),ncol=n);B<-matrix(runif(n*n),ncol=n)
+b <- rep(system.time(A%*%B),4)
+b
+EOF
+
+## standard R BLAS
+/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla <<-EOF
+set.seed(1782)
+n <- 1000;A<-matrix(runif(n*n),ncol=n);B<-matrix(runif(n*n),ncol=n)
+a <- rep(system.time(A%*%B),4)
+a
+n <- 5000;A<-matrix(runif(n*n),ncol=n);B<-matrix(runif(n*n),ncol=n)
+b <- rep(system.time(A%*%B),4)
+b
+EOF
+

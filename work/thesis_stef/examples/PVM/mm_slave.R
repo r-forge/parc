@@ -23,7 +23,7 @@ nrows_on_last <- .PVM.upkint()
 X <- .PVM.upkdblmat()
 Y <- .PVM.upkdblmat()
 
-if(order==(n_cpu - 1))
+if(order==n_cpu)
   local_mm <- serial.matrix.mult(X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_last),],Y)
 else
   local_mm <- serial.matrix.mult(X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_slaves),],Y)

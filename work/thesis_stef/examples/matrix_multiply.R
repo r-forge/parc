@@ -15,11 +15,11 @@ serial.matrix.mult.native <- function(X, Y) {
 ## slave job
 mpi.matrix.mult.slave <- function(){
   require("paRc")
-  commrank <- mpi.comm.rank()
-  if(commrank==(n_cpu - 1))
-    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y)
+  rank <- mpi.comm.rank() - 1 ## root only responsible for I/O
+  if(rank==n_cpu)
+    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_last),],Y)
   else
-    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
+    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_slaves),],Y)
   mpi.gather.Robj(local_mm,root=0,comm=1)    
 }
 
@@ -40,7 +40,7 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
   if( n_cpu == 1 )
     return(serial.matrix.mult(X, Y))
   if( spawnRslaves == TRUE )
-    mpi.spawn.Rslaves(nslaves = n_cpu - 1)
+    mpi.spawn.Rslaves(nslaves = n_cpu)
 
   mpi.bcast.Robj2slave(Y) ## needed on every node
   mpi.bcast.Robj2slave(X) ## not needed when code fixed
@@ -69,8 +69,9 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
 
   mpi.bcast.cmd(mpi.matrix.mult.slave())
   
-  commrank <- mpi.comm.rank()
-  local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
+  local_mm <- NULL
+#  rank <- mpi.comm.rank()
+#  local_mm <- serial.matrix.mult(X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_slaves),],Y)
   mm <- mpi.gather.Robj(local_mm, root=0, comm=1)
 
   out <- NULL

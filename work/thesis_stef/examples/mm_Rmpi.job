@@ -1,0 +1,6 @@
+#$ -N MM-Rmpi-benchmark
+#$ -pe lam 12
+#$ -q node.q
+
+R-g --vanilla < /home/stheussl/svn/paRc/work/thesis_stef/examples/mm_Rmpi.R
+

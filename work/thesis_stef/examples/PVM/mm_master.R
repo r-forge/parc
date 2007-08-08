@@ -1,3 +1,4 @@
+
 ##########################################################
 ## script file: PVM matrix multiplication
 ## mm_master.R
@@ -6,14 +7,10 @@
 ##########################################################
 
 require("paRc")
-require("Rmpi")
-
-
-
-
+require("rpvm")
 
 ## master job
-pvm.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
+pvm.matrix.mult <- function(X, Y, n_cpu = 1) {
   ## Input validation
   if(!(is.matrix(X) && is.matrix(Y)))
     stop("'X' and 'Y' must be matrices.")
@@ -33,7 +30,7 @@ pvm.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
     return(serial.matrix.mult(X, Y))
 
   mytid <- .PVM.mytid()
-  children <- .PVM.spawnR(ntask = NTASK, slave = "mm_slave")
+  children <- .PVM.spawnR(ntask = n_cpu, slave = "mm_slave.R")
   if (all(children < 0)) {
     cat("Failed to spawn any task: ", children, "\n")
     .PVM.exit()
@@ -59,15 +56,11 @@ pvm.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
     .PVM.send(children[id], WORKTAG)
    }
   
-  commrank <- mpi.comm.rank()
-  local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
-  mm <- mpi.gather.Robj(local_mm, root=0, comm=1)
-
   partial.results <- list()
   for (child in children) {
     .PVM.recv(-1, RESULTAG)
     rank <- .PVM.upkint()
-    partial.results[[order]] <- .PVM.upkdblvec()
+    partial.results[[order]] <- .PVM.upkdblmat()
   }
   .PVM.exit()
   return(unlist(partial.results))
