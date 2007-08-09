@@ -17,24 +17,21 @@ maxcpu <- mpi.universe.size()
 ## maximum Rmpi can spawn is 10 Rslaves
 if(maxcpu > 10)
   maxcpu <- 10
+
 ## set problem size (nxn matrix)
 n <- 100
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+
 
 ## define benchmark
-bench <- list()
-bench$functions_to_be_applied <- c("serial.matrix.mult","serial.matrix.mult.native","mpi.matrix.mult")
-bench$is_parallel <- c(FALSE,FALSE,TRUE)
-bench$cpu_range <- 1:maxcpu
-bench$task <- "matrix multiplication"
-bench$avail_cpu <- c(1,1,maxcpu)
-bench$data <- list()
-bench$data[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
-bench$data[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
-class(bench) <- "benchmark"
+bm <- create.benchmark(task="matrix multiplication", data=bmdata, type="MPI",
+                       parallel=TRUE, cpu_range=1:maxcpu)
 
-bm_results <- run.benchmark(bench)
-bm_results
-save("bm_results",file="Rmpi_results.Rda")
+bmres_MPI <- run.benchmark(bm)
+bmres_MPI
+save("bmres_MPI",file="bmres_MPI.Rda")
 mpi.exit()
 
 

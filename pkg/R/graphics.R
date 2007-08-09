@@ -28,52 +28,5 @@ require("vcd")
 ## TODO: plot be task: ie. task = "all", task = "matrix multiply"
 ## TODO: speedup plot: speedup=TRUE,FALSE
 
-plot.bench_results <- function(x, task="all", ... ){
-  if(!class(x)[1]=="bench_results")
-    stop("'x' not of class 'bench_results'")
-
-  count.foo <- length(unique(x$foo))
-  count.task <- length(unique(x$task))
-
-  if(count.foo > 5)
-    stop("more than 5 functions in a benchmark are not supported yet")
-
-  
-  ## define plot region, colorspace and other plot parameters
-  xlim <- c(0,max(as.numeric(x$n_cpu))+1)
-  ylim <- c(0,max(x$time_ela)+1)
-  ncolors <- count.foo*count.task
-  colors <- rainbow_hcl(ncolors, c=80, l=65, start = 20, end = 340)
-  ltys <- c(1:6)
-  pchs <- c(21:25)
-  par(mar=c(5,4,4,5))
-  main=paste("Task:",task)
-
-  ## plot reference
-  ref <- x$foo[1]
-  plot( x = as.numeric(x$n_cpu)[1], y = x$time_ela[1], col=colors[1], xlim = xlim, ylim = ylim, type = "b",
-       pch = pchs[1], ,xlab = "# of CPUs", ylab = "execution time", main = main)
-
-  ##plot the rest
-  results.to.plot <- unique(x$foo)
-  results.to.plot <- results.to.plot[-which(results.to.plot==ref)]
-  for(i in 1:length(results.to.plot)){
-    lines(x = as.numeric(x$n_cpu[which(x$foo==results.to.plot[i])]), y = x$time_ela[which(x$foo==results.to.plot[i])],
-          col=colors[i+1], type = "b", lty= ltys[i+1], pch = pchs[i+1])
-  }
-
-  ## plot speedup
-  ##par(new = TRUE)
-  ##xlim <- c(0,x$cpucount[x$cpusteps]+1)
-  ##ylim <- c(0,max(x$speedup))
-  ##plot(x$cpucount, x$speedup[1,], col = colors[1+x$kinds], axes = FALSE, xlim = xlim, ylim=ylim, type = "b", xlab = "", ylab = "", lty=ltys[1], pch = pchs[1])
-  ##for(i in 2:x$kinds)
-  ##  lines(x = x$cpucount, y = x$speedup[i,], col=colors[i+x$kinds], type = "b", lty= ltys[i], pch = pchs[i])
-  ##axis(4)
-  ##mtext("Speedup", side = 4, line = 3)
-
-  ## legend
-  legend("topleft", c(ref,results.to.plot), col=colors[1:count.foo], lty = ltys[1:count.foo], bty = "n", pch = pchs[1:count.foo])
-}
 
 

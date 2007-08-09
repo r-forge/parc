@@ -12,12 +12,16 @@ export(## OpenMP function wrappers
        "serial.dot.product",
 
        ## benchmarking
-       "benchmark.task",
-       "benchmark.functions.to.apply",
-       "benchmark.is.parallel",
-       "benchmark.cpu.range",
-       "benchmark.avail.cpu",
-       "benchmark.data",
+       "bm.task",
+       "bm.tasks",
+       "bm.type",
+       "bm.types",
+       "bm.function.to.apply",
+       "bm.is.parallel",
+       "bm.cpu.range",
+       "bm.data",
+       "bm.data.frame",
+       "create.benchmark",
        "run.benchmark",
 
        ## Application: option pricing
@@ -45,7 +49,7 @@ export(## OpenMP function wrappers
 ## S3methods
 ## benchmarking
 S3method("print","benchmark")
-S3method("plot","bench_results")
+S3method("plot","bm_results")
 
 ## option pricing
 S3method("as.option","default")
