@@ -6,7 +6,7 @@
 ##########################################################
 
 require("paRc")
-require("Rmpi")
+require("Rmpi")ma
 
 serial.matrix.mult.native <- function(X, Y) {
   X%*%Y
@@ -16,7 +16,7 @@ serial.matrix.mult.native <- function(X, Y) {
 mpi.matrix.mult.slave <- function(){
   require("paRc")
   rank <- mpi.comm.rank() - 1 ## root only responsible for I/O
-  if(rank==n_cpu)
+  if(rank==(n_cpu - 1))
     local_mm <- serial.matrix.mult(X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_last),],Y)
   else
     local_mm <- serial.matrix.mult(X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_slaves),],Y)

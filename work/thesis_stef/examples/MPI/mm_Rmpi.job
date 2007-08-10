@@ -1,6 +1,6 @@
 #$ -N MM-Rmpi
-#$ -pe lam 12
+#$ -pe lam 20
 #$ -q node.q
 
-R-g --vanilla < /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/mm_Rmpi.R
+/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/mm_Rmpi.R
 

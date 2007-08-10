@@ -137,13 +137,50 @@ bm.function.to.apply <- function(x){
                   "goto-BLAS" = function(X,Y){X%*%Y},
                   "MKL-BLAS" = function(X,Y){X%*%Y},
                   "OpenMP" = omp.matrix.mult,
+                  "snow-MPI" = function(X,Y,n = 1){
+                    if(n==1)
+                      out <- X%*%Y
+                    else{
+                      cl <- getMPIcluster()
+                      out <- parMM(cl, X, Y)
+                    }
+                    out
+                  },
+                  "MPI" = mm.Rmpi,
                   stop("no such type")
                   )
   else
     stop("no such task")
   foo
-}  
+}
 
+bm.prepare <- function(x,n){
+  type <- bm.type(x)
+  if(any(type == c("normal", "native-BLAS", "goto-BLAS", "MKL-BLAS", "OpenMP")))
+    return()
+  if(type == "snow-MPI"){
+    if(!(require("snow")&&require("Rmpi")))
+      stop("Packages 'Rmpi' and 'snow' are required to run this benchmark")
+    cl <- makeCluster(n, type = "MPI")
+  }
+  if(type == "MPI"){
+    if(!(require("Rmpi")))
+      stop("Packages 'Rmpi' is required to run this benchmark")
+    mpi.spawn.Rslaves(nslaves=n)
+  }
+}
+
+bm.close <- function(x){
+  type <- bm.type(x)
+  if(any(type == c("normal", "native-BLAS", "goto-BLAS", "MKL-BLAS", "OpenMP")))
+    return()
+  if(type == "snow-MPI"){
+    cl <- getMPIcluster()
+    stopCluster(cl)  
+  }
+  if(type == "MPI")
+    mpi.close.Rslaves()
+}
 ## benchmark workhorses
 
 bm.matrix.multiplication <- function(x){
@@ -160,13 +197,12 @@ bm.matrix.multiplication <- function(x){
                    as.vector(system.time(foo(data[[1]],data[[2]])))[1:3],
                    bm.is.parallel(x))
     else {
-      ##mpi.spawn.Rslaves(nslaves = n_cpu - 1)
+      bm.prepare(x,n_cpu)
       tmp <- c(bm.task(x), bm.type(x), n_cpu,
                as.vector(system.time(foo(data[[1]], data[[2]], n_cpu)))[1:3],
                TRUE)
       out[n_cpu,] <- tmp
-      
-      ##mpi.close.Rslaves()
+      bm.close(x)     
     }
   }
   ## format data.frame accordingly

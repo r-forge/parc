@@ -60,6 +60,54 @@ omp.matrix.mult <- function(X, Y, n_cpu = 1)
   matrix(out$z,ncol=dy[2])
 }
 
+mm.Rmpi.slave <- function(){
+  commrank <- mpi.comm.rank() -1
+  if(commrank==(n_cpu - 1))
+    local_mm <- X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),]%*%Y
+  else
+    local_mm <- X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),]%*%Y
+  mpi.gather.Robj(local_mm,root=0,comm=1)    
+}
+
+## master job
+mm.Rmpi <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
+  dx <- dim(X) ## dimensions of matrix A
+  dy <- dim(Y) ## dimensions of matrix B
+  ## Input validation
+  matrix.mult.validate(X, Y, dx, dy)
+  
+  if( n_cpu == 1 )
+    return(X%*%Y)
+  if( spawnRslaves == TRUE )
+    mpi.spawn.Rslaves(nslaves = n_cpu)
+
+  ## broadcast data and functions necessary on slaves
+  mpi.bcast.Robj2slave(Y) 
+  mpi.bcast.Robj2slave(X) 
+  mpi.bcast.Robj2slave(n_cpu)
+  
+  nrows_on_slaves <- ceiling(dx[1]/n_cpu)
+  nrows_on_last <- dx[1] - (n_cpu - 1)*nrows_on_slaves
+  mpi.bcast.Robj2slave(nrows_on_slaves)
+  mpi.bcast.Robj2slave(nrows_on_last)
+  mpi.bcast.Robj2slave(mm.Rmpi.slave)
+
+  ## start partial matrix multiplication on slaves
+  mpi.bcast.cmd(mm.Rmpi.slave())
+
+  ## gather partial results from slaves
+  local_mm <- NULL
+  mm <- mpi.gather.Robj(local_mm, root=0, comm=1)
+  out <- NULL
+
+  ## Rmpi returns a list when the vectors have different length (local_mm = NULL)
+  for(i in 1:n_cpu)
+    out <- rbind(out,mm[[i+1]])
+  
+  if( spawnRslaves == TRUE )
+    mpi.close.Rslaves()
+  out
+}
 
 serial.dot.product <- function(x, y)
 {
