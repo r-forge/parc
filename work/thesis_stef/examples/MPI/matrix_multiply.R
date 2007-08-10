@@ -14,12 +14,14 @@ serial.matrix.mult.native <- function(X, Y) {
 
 ## slave job
 mpi.matrix.mult.slave <- function(){
-  require("paRc")
-  commrank <- mpi.comm.rank()
+  #require("paRc")
+  commrank <- mpi.comm.rank() -1
   if(commrank==(n_cpu - 1))
-    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y)
+  #  local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y)
+    local_mm <- X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),]%*%Y
   else
-    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
+#    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
+    local_mm <- X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),]%*%Y
   mpi.gather.Robj(local_mm,root=0,comm=1)    
 }
 
@@ -40,7 +42,7 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
   if( n_cpu == 1 )
     return(serial.matrix.mult(X, Y))
   if( spawnRslaves == TRUE )
-    mpi.spawn.Rslaves(nslaves = n_cpu - 1)
+    mpi.spawn.Rslaves(nslaves = n_cpu)
 
   mpi.bcast.Robj2slave(Y) ## needed on every node
   mpi.bcast.Robj2slave(X) ## not needed when code fixed
@@ -69,20 +71,20 @@ mpi.matrix.mult <- function(X, Y, n_cpu = 1, spawnRslaves=TRUE) {
 
   mpi.bcast.cmd(mpi.matrix.mult.slave())
   
-  commrank <- mpi.comm.rank()
-  local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
+#  commrank <- mpi.comm.rank()
+ # local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
+  local_mm <- NULL
   mm <- mpi.gather.Robj(local_mm, root=0, comm=1)
-
   out <- NULL
   ## Rmpi returns a list when the vectors have different length and a matrix otherwise
   ## so we have to hack this by hand again
-  if(nrows_on_slaves == nrows_on_last)
-    for(i in 1:n_cpu)
-      out <- rbind(out,matrix(mm[,i],nrow=nrows_on_slaves))
-  else {
-    for(i in 1:n_cpu)
-      out <- rbind(out,mm[[i]])
-  }
+  #if(nrows_on_slaves == nrows_on_last)
+  #  for(i in 1:n_cpu)
+  #    out <- rbind(out,matrix(mm[,i],nrow=nrows_on_slaves))
+  #else {
+  for(i in 1:n_cpu)
+    out <- rbind(out,mm[[i+1]])
+  #}
   
   if( spawnRslaves == TRUE )
     mpi.close.Rslaves()
