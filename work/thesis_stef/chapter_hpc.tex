@@ -22,9 +22,9 @@ increased. Data collection and mining is done nearly everywhere. This
 bulk of data implies that enough memory is available to process it.
 
 Now, more than 40 years later desktop systems with two to four
-processors and lots of memory are available, which means that they can
-be compared with high performance workstations of just a few years
-ago.
+processors and lots of memory are available. This means that standard
+stock computers can be compared with high performance workstations of
+just a few years ago.
 
 Factors which constitute this trend are~(\cite{C1quant07}):
 \begin{itemize}
@@ -45,6 +45,7 @@ With the need to solve large problems and the availability of adequate
 workstations, large-scale parallel computing has become more and more
 important. Some examples to illustrate this need in science and
 research include:
+
 \begin{itemize}
 \item data mining for large data sets,
 \item algorithms for solving $\mathcal{NP}$-complete problems,
@@ -65,7 +66,125 @@ presented. It provides a general overview of the field of High
 Performance Computing and how performance of applications can be
 analyzed in this field.
 
+\section{Terms and Definitions}
+\label{sec:termsdef}
+
+Before we go into further details the term high performance computing
+should be defined. Furthermore, it is important to know the difference
+between parallelism and concurrency. They are explained in this
+section.
+
+\subsection{High Performance Computing}
+
+The term high performance computing (HPC) refers to the use of (parallel)
+supercomputers and computer clusters (\cite{wiki:hpc}). Indeed it can
+be explained as computing on a high performance computing
+machine. This machines can be clusters of workstations or huge shared
+memory machines (see Secion~\ref{sec:hpcserver} for more details on
+high performance computing servers).
+
+Furthermore, HPC is a branch of computer science that concentrates on
+developing high performance computers and software to run on these
+computers. An important area of this discipline is the development of
+parallel processing algorithms or software.
+
+\subsection{Process vs. Thread}
+
+Both threads and processes are methods of parallelizing an
+application. The difference between them is the way they are
+created and share resources.
+
+A process is the execution of a list of statements (a sequential
+program). Processes have their own state information, use their own 
+address space and interact with other processes only via an
+interprocess communication mechanism generally managed by the operating
+system. A master process may spawn subprocesses which are logically
+separeted from the functionality of the master process and other
+subprocesses.
+
+In contrast to processes, threads are typically spawned from processes
+for a short time to achieve a certain task and then terminate
+(fork-join principle). Threads within a process
+share the same state and same memory space, and can communicate with
+each other directly through shared variables.
+
+\subsection{Parallelism vs. Concurrency}
+
+\textbf{Parallelism} is physically simultanous processing of multiple
+threads or processes with the objective
+to increase performance (this implies multiple processing elements)
+whereas \textbf{concurrency} is logically simultanous processing of
+threads or processes regardless of a performance gain (this does not
+imply multiple processing elements). I.e., concurrent execution of
+processes can be interleaved execution on a single processing
+element. Table~\ref{tab:concurrency}) shows interleaved execution of 3
+processes. In every cycle the process executed (X) changes: in the
+first cycle process $1$ is executed, in the second cycle process $2$
+and after process $3$ has started in cycle $3$, process $1$ continues
+its execution in cycle $4$. Table~\ref{tab:parallelism} shows the
+execution of three parallel processes running on a computer with three
+processing elements. 
+
+\begin{table}[h!b!p!]
+\caption{Interleaved Concurrency}
+\centering
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
+\hline
+ & \multicolumn{9}{|c|}{\textbf{Cycle}} \\
+\textbf{Process}
+	& 1
+	& 2
+	& 3
+        & 4
+        & 5
+        & 6
+        & 7
+        & 8
+        & 9
+        \\ \hline 
+Process $1$ & X &   &   & X &   &   & X &   &   \\ \hline
+Process $2$ &   & X &   &   & X &   &   & X &   \\ \hline
+Process $3$ &   &   & X &   &   & X &   &   & X \\ \hline
+\end{tabular}
+\label{tab:concurrency}
+\end{table}
+
+\begin{table}[h!b!p!]
+\caption{Parallelism}
+\centering
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
+\hline
+ & \multicolumn{9}{|c|}{\textbf{Cycle}} \\
+\textbf{Process}
+	& 1
+	& 2
+	& 3
+        & 4
+        & 5
+        & 6
+        & 7
+        & 8
+        & 9
+        \\ \hline 
+Process $1$ & X & X & X &   &   &   & X & X & X \\ \hline
+Process $2$ &   &   & X & X & X & X & X & X & X \\ \hline
+Process $3$ &   & X & X & X & X & X &   &   &   \\ \hline
+\end{tabular}
+\label{tab:parallelism}
+\end{table}
+
+In general, concurrent programs can be executed 
+in parallel whereas parallel programs cannot be reduced to logically
+concurrent processes. 
+
+For description of concurrent programming languages and programming
+models see \cite{gehani88:concurrentprog}.
+
+In the rest of this thesis we do not distinguish between the terms
+parallel and concurrent and use them interchangeably.
+
 \section{Computer Architecture}
+
 In this section computer architectures are briefly described. This
 knowledge is of great advantage to
 understand how performance can be maximized when using parallel
@@ -245,6 +364,7 @@ subsequent steps. This increases the throughput of the data provided that
 the predictions made were correct.
 
 \subsection{High Performance Computing Server}
+\label{sec:hpcserver}
 
 Traditionally computers can be categorized as follows:
 \begin{itemize}
@@ -266,9 +386,9 @@ We are now interested in the last category namely high performance
 computing servers, because these computers have the highest
 computational power and they are mainly used
 for scientific or technical applications. The number of processors
-such a computer can have reaches from 100 to several thousand. The
-trend is to use 64 bit processors as allow addressing more memory (and
-they have become commonplace now). 
+such a computer can have reaches from hundred to several thousand. The
+trend is to use 64 bit processors as this kind allows addressing more
+memory (and they have become commonplace now). 
 This category of computers can be devided into the following
 categories: ``vector computers'' or ``parallel computers''.
 The amount of memory they have varies according to the type of
@@ -283,7 +403,7 @@ vector supercomputing system using a single shared memory were widely
 used to run large-scale applications. Due to the fact that vector
 systems were rather expensive in both purchasing and operation and
 bus-based shared-memory parallel systems were technologically bounded
-to smaller CPU counts, the first distributed-memory parallel platforms (DMPs)
+to smaller CPU counts, the first distributed memory parallel platforms (DMPs)
 came up. The big advantage was that they were inexpensive and could be
 built in many different sizes. DMPs could be rather small like a
 connection of workstations connected via a network to form a cluster of
@@ -309,16 +429,20 @@ Linux operating system and therefore offer high performance for a
 reasonable price.
 
 New developments show that there are interesting alternatives. Some
-HPC platforms offer a global addressing scheme and therefore enables
+HPC platforms offer a global addressing scheme and therefore enable
 CPUs to directly access the entire system's memory. This can be done
-with ccNUMA (cache coherent nonuniform memory access) systems
-(\textbf{CITATION MISSING}) or
-%cite hp sgi paper and sgi.pdf-luthien)
-global arrays~(\cite{nieplocha96gan}). %(see Section \ref{globalArrays}).
-They have become an important improvement to distributed memory
-platforms because amongst others it enables compiler driven
-parallelizing techniques like OpenMP (see Section~\ref{sec:OpenMP})to be
-used on these systems. 
+i.e., with ccNUMA (cache coherent nonuniform memory access) systems
+(for more information see i.e., \cite{kleen05:NUMA}) or
+global arrays~(\cite{nieplocha96gan}).
+They have become an important improvement because they allow a
+processor to access local and remote memory with rather low latency.
+
+Another advantage of having a global addressing scheme is that it
+enables compiler driven parallelizing techniques like OpenMP (see
+Section~\ref{sec:OpenMP})to be used on these systems. Otherwise the
+shared memory paradigm has to be maintained through a distributed
+shared memory subsystem like in Cluster OpenMP
+(\cite{hoeflinger06clusterOpenMP}).
 
 \section{MIMD Computers}
 \label{sec:mimd_computers}
@@ -482,7 +606,8 @@ is what one would asume when speaking of MIMD architectures.
 
 \subsubsection{History}
 When parallel computing came up there have been a lot of programming
-languages developed. Only few of them experienced any real use. There
+languages developed (see ie., \cite{gehani88:concurrentprog} and
+\cite{wilson96:parallelprog}). Only few of them experienced any real use. There
 have also been many implementations of computer vendors for their own
 machines. For a long time there has been no standard in sight as no
 agreement between hardware vendors and developers emerged. It was
@@ -521,7 +646,9 @@ functions, creating parallel programs can be extremely
 efficient. Developers don't have to care about low level
 message passing anymore.
 
-identifier MPI rank PVM TaskID
+To identify a process in a communication environment message passing
+libraries make use of identifiers. In MPI they are called ``ranks''
+and in PVM ``TaskIDs''.
 
 
 \subsubsection{Buffering}
