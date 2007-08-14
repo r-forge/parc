@@ -1,10 +1,9 @@
 
 ## load required libraries
-library("snow")
-library("Rmpi")
+library("rpvm")
 library("paRc")
 
-maxcpu <- mpi.universe.size()
+maxcpu <- 4
 
 ## 1000x1000
 set.seed(1782)
@@ -13,22 +12,22 @@ bmdata <- list()
 bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
 bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
 bm <- create.benchmark(task="matrix multiplication", data=bmdata,
-                       type="snow-MPI", parallel=TRUE, cpu_range=1:maxcpu)
+                       type="PVM", parallel=TRUE, cpu_range=1:maxcpu)
 
-#bmres_snowMPI <- run.benchmark(bm)
-#save("bmres_snowMPI",file="bmres_snowMPI-shared-1000.Rda")
+bmres_PVM <- run.benchmark(bm)
+save("bmres_PVM",file="bmres_PVM-shared-1000.Rda")
 
-
+## 2500x2500
 set.seed(1782)
 n <- 2500
 bmdata <- list()
 bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
 bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
 bm <- create.benchmark(task="matrix multiplication", data=bmdata,
-                       type="snow-MPI", parallel=TRUE, cpu_range=1:maxcpu)
+                                              type="PVM", parallel=TRUE, cpu_range=1:maxcpu)
 
-#bmres_snowMPI <- run.benchmark(bm)
-#save("bmres_snowMPI",file="bmres_snowMPI-shared-2500.Rda")
+bmres_PVM <- run.benchmark(bm)
+save("bmres_PVM",file="bmres_PVM-shared-2500.Rda")
 
 ## 5000x5000
 set.seed(1782)
@@ -37,8 +36,8 @@ bmdata <- list()
 bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
 bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
 bm <- create.benchmark(task="matrix multiplication", data=bmdata,
-                       type="snow-MPI", parallel=TRUE, cpu_range=1:maxcpu)
+                                              type="PVM", parallel=TRUE, cpu_range=1:maxcpu)
 
-bmres_snowMPI <- run.benchmark(bm)
-save("bmres_snowMPI",file="bmres_snowMPI-shared-5000.Rda")
+bmres_PVM <- run.benchmark(bm)
+save("bmres_PVM",file="bmres_PVM-shared-5000.Rda")
 

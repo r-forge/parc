@@ -1,0 +1,12 @@
+#$ -N MM-rpvm
+#$ -pe pvm 4
+#$ -q bignode.q@bignode002
+
+## if shared library not available in standard paths add the following
+export LD_LIBRARY_PATH=/home/stheussl/lib/pvm3/lib/LINUX64/:$LD_LIBRARY_PATH
+export PATH=/home/stheussl/lib/R/rpvm/:$PATH
+## now export all environment variables
+# -V
+
+/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < /home/stheussl/svn/paRc/work/thesis_stef/examples/PVM/mm_rpvm.R
+

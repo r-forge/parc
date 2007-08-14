@@ -1,5 +1,5 @@
 ##########################################################
-## script file: slave R script for PVM matrix mult
+## script file: slave R script for PVM matrix mult w/o BLAS
 ## matrix_multiply.R
 ## application: Parallel Matrix Multiplication
 ## theussl, 2007
@@ -7,6 +7,7 @@
 
 #require("paRc")
 library("rpvm")
+library("paRc")
 
 WORKTAG <- 17
 RESULTAG <- 82
@@ -25,9 +26,9 @@ Y <- .PVM.upkdblmat()
 
 
 if(rank==(n_cpu - 1))
-  local_mm <- X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_last),]%*%Y
+  local_mm <- serial.matrix.mult(X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_last),],Y)
 if(rank<(n_cpu - 1))
-  local_mm <- X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_slaves),]%*%Y
+  local_mm <- serial.matrix.mult(X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_slaves),],Y)
 
 ## Send result back
 .PVM.initsend()

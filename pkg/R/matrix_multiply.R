@@ -69,6 +69,16 @@ mm.Rmpi.slave <- function(){
   mpi.gather.Robj(local_mm,root=0,comm=1)    
 }
 
+mm.Rmpi.slave.C <- function(){
+  require("paRc")
+  commrank <- mpi.comm.rank() -1
+  if(commrank==(n_cpu - 1))
+    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y)
+  else
+    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
+  mpi.gather.Robj(local_mm,root=0,comm=1)    
+}
+
 ## master job
 mm.Rmpi <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   dx <- dim(X) ## dimensions of matrix A
@@ -109,6 +119,159 @@ mm.Rmpi <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   out
 }
 
+mm.Rmpi.C <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
+  dx <- dim(X) ## dimensions of matrix A
+  dy <- dim(Y) ## dimensions of matrix B
+  ## Input validation
+  matrix.mult.validate(X, Y, dx, dy)
+  
+  if( n_cpu == 1 )
+    return(serial.matrix.mult(X,Y))
+  if( spawnRslaves == TRUE )
+    mpi.spawn.Rslaves(nslaves = n_cpu)
+
+  ## broadcast data and functions necessary on slaves
+  mpi.bcast.Robj2slave(Y) 
+  mpi.bcast.Robj2slave(X) 
+  mpi.bcast.Robj2slave(n_cpu)
+  
+  nrows_on_slaves <- ceiling(dx[1]/n_cpu)
+  nrows_on_last <- dx[1] - (n_cpu - 1)*nrows_on_slaves
+  mpi.bcast.Robj2slave(nrows_on_slaves)
+  mpi.bcast.Robj2slave(nrows_on_last)
+  mpi.bcast.Robj2slave(mm.Rmpi.slave.C)
+
+  ## start partial matrix multiplication on slaves
+  mpi.bcast.cmd(mm.Rmpi.slave.C())
+
+  ## gather partial results from slaves
+  local_mm <- NULL
+  mm <- mpi.gather.Robj(local_mm, root=0, comm=1)
+  out <- NULL
+
+  ## Rmpi returns a list when the vectors have different length (local_mm = NULL)
+  for(i in 1:n_cpu)
+    out <- rbind(out,mm[[i+1]])
+  
+  if( spawnRslaves == TRUE )
+    mpi.close.Rslaves()
+  out
+}
+
+mm.rpvm <- function(X, Y, n_cpu = 1) {
+
+  dx <- dim(X) ## dimensions of matrix A
+  dy <- dim(Y) ## dimensions of matrix B
+
+  ## Input validation
+  matrix.mult.validate(X,Y,dx,dy)
+
+  ## Tags for message sending
+  WORKTAG <- 17
+  RESULTAG <- 82
+  
+  if(n_cpu == 1)
+    return(serial.matrix.mult(X,Y))
+
+  mytid <- .PVM.mytid()
+  children <- .PVM.spawnR(ntask = n_cpu, slave = "mm_slave.R")
+  if (all(children < 0)) {
+    cat("Failed to spawn any task: ", children, "\n")
+    .PVM.exit()
+  }
+  else if (any(children < 0)) {
+    cat("Failed to spawn some tasks.  Successfully spawned ",
+        sum(children > 0), "tasks\n")
+    children <- children[children > 0]
+  }
+
+  nrows_on_slaves <- ceiling(dx[1]/n_cpu)
+  nrows_on_last <- dx[1] - (n_cpu - 1)*nrows_on_slaves
+
+  ## distribute data
+  for (id in 1:length(children)) {
+    .PVM.initsend()
+    .PVM.pkint(id)
+    .PVM.pkint(n_cpu)
+    .PVM.pkint(nrows_on_slaves)
+    .PVM.pkint(nrows_on_last)
+    .PVM.pkdblmat(X)
+    .PVM.pkdblmat(Y)
+    .PVM.send(children[id], WORKTAG)
+   }
+
+  ## receive partial results
+  partial.results <- list()
+  for (child in children) {
+    .PVM.recv(-1, RESULTAG)
+    rank <- .PVM.upkint()
+    partial.results[[rank]] <- .PVM.upkdblmat()
+  }
+  .PVM.exit()
+  ## return in matrix form
+  out <- NULL
+  for(i in 1:n_cpu)
+    out <- rbind(out,partial.results[[i]])
+  out
+}
+
+mm.rpvm.C <- function(X, Y, n_cpu = 1) {
+
+  dx <- dim(X) ## dimensions of matrix A
+  dy <- dim(Y) ## dimensions of matrix B
+
+  ## Input validation
+  matrix.mult.validate(X,Y,dx,dy)
+
+  ## Tags for message sending
+  WORKTAG <- 17
+  RESULTAG <- 82
+  
+  if(n_cpu == 1)
+    return(serial.matrix.mult(X,Y))
+
+  mytid <- .PVM.mytid()
+  children <- .PVM.spawnR(ntask = n_cpu, slave = "mm_slaveC.R")
+  if (all(children < 0)) {
+    cat("Failed to spawn any task: ", children, "\n")
+    .PVM.exit()
+  }
+  else if (any(children < 0)) {
+    cat("Failed to spawn some tasks.  Successfully spawned ",
+        sum(children > 0), "tasks\n")
+    children <- children[children > 0]
+  }
+
+  nrows_on_slaves <- ceiling(dx[1]/n_cpu)
+  nrows_on_last <- dx[1] - (n_cpu - 1)*nrows_on_slaves
+
+  ## distribute data
+  for (id in 1:length(children)) {
+    .PVM.initsend()
+    .PVM.pkint(id)
+    .PVM.pkint(n_cpu)
+    .PVM.pkint(nrows_on_slaves)
+    .PVM.pkint(nrows_on_last)
+    .PVM.pkdblmat(X)
+    .PVM.pkdblmat(Y)
+    .PVM.send(children[id], WORKTAG)
+   }
+
+  ## receive partial results
+  partial.results <- list()
+  for (child in children) {
+    .PVM.recv(-1, RESULTAG)
+    rank <- .PVM.upkint()
+    partial.results[[rank]] <- .PVM.upkdblmat()
+  }
+  .PVM.exit()
+  ## return in matrix form
+  out <- NULL
+  for(i in 1:n_cpu)
+    out <- rbind(out,partial.results[[i]])
+  out
+}
+
 serial.dot.product <- function(x, y)
 {
     if(!is.vector(x) && !is.vector(y))
@@ -126,3 +289,4 @@ serial.dot.product <- function(x, y)
               PACKAGE = "paRc")
     out$prod
 }
+

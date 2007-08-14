@@ -25,7 +25,9 @@ create.benchmark <- function(task, data, type="normal", parallel=FALSE, cpu_rang
              "MPI",
              "PVM",
              "snow-MPI",
-             "snow-PVM")
+             "snow-PVM",
+             "MPI-wB",
+             "PVM-wB")
 
   typeNr <- pmatch(tolower(type), tolower(types))
   if(is.na(typeNr)) stop (paste("Unknown type:",sQuote(type)))
@@ -138,7 +140,7 @@ bm.function.to.apply <- function(x){
                   "MKL-BLAS" = function(X,Y){X%*%Y},
                   "OpenMP" = omp.matrix.mult,
                   "snow-MPI" = function(X,Y,n = 1){
-                    if(n==1)
+                    if(n == 1)
                       out <- X%*%Y
                     else{
                       cl <- getMPIcluster()
@@ -146,7 +148,18 @@ bm.function.to.apply <- function(x){
                     }
                     out
                   },
+                  "snow-PVM" = function(X,Y,cl=1){
+                    if(!is.list(cl))
+                      out <- X%*%Y
+                    else{
+                      out <- parMM(cl, X, Y)
+                    }
+                    out
+                  },
                   "MPI" = mm.Rmpi,
+                  "MPI-wB" = mm.Rmpi.C,
+                  "PVM" = mm.rpvm,
+                  "PVM-wB" = mm.rpvm.C,
                   stop("no such type")
                   )
   else
@@ -157,28 +170,46 @@ bm.function.to.apply <- function(x){
 bm.prepare <- function(x,n){
   type <- bm.type(x)
   if(any(type == c("normal", "native-BLAS", "goto-BLAS", "MKL-BLAS", "OpenMP")))
-    return()
+    return(n)
   if(type == "snow-MPI"){
     if(!(require("snow")&&require("Rmpi")))
       stop("Packages 'Rmpi' and 'snow' are required to run this benchmark")
     cl <- makeCluster(n, type = "MPI")
+    return(n)
   }
-  if(type == "MPI"){
+  if(any(type == c("MPI","MPI-wB"))){
     if(!(require("Rmpi")))
       stop("Packages 'Rmpi' is required to run this benchmark")
     mpi.spawn.Rslaves(nslaves=n)
+    return(n)
   }
+  if(type == "snow-PVM") {
+    if(!(require("snow")&&require("rpvm")))
+      stop("Packages 'rpvm' and 'snow' are required to run this benchmark")
+    cl <- makeCluster(n, type = "PVM")
+    return(cl)
+  }
+  if(any(type == c("PVM","PVM-wB"))) {
+    if(!require("rpvm"))
+      stop("Package 'rpvm' is required to run this benchmark")
+    return(n)
+  }
+  else
+    stop("No init procedure found")
 }
 
-bm.close <- function(x){
+bm.close <- function(x, prep){
   type <- bm.type(x)
-  if(any(type == c("normal", "native-BLAS", "goto-BLAS", "MKL-BLAS", "OpenMP")))
+  if(any(type == c("normal", "native-BLAS", "goto-BLAS", "MKL-BLAS", "OpenMP", "PVM")))
     return()
   if(type == "snow-MPI"){
     cl <- getMPIcluster()
-    stopCluster(cl)  
+    stopCluster(cl)
   }
-  if(type == "MPI")
+  if(type == "snow-PVM"){
+     stopCluster(prep)
+  }
+  if(any(type == c("MPI","MPI-wB")))
     mpi.close.Rslaves()
 }
 ## benchmark workhorses
@@ -197,12 +228,12 @@ bm.matrix.multiplication <- function(x){
                    as.vector(system.time(foo(data[[1]],data[[2]])))[1:3],
                    bm.is.parallel(x))
     else {
-      bm.prepare(x,n_cpu)
+      prep <- bm.prepare(x,n_cpu)
       tmp <- c(bm.task(x), bm.type(x), n_cpu,
-               as.vector(system.time(foo(data[[1]], data[[2]], n_cpu)))[1:3],
+               as.vector(system.time(foo(data[[1]], data[[2]], prep)))[1:3],
                TRUE)
       out[n_cpu,] <- tmp
-      bm.close(x)     
+      bm.close(x, prep)     
     }
   }
   ## format data.frame accordingly

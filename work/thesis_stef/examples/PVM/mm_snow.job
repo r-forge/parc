@@ -1,0 +1,10 @@
+#$ -N SNOW-matrixmult
+#$ -pe pvm 4 
+#$ -q node.q
+
+## if shared library not available in standard paths add the following
+export LD_LIBRARY_PATH=/home/stheussl/lib/pvm3/lib/LINUX64/:$LD_LIBRARY_PATH
+export PATH=/home/stheussl/lib/R/rpvm/:$PATH
+
+R-g --vanilla < /home/stheussl/svn/paRc/work/thesis_stef/examples/PVM/mm_snow.R
+

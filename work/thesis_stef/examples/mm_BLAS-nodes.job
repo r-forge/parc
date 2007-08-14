@@ -1,0 +1,191 @@
+#$ -N MM-BLAS
+#$ -q node.q
+#$ -pe simple 2
+##### Matrix Multiplication 1000x1000
+
+## libGoTo BLAS
+echo "Starting libgoto benchmark"
+/home/stheussl/lib/R/R-2.5.1-icc-GOTO/bin/R --vanilla <<-EOF
+library("paRc")
+set.seed(1782)
+n <- 1000
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="goto-BLAS", parallel=FALSE, cpu_range=1)
+bmres_GOTO <- run.benchmark(bm)
+save("bmres_GOTO",file="bmres_GOTO-1000.Rda")
+EOF
+
+## libmkl BLAS
+echo "Starting libmkl benchmark"
+/home/stheussl/lib/R/R-2.5.1-icc-MKL/bin/R --vanilla <<-EOF
+library("paRc")
+set.seed(1782)
+n <- 1000
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="MKL-BLAS", parallel=FALSE, cpu_range=1)
+bmres_MKL <- run.benchmark(bm)
+save("bmres_MKL",file="bmres_MKL-1000.Rda")
+EOF
+
+## standard R BLAS and OpenMP
+echo "Starting native BLAS and OpenMP benchmark"
+#/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < mm_OMP.R
+/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla <<-EOF
+library("paRc")
+maxcpu <- omp.get.max.threads()
+set.seed(1782)
+n <- 1000
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="OpenMP", parallel=TRUE, cpu_range=1:maxcpu)
+
+bmres_OMP <- run.benchmark(bm)
+
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="normal", parallel=FALSE, cpu_range=1)
+bmres_normal <- run.benchmark(bm)
+
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="native-BLAS", parallel=FALSE, cpu_range=1)
+bmres_BLAS <- run.benchmark(bm)
+
+load("bmres_GOTO-1000.Rda")
+load("bmres_MKL-1000.Rda")
+
+bmres_shared <- rbind(bmres_normal,bmres_BLAS,bmres_MKL,bmres_GOTO,bmres_OMP)
+save("bmres_shared",file="bmres_node-1000.Rda")
+EOF
+
+##### Matrix Multiplication 2500x2500
+
+## libGoTo BLAS
+echo "Starting libgoto benchmark"
+/home/stheussl/lib/R/R-2.5.1-icc-GOTO/bin/R --vanilla <<-EOF
+library("paRc")
+set.seed(1782)
+n <- 2500
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="goto-BLAS", parallel=FALSE, cpu_range=1)
+bmres_GOTO <- run.benchmark(bm)
+save("bmres_GOTO",file="bmres_GOTO-2500.Rda")
+EOF
+
+## libmkl BLAS
+echo "Starting libmkl benchmark"
+/home/stheussl/lib/R/R-2.5.1-icc-MKL/bin/R --vanilla <<-EOF
+library("paRc")
+set.seed(1782)
+n <- 2500
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="MKL-BLAS", parallel=FALSE, cpu_range=1)
+bmres_MKL <- run.benchmark(bm)
+save("bmres_MKL",file="bmres_MKL-2500.Rda")
+EOF
+
+## standard R BLAS and OpenMP
+echo "Starting native BLAS and OpenMP benchmark"
+#/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < mm_OMP.R
+/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla <<-EOF
+library("paRc")
+maxcpu <- omp.get.max.threads()
+set.seed(1782)
+n <- 2500
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="OpenMP", parallel=TRUE, cpu_range=1:maxcpu)
+
+bmres_OMP <- run.benchmark(bm)
+
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="normal", parallel=FALSE, cpu_range=1)
+bmres_normal <- run.benchmark(bm)
+
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="native-BLAS", parallel=FALSE, cpu_range=1)
+bmres_BLAS <- run.benchmark(bm)
+
+load("bmres_GOTO-2500.Rda")
+load("bmres_MKL-2500.Rda")
+
+bmres_shared <- rbind(bmres_normal,bmres_BLAS,bmres_MKL,bmres_GOTO,bmres_OMP)
+save("bmres_shared",file="bmres_node-2500.Rda")
+EOF
+
+##### Matrix Multiplication 5000x5000
+
+## libGoTo BLAS
+echo "Starting libgoto benchmark"
+/home/stheussl/lib/R/R-2.5.1-icc-GOTO/bin/R --vanilla <<-EOF
+library("paRc")
+set.seed(1782)
+n <- 5000
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="goto-BLAS", parallel=FALSE, cpu_range=1)
+bmres_GOTO <- run.benchmark(bm)
+save("bmres_GOTO",file="bmres_GOTO-5000.Rda")
+EOF
+
+## libmkl BLAS
+echo "Starting libmkl benchmark"
+/home/stheussl/lib/R/R-2.5.1-icc-MKL/bin/R --vanilla <<-EOF
+library("paRc")
+set.seed(1782)
+n <- 5000
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="MKL-BLAS", parallel=FALSE, cpu_range=1)
+bmres_MKL <- run.benchmark(bm)
+save("bmres_MKL",file="bmres_MKL-5000.Rda")
+EOF
+
+## standard R BLAS and OpenMP
+echo "Starting native BLAS and OpenMP benchmark"
+#/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < mm_OMP.R
+/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla <<-EOF
+library("paRc")
+maxcpu <- omp.get.max.threads()
+set.seed(1782)
+n <- 5000
+bmdata <- list()
+bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="OpenMP", parallel=TRUE, cpu_range=1:maxcpu)
+
+bmres_OMP <- run.benchmark(bm)
+
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="normal", parallel=FALSE, cpu_range=1)
+bmres_normal <- run.benchmark(bm)
+
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="native-BLAS", parallel=FALSE, cpu_range=1)
+bmres_BLAS <- run.benchmark(bm)
+
+load("bmres_GOTO-5000.Rda")
+load("bmres_MKL-5000.Rda")
+
+bmres_shared <- rbind(bmres_normal,bmres_BLAS,bmres_MKL,bmres_GOTO,bmres_OMP)
+save("bmres_shared",file="bmres_node-5000.Rda")
+EOF

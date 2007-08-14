@@ -9,6 +9,8 @@
 require("paRc")
 require("rpvm")
 
+A<-matrix(runif(16*16),ncol=16)
+
 ## master job
 pvm.matrix.mult <- function(X, Y, n_cpu = 1) {
   ## Input validation
@@ -60,8 +62,11 @@ pvm.matrix.mult <- function(X, Y, n_cpu = 1) {
   for (child in children) {
     .PVM.recv(-1, RESULTAG)
     rank <- .PVM.upkint()
-    partial.results[[order]] <- .PVM.upkdblmat()
+    partial.results[[rank]] <- .PVM.upkdblmat()
   }
   .PVM.exit()
-  return(unlist(partial.results))
+  out <- NULL
+  for(i in 1:n_cpu)
+    out <- rbind(out,partial.results[[i]])
+  out
  }
