@@ -171,7 +171,7 @@ mm.rpvm <- function(X, Y, n_cpu = 1) {
   RESULTAG <- 82
   
   if(n_cpu == 1)
-    return(serial.matrix.mult(X,Y))
+    return(X%*%Y)
 
   mytid <- .PVM.mytid()
   children <- .PVM.spawnR(ntask = n_cpu, slave = "mm_slave.R")

@@ -32,7 +32,7 @@ pvm.matrix.mult <- function(X, Y, n_cpu = 1) {
     return(serial.matrix.mult(X, Y))
 
   mytid <- .PVM.mytid()
-  children <- .PVM.spawnR(ntask = n_cpu, slave = "mm_slave.R")
+  children <- .PVM.spawnR(ntask = n_cpu, slave = "mm_slaveC.R")
   if (all(children < 0)) {
     cat("Failed to spawn any task: ", children, "\n")
     .PVM.exit()

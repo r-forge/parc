@@ -115,7 +115,49 @@ bm.data <- function(x) {
 
 ## replacement functions
 
+'bm.task<-' <- function(x, value){
+  if(!inherits(x, "benchmark"))
+    stop("'x' not of class 'benchmark'")
+  tasks <- c(
+             "matrix multiplication",
+             "Monte Carlo Simulation"
+             )
+  if(is.null(value)) stop("No task chosen to benchmark")
+  else taskNr <- pmatch(tolower(value), tolower(tasks))
+  if(is.na(taskNr)) stop (paste("Unknown task:",sQuote(value)))
+  x$task <- taskNr
+  x
+}
 
+'bm.type<-' <- function(x, value){
+  if(!inherits(x, "benchmark"))
+    stop("'x' not of class 'benchmark'")
+  types <- bm.types(x)
+  typeNr <- pmatch(tolower(value), tolower(types))
+  if(is.na(typeNr)) stop (paste("Unknown type:",sQuote(value)))
+  x$type <- typeNr
+  x
+}
+
+'bm.cpu.range<-' <- function(x, value) {
+  if(!inherits(x, "benchmark"))
+    stop("'x' not of class 'benchmark'")
+  if(!(all(value > 0) && is.numeric(value)))
+    stop("'cpu_range' must be a vector of positive integers")
+  x$cpu_range <- value
+  x
+}
+
+'bm.data<-' <- function(x, value) {
+  if(!inherits(x, "benchmark"))
+    stop("'x' not of class 'benchmark'")
+  if(!is.list(value))
+    stop("'value' must be of type list")
+  x$data <- value
+  x
+}
+
+## internal functions
 
 bm.data.frame <- function(){
   out <- data.frame(task=NA, type=NA, n_cpu=NA, time_usr=NA, time_sys=NA,
@@ -212,6 +254,7 @@ bm.close <- function(x, prep){
   if(any(type == c("MPI","MPI-wB")))
     mpi.close.Rslaves()
 }
+
 ## benchmark workhorses
 
 bm.matrix.multiplication <- function(x){
@@ -244,6 +287,26 @@ bm.matrix.multiplication <- function(x){
   out
 }
 
+## S3 generic
+## generics
+speedup <- function(x, ...){
+  UseMethod("speedup")
+}
+
+## methods
+speedup.default <- function(x){
+  writeLines("Use a vector or a benchmark results object as input.")
+}
+
+speedup.numeric <- function(x){
+  x[1]/x
+}
+
+speedup.bm_results <- function(xp){
+  vec <- x$time_ela
+  names(vec) <- x$type
+  speedup(vec)
+}
 ## S3 methods
 
 ## print method

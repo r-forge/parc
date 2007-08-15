@@ -13,13 +13,17 @@ export(## OpenMP function wrappers
 
        ## benchmarking
        "bm.task",
+       "bm.task<-",
        "bm.tasks",
        "bm.type",
+       "bm.type<-",
        "bm.types",
        "bm.function.to.apply",
        "bm.is.parallel",
        "bm.cpu.range",
+       "bm.cpu.range<-",
        "bm.data",
+       "bm.data<-",
        "bm.data.frame",
        "create.benchmark",
        "run.benchmark",
