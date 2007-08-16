@@ -2,13 +2,14 @@
 \label{chap:Rhpc}
 \section{Introduction}
 
-This chapter provides an overview of the capabilities of R in the area
+This chapter provides an overview of the capabilities of R (\cite{IntrotoR}
+and \cite{ihaka96rld}) in the area
 of high performance computing. A short description of the
 software package R is given at the beginning of this
 chapter. Subsequently extensions to the base environment 
 (packages) which provide high performance computation functionality to
 R are going to be explained. Among these extensions there is the
-package called ``paRc'', which has been developed in the course of
+package called \pkg{paRc}, which has been developed in the course of
 this thesis.
 
 \section{The R environment}
@@ -32,9 +33,11 @@ calculation and graphical display. Among other things it has (\cite{IntrotoR})
 R is not only an environment for statistical computing and graphics
 but also a freely available high-level language for programming. It
 can be extended by standardized collections of code called
-`packages'. So developers and statisticians around the world can
-participate and provide optional code to base R and therefore makes R
-the platform of choice for developing new methods of data analysis. 
+``packages''. So developers and statisticians around the world can
+participate and provide optional code to the base R environment.
+Developing and implementing new methods of data analysis can therefore
+be rather easy to achieve (for more details on how R can be extended
+see \cite{Rcore07Ext}). 
 
 As datasets grow bigger and bigger and algorithms become more and more
 complex, R has to join the high performance computing hype. Indeed, R
@@ -51,7 +54,46 @@ subsequent chapters.
 \input{section_snow.tex}
 
 %% subsection: The paRc package 
-%\input{section_paRc.tex}
+\input{section_paRc.tex}
+
+\section{Other Packages Providing HPC Functionality}
+
+There are a few other packages which supply the user with parallel
+computing functions or extend other high performance computing
+packages. In this section a short description of each of these
+packages is given.
+
+\begin{description}
+\item[rsprng] (\cite{li07rsprng}) is an R interface to SPRNG (Scalable Parallel Random
+  Number Generators---\cite{mascagni00ssl}). SPRNG is a package for parallel
+  pseudo random number generation with the aim to be easy to use on a
+  variety of architectures, especially in large-scale parallel Monte
+  Carlo applications.
+\item[RScaLAPACK] (\cite{samatova05RSca} and \cite{yoginath05rhp})
+  uses the high performance ScaLAPACK library
+  (\cite{dongarra97sus})for linear algebra computations. ScaLAPACK is
+  a library of high performance linear algebra routines which makes
+  use of message passing to run on distributed memory machines. Among
+  other routines it provides functionality to solve systems of linear equations, linear
+  least squares problems, eigenvalue problems and singular value
+  problems. ScaLAPACK is an acronym for Scalable Linear Algebra
+  PACKage or Scalable LAPACK. \cite{samatova06hps} have shown how to
+  use \pkg{RScaLAPACK} in biology and climate modelling and analized
+  its performance.
+\item[papply] (\cite{currie05papply}) implements a similar interface
+  to lapply and apply but distributes the processing evenly among the
+  nodes of a cluster. \pkg{papply} uses the package \pkg{Rmpi} (see
+  Section~\ref{sec:Rmpi}) for
+  communication but supports more error messages for debugging.
+\item[biopara] (\cite{lazar06biopara}) allows users to distribute
+  execution of large problems over multiple machines. It uses R socket
+  connections (TCP) for communication. \pkg{biopara} supplies two high
+  level functions, one for distributing work (represented by function
+  and its arguments) among ``workers'' and the other for doing
+  parallel bootstrapping like the native R function boot(). 
+\item[taskPR] (\cite{samatova04taskPR}) provides a parallel execution environment on
+  the basis of TCP or MPI-2.
+\end{description}
 
 \section{Conclusion}
 
