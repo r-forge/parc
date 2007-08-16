@@ -122,6 +122,96 @@
   year = 	 2006
 }
 
+@article{becker95bpw,
+  title={{Beowulf: A Parallel Workstation for Scientific Computation}},
+  author={Becker, D.J. and Sterling, T. and Savarese, D. and Dorband, J.E. and Ranawak, U.A. and Packer, C.V.},
+  journal={Proceedings of the 1995 International Conference on Parallel Processing (ICPP)},
+  pages={11--14},
+  year=1995
+}
+
+%% GRID
+
+@Book{foster99gbf,
+  title={{The Grid: Blueprint for a New Computing Infrastructure}},
+  editor={Ian Foster and Carl Kesselman},
+  year=1999,
+  publisher={Morgan Kaufmann Publishers}
+}
+
+@article{foster97gmi,
+  title={{Globus: a Metacomputing Infrastructure Toolkit}},
+  author={Ian Foster and Carl Kesselman},
+  journal={International Journal of High Performance Computing Applications},
+  volume=11,
+  number=2,
+  pages=115,
+  year=1997
+}
+
+@article{gentzsch02sge,
+  title={{Sun Grid Engine: Towards Creating a Compute Power Grid}},
+  author={Gentzsch, W. and others},
+  journal={Proceedings of the First IEEE/ACM International Symposium on Cluster Computing and the Grid},
+  year=2002
+}
+
+@Manual{sge07,
+  title = {Sun N1 Grid Engine 6.1 User's Guide},
+  author = {{Sun Microsystems, Inc.}},
+  organization = {Sun Microsystems, Inc.},
+  address = {Santa Clara, CA U.S.A.},
+  year = 2007,
+  url = {http://docs.sun.com/app/docs/doc/820-0699?a=load},
+}
+
+@Manual{icc07,
+  title = {Intel C++ Compiler Documentation},
+  author = {{Intel Corporation}},
+  organization = {Intel Corporation},
+  year = 2007,
+  url = {www.intel.com},
+}
+
+@Manual{ifort07,
+  title = {Intel Fortran Compiler Documentation},
+  author = {{Intel Corporation}},
+  organization = {Intel Corporation},
+  year = 2007,
+  url = {www.intel.com},
+}
+
+@Manual{gcc07,
+  title = {Using the GNU Compiler Collection},
+  author = {Richard Stallman and {the GCC Developer Community}},
+  organization = {The Free Software Foundation},
+  year = 2007,
+  url = {http://gcc.gnu.org},
+}
+
+
+%% SETI@home
+@article{anderson02she,
+  title={{SETI@ home: an experiment in public-resource computing}},
+  author={Anderson, D.P. and Cobb, J. and Korpela, E. and Lebofsky, M. and Werthimer, D.},
+  journal={Communications of the ACM},
+  volume=45,
+  number=11,
+  pages={56--61},
+  year=2002,
+  publisher={ACM Press New York, NY, USA}
+}
+@article{korpela01shm,
+  title={{SETI@ home-massively distributed computing for SETI}},
+  author={Korpela, E. and Werthimer, D. and Anderson, D. and Cobb, J. and Leboisky, M.},
+  journal={Computing in Science \& Engineering [see also IEEE Computational Science and Engineering]},
+  volume=3,
+  number=1,
+  pages={78--83},
+  year=2001
+}
+
+
 %% Standards
 
 %% PVM
@@ -242,7 +332,26 @@
   url = {http://www.R-project.org},
 }
 
+@article{ihaka96rld,
+  title={{R: A Language for Data Analysis and Graphics}},
+  author={Ihaka, R. and Gentleman, R.},
+  journal={Journal of Computational and Graphical Statistics},
+  volume=5,
+  number=3,
+  pages={299--314},
+  year=1996,
+  publisher={JSTOR}
+}
 
+
+@Manual{Rcore07Ext,
+  title = {Writing R Extensions},
+  author = {{R Development Core Team}},
+  organization = {R Foundation for Statistical Computing},
+  address = {Vienna, Austria},
+  year = 2007,
+  url = {http://www.R-project.org},
+}
 
 %% R packages
 
@@ -304,6 +413,104 @@
   URL =          {http://www.bepress.com/uwbiostat/paper193}
 }
 
+%% paRc
+
+@Manual{theussl07paRc,
+  title = {paRc: Parallel computations in R},
+  author = {Stefan Theussl},
+  year = 2007,
+  note = {R package version 0.0-9},
+  url={http://parc.r-forge.r-project.org},
+}
+
+%%rsprng 
+@Manual{li07rsprng,
+    title = {rsprng: R interface to SPRNG (Scalable Parallel Random Number
+Generators)},
+    author = {Na (Michael) Li},
+    year = 2007,
+    note = {R package version 0.3-4},
+    url = {http://www.r-project.org/,
+http://www.biostat.umn.edu/~nali/SoftwareListing.html},
+  }
+
+@article{mascagni00ssl,
+  title={{SPRNG: A scalable library for pseudorandom number generation}},
+  author={Mascagni, M. and Srinivasan, A.},
+  journal={ACM Transactions on Mathematical Software},
+  volume={26},
+  number={3},
+  pages={436--461},
+  year={2000}
+}
+
+
+%%RScaLAPACK
+
+@Manual{samatova05RSca,
+    title = {A Seamless Interface to Perform Parallel Computation on
+Linear Algebra Problems Using the ScaLAPACK Library},
+    author = {Nagiza Samatova and Srikanth Yoginath and David Baues and 
+Guruprasad Kora},
+    year = 2005,
+    note = {R package version 0.5.1},
+    url = {http://www.aspect-sdm.org/Parallel-R},
+}
+
+@article{dongarra97sus,
+  title={{ScaLAPACK user's guide}},
+  author={Dongarra, J.J. and Blackford, LS and Choi, J. and Cleary, A. and D'Azeuedo, E. and Demmel, J. and Dhillon, I. and Hammarling, S. and Henry, G. and Petitet, A. and others},
+  journal={Society for Industrial and Applied Mathematics (SIAM)},
+  year=1997
+}
+
+@article{yoginath05rhp,
+  title={{RScaLAPACK: High-Performance Parallel Statistical Computing with R and ScaLAPACK}},
+  author={Yoginath, S. and Samatova, NF and Bauer, D. and Kora, G. and Fann, G. and Geist, A.},
+  journal={Proceedings of the 18th International Conference on Parallel and Distributed Computing Systems},
+  pages={12--14},
+  year=2005
+}
+
+@article{samatova06hps,
+  title={{High performance statistical computing with parallel R: applications to biology and climate modelling}},
+  author={Samatova, N.F. and Branstetter, M. and Ganguly, A.R. and Hettich, R. and Khan, S. and Kora, G. and Li, J. and Ma, X. and Pan, C. and Shoshani, A. and others},
+  journal={Journal of Physics},
+  pages={505--509},
+  year=2006
+}
+
+
+%% papply
+
+@Manual{currie05papply,
+  title = {papply: Parallel apply function using MPI},
+  author = {Duane Currie},
+  year = 2005,
+  note = {R package version 0.1},
+  url = {http://ace.acadiau.ca/math/ACMMaC/software/papply/},
+}
+
+%% biopara
+
+@Manual{lazar06biopara,
+  title = {biopara: Self-contained parallel system for R},
+  author = {Peter Lazar and David Schoenfeld},
+  year = 2006,
+  note = {R package version 1.4},
+}
+
+%% taskPR
+
+@Manual{samatova04taskPR,
+  title = {taskPR: Task-Parallel R Package},
+  author = {Nagiza F. Samatova and David Bauer and Srikanth Yoginath},
+  year = 2004,
+  note = {R package version 0.2.7},
+  url = {http://www.aspect-sdm.org/Parallel-R/},
+}
+
+
 
 
 %% Further Books
@@ -332,11 +539,3 @@
    note = "[Online; accessed 14-August-2007]"
 }
 
-%% paRc
-
-@Manual{theussl07paRc,
-  title = {paRc: Parallel computations in R},
-  author = {Stefan Theussl},
-  year = 2007,
-  note = {R package version 0.0-4},
-}

@@ -276,7 +276,7 @@ he is aware of the underlying hardware. In fact parallelism can be
 exploited at different levels starting with the processor
 itself. Furthermore, processors have to be provided with data
 sufficiently fast. If the memory is too slow having a faster processor
-doesn't pay. Normally memory which delivers good performance is too
+does not pay. Normally memory which delivers good performance is too
 expensive to be economically feasible. This situation has led to the
 development of memory hierarchies.
 
@@ -492,7 +492,8 @@ parallelizing compilers (ie. OpenMP see Section~\ref{sec:OpenMP}).
 
 \subsection{Distributed Memory Systems}
 \label{sec:distributedmemorysystems}
-Since the developments done by the NASA in the 1990's (the Beowulf project),
+Since the developments done by the NASA in the 1990's (the Beowulf
+project---\cite{becker95bpw}),
 this kind of MIMD architecure has become really popular.
 Distributed memory system can
 entirely be build out of stock hardware and therefore give cheap
@@ -510,14 +511,14 @@ or standards which assist the developer in achieving message passing
 In 1995 NASA scientist completed the Beowulf project, which was a
 milestone toward cluster computing.
 
-Beowulf Clusters are scalable performance clusters based on commodity
+``Beowulf Clusters are scalable performance clusters based on commodity
 hardware, on a private system network, with open source software
 (Linux) infrastructure. The designer can improve performance
 proportionally with added machines. The commodity hardware can be any
 of a number of mass-market, stand-alone compute nodes as simple as two
 networked computers each running Linux and sharing a file system or as
-complex as 1024 nodes with a high-speed, low-latency network (from
-\url{http://www.beowulf.org/}).
+complex as 1024 nodes with a high-speed, low-latency network.'' (from
+\url{http://www.beowulf.org/})
 
 Since then building an efficient low-cost distributed memory computer
 has not been difficult anymore. Indeed it has become the way to build
@@ -526,11 +527,13 @@ MIMD computers.
 \subsubsection{The Grid}
 
 Another (new) type of achieving high performance computing is to use a
-Grid. In a Grid, computer which participate are connected to each other
+Grid (\cite{foster99gbf}). In a Grid, computer which participate are
+connected to each other
 via the internet (or other wide area networks). These distributed
 resources are shared via a 
 Grid-software. The software monitors separate resources and if
-necessary supplies them with jobs. The research project SETI@home can
+necessary supplies them with jobs. The research project SETI@home
+(\cite{korpela01shm} and \cite{anderson02she}) can
 be said to be the first grid-like computing endeavor. Over 3 million
 users work together in processing data acquired by the Acribo radio
 telescope, searching for extraterrestial signals. Most of the power is
@@ -564,8 +567,9 @@ compilers. All in all they may differ in the following areas:
 \end{itemize}
 
 A Grid middleware software like the open-source software ``globus
-toolkit'' (\url{http://www.globus.org/}) interconnects all the (heterogenous)
-distributed resources in a network.  
+toolkit'' (\cite{foster97gmi}---software available from
+\url{http://www.globus.org/}) interconnects all the (heterogenous)
+distributed resources in a network.
 All interfaces between these heterogeneous components have to be standardized
 and thus enable full interoperability between them.
 
@@ -623,7 +627,9 @@ developed.
 
 
 The programming models presented in this section are common and widely
-used. Starting with the first generation the Message Passing Interface
+used. First we start with a description of fundamental concepts of
+message passing as they are needed in subsequent sections. Then the
+first generation the Message Passing Interface 
 (MPI---see~\cite{forum94:MPI}) and Parallel Virtual Machine
 (PVM---see~\cite{geist94pvm})
 are going to be described. The second generation of HPC programming
@@ -643,7 +649,7 @@ the nodes is message passing.
 A message passing function is a function which explicitly transmits
 data from one process to another. With these
 functions, creating parallel programs can be extremely
-efficient. Developers don't have to care about low level
+efficient. Developers do not have to care about low level
 message passing anymore.
 
 To identify a process in a communication environment message passing
@@ -678,7 +684,7 @@ allocation see Section~4.2 in~\cite{geist94pvm}
 
 \subsubsection{Collective Communication}
 
-In a parallel program we don't want that only one process does most of
+In a parallel program we do not want that only one process does most of
 the work. This is an issue if it comes to sending of data. Assume that
 all of the data is available to one process (A) and it wants to send it to
 all of the other. The last receiving process remains idle until
@@ -735,7 +741,7 @@ is available for R. MPI communication can be set up using the R extension
 
 \subsubsection{Disadvantages}
 \begin{itemize}
-\item MPI isn't a self contained software package
+\item MPI is not a self contained software package
 \item development of parallel programs is difficult
 \item no resource management like PVM 
 \item heterogeneity only within an architecture
@@ -972,7 +978,7 @@ Section~1.5 of \cite{kontoghiorghes06handbookpcstat}).
 Equation~\ref{eq:amdahl_speedup} shows the corresponding speedup that
 can be achieved. If $f$ equals one (the program can be ideally
 parallelized) the speedup would equal the amount of processors $p$. If
-$f$ is zero (the program can't be parallelized) the speedup would be
+$f$ is zero (the program cannot be parallelized) the speedup would be
 one. 
 
 \begin{equation}
@@ -1019,7 +1025,8 @@ Department of Statistics and Mathematics.
 All of the programs
 have been tested as well as benchmarked on this cluster of
 workstations running the Sun Grid 
-Engine (see Appendix~\ref{app:gridengine} for more information on the
+Engine (\cite{gentzsch02sge} and \cite{sge07}---see also
+Appendix~\ref{app:gridengine} for more information on the 
 grid engine). With a total of 152 64-bit computation nodes and a total
 of 336 gigabytes of RAM, Cluster@WU is by now amongst the fastest
 supercomputers in Austria.
@@ -1088,12 +1095,16 @@ Linux~(\url{http://www.debian.org}).
   on~\url{http://www.sun.com/software/gridware/}. See
   Appendix~\ref{app:gridengine} how to use the Grid Engine with
   parallel environments.
-\item[Compiler] used in this thesis are the Intel Compiler version 9.1 (
-  and the GNU Compiler Collection 4.1.2. For compiling OpenMP code the
+\item[Compiler] used in this thesis are the Intel C++ Compiler
+  (\cite{icc07}) the Intel Fortran Compiler (\cite{ifort07}) both in
+  version 9.1 
+  and the GNU Compiler Collection 4.1.2 (\cite{gcc07}). For compiling
+  OpenMP code the 
   Intel compiler is being used since the GNU compiler supports this
   parallelizing techniques as of version 4.2.
 \item[R] is a free software environment for statistical computing and
-  graphics. R-patched 2.5.1 is used in this thesis. There is an own
+  graphics (\cite{Rcore07R}. R-patched 2.5.1 is used in this
+  thesis. There is an own
   chapter about R and high performance computing (Chapter~\ref{chap:Rhpc}).
 \item[PVM] version 3.4 is used for running the corresponding programs
   (see Section~\ref{sec:PVM}).
