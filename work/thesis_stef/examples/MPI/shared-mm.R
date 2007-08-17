@@ -1,14 +1,14 @@
 ## load required libraries
-library("rpvm")
+library("Rmpi")
 library("paRc")
 library("snow")
 
-maxcpu <- 20
-
+## definition of benchmark run
+maxcpu <- mpi.universe.size()
 task <- "matrix multiplication"
 taskID <- "mm"
-paradigm <- "distributed"
-types <- c("PVM","snow-PVM","PVM-wB")
+paradigm <- "shared"
+types <- c("MPI","snow-MPI","MPI-wB")
 complexity <- c(1000,2500,5000)
 
 bm <- create.benchmark(task=task, data=list(),
@@ -29,3 +29,4 @@ for(n in complexity){
   }
 }
 
+mpi.exit()

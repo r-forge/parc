@@ -1,6 +1,0 @@
-#$ -N MM-RmpiC
-#$ -pe lam 4
-#$ -q bignode.q@bignode002
-
-/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/mm_RmpiC.R
-
