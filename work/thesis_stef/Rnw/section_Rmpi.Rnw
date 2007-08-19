@@ -2,21 +2,34 @@
 \label{sec:Rmpi}
 The Message Passing Interface (MPI) is a set of library interface
 standards for message-passing and there are many implementations using
-these standards (see also section \ref{sec:MPI}).
+these standards (see also Section~\ref{sec:MPI}).
 Rmpi is an interface to MPI (\cite{yu02Rmpi} and \cite{yu06Rmpi}). As
-of the time of this writing Rmpi uses
+of the time of this writing \pkg{Rmpi} uses
 the LAM implementation of MPI. For process spawning the standard
 MPI-1.2 is required which is available in the LAM/MPI implementation 
 as LAM/MPI (version 7.1.3) supports a large portions of the MPI-2
-standard. There are 
-a lot of low level interface functions to the MPI C-library available.
-Furthermore, a handful of high level functions are supplied by the
-Rmpi package. 
+standard. This is necessary if one likes to use interactive spawning
+of R processes. With MPI versions prior to MPI-1.2 separate R
+processes have to be created by hand using mpirun (part of many MPI
+implementations) for example.
+
+\pkg{Rmpi} contains a lot of low level interface functions to the MPI
+C-library available. 
+Furthermore, a handful of high level functions are supplied. A
+selection of functions is going to be presented in this section sorted
+by the following topics:
+
+\begin{itemize}
+\item Initialization and Status Queries
+\item Process Spawning and Communication
+\item Built-in High Level Functions
+\item Other Important Functions
+\end{itemize}  
 
 A windows implementation of this package (which uses MPICH2)
-can also be obtained from
+is also available.
 
-\subsection{Initializing and Status queries}
+\subsection{Initializing and Status Queries}
 
 The LAM/MPI environment has to be booted prior to using any
 message-passing library functions. One possibility is to use the
@@ -24,8 +37,8 @@ command line, the other is to load the Rmpi package. It automatically
 sets up a (small--1 host) LAM/MPI environment (if the executables are
 in the search path). 
 
-When using the Sun Grid Engine (SGE) to boot the LAM/MPI parallel
-environment the developer is not engaged with
+When using the Sun Grid Engine (SGE) or other queueing systems to boot
+the LAM/MPI parallel environment the developer is not engaged with
 setting up and booting the environment anymore (see
 appendix \ref{app:gridengine} on how to do this). On a cluster of
 workstations this is the method of choice. 
@@ -46,16 +59,22 @@ Rmpi management and query functions:
 \item[\texttt{mpi.quit()}] terminates the mpi communication
   environment and quits R.  
 \end{description}
-  
 
-\textbf{Example:} Simple queries using Rmpi \newline
+Example~\ref{ex:Rmpi1}shows a how the configuration of the parallel
+environment can be obtained. First it returns the hosts connected to
+the parallel environment and then prints the number of CPUs available
+in it. After a query if this process is the master process the
+hostname where the current process runs on is returned. Finally the
+parallel environment is stopped. 
+
+\begin{Example} Simple queries using Rmpi \newline
 running on cluster@WU using the node.q -- the parallel environment was
 started with the SGE using 8 nodes.
 
 <<echo=TRUE>>=
 library("Rmpi")
 set.seed(1782)
-## Query the configuration of the parallel virtual machine 
+## Query the configuration of the parallel environment 
 lamhosts()
 
 ## how many CPU's are available in the parallel environment
@@ -69,13 +88,16 @@ mpi.get.processor.name()
 ## mpi.quit()
 
 @ 
+\label{ex:Rmpi1}
+\end{Example}
 
-\subsection{Process spawning and communication}
+\subsection{Process Spawning and Communication}
 
-In Rmpi it is easy to spawn R slaves and use them as workhorses.
-
-%% TODO: explain here or in MPI section more about comms ranks etc.
-%% mpi.send recv bcast etc. explained here
+In Rmpi it is easy to spawn R slaves and use them as workhorses. The
+communication between all the involved processes is carried out in a
+so called communicator (comm). All processes within the same
+communicator are able to send or receive messages from other
+processes. The processes are identified through their commrank.
 
 \begin{description}
 
@@ -96,10 +118,12 @@ In Rmpi it is easy to spawn R slaves and use them as workhorses.
   \texttt{cmd} and return executed results if \texttt{TRUE}.
 \end{description}
 
+\begin{Example}
+
 <<echo=TRUE>>=
 ## spawn as many slaves as CPUs available in the parallel environment
 ## minus one representing the already running root process.
-mpi.spawn.Rslaves(nslaves=mpi.universe.size()-1)
+mpi.spawn.Rslaves(nslaves=mpi.universe.size())
 ## how many R processes are connected to the communicator?
 mpi.comm.size()
 ## execute mpi.comm.rank() on the slaves
@@ -110,8 +134,16 @@ mpi.comm.rank()
 mpi.close.Rslaves()
 
 @ 
+\label{ex:Rmpi2}
+\end{Example}
 
-\subsection{Built-in high level functions}
+In example~\ref{ex:Rmpi2} as many slaves are spawned as are available
+in the parallel environment. The size of the communicator is returned
+(1 master plus the spawned slaves) and a remote query of the commrank
+is carried out. Before the slaves are closed the commrank of the
+master is printed.
+ 
+\subsection{Built-in High Level Functions}
 
 Rmpi provides the following high level functions (this is only a selection): 
 
@@ -143,7 +175,7 @@ Rmpi provides the following high level functions (this is only a selection):
 \end{description}
 
 
-\textbf{Example:} Using mpi.apply\newline
+\begin{Example} Using mpi.apply\newline
 running on cluster@WU using the node.q -- the parallel environment was
 started with SGE using 8 nodes
 
@@ -156,13 +188,25 @@ mpi.spawn.Rslaves(nslaves = n)
 x <- rep(n,n)
 rows <- mpi.apply(x, runif)
 X <- matrix(unlist(rows), ncol = n, byrow=TRUE)
-X
+round(X,3)
 mpi.close.Rslaves()
 
 @ 
+\label{ex:Rmpi3}
+\end{Example}
 
+How to use the high level function \code{mpi.apply()} is shown in
+Example~\ref{ex:Rmpi3}. A vector of $n$ random numbers is generated on
+each of the $n$ slave and they are returned to the master as a
+list (each list element representing one row). Finally a $n$x$n$
+matrix is formed and printed. The output of the matrix shows for each
+row the same random numbers. This is because of the fact, that each
+slave has the same seed. This problem is more specific treated in
+Chapter~\ref{chap:options}. For more information about parallel random
+number generators see the descriptions of the packages \pkg{rsprng}
+and \pkg{rlecuyer} in Section~\ref{sec:otherpackages}.
 
-\subsection{Other important functions}
+\subsection{Other Important Functions}
 
 To complete the set of important functions supplied by the Rmpi
 package the following functions have to be explained:
@@ -180,19 +224,24 @@ package the following functions have to be explained:
   member. 
 \end{description}
 
-\subsection{conclusion}
+\subsection{Conclusion}
 
-%The \texttt{PVM.rapply()} example shown in this section followed the Single Program
-%Multiple Data (SPMD) paradigm. Data is splitted into different parts
-%which are sent to different processes. I/O is handled by a master
-%process. When loading rpvm in an R session this session becomes the
-%master process. Slaves can easily be spawned provided that there are
-%working slave scripts available. A major disadvantage is that the rpvm
-%package only has two higher-level function. One of them can be used
-%for calculations. That means when using this package for HPC one has
-%to deal with low-level message-passing which in turn provides high
-%flexibility. New parallel functions can be constructed on the basis of
-%the provided interface.
+The package \pkg{Rmpi} implements many of the routines available in
+MPI-2. But there are some that have to be ommitted or are not included
+because they are not needed for use in R (i.e., data management
+routines are not necessary as R has its own tools for data handling).
+A really interesting aspect of the \pkg{Rmpi} package is the
+possibilty to spawn R slaves. That enables the user to interactively
+define functions which can be executed remotely on the slaves in
+parallel. An example how one can do this is shown in
+Chapter~\ref{chap:matrix}, where the implementation of matrix
+multiplication is shown. A major disadvantage is that MPI in its
+current implementations lack in fault tolerance. This results in a
+rather instable execution of MPI applications. Furthermore, debugging
+is really difficult as there is no support for it in \pkg{Rmpi}.
+
+All in all this package is a good start in creating parallel programs
+as this can easy be achieved entirely in R.  
 
 For further interface functions supplied by the Rmpi package, a more detailed
 description and further examples please consult the package description

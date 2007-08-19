@@ -1,6 +1,36 @@
 \chapter{Introduction}
 \section{Motivation}
-\section{Goal of this Thesis}
+During the last decades the demand for computing power has steadily
+increased, since problems like climate prediction, difficult
+computations in biology and data mining or optimization in economics
+make use of more accurate and therefore time consuming models. It is
+obvious that minimizing time a calculation needs to finish has become
+an important task. Therefore a new field in computer science have come
+up---high performance computing.
+Being able to write code which can be executed in parallel is a key
+ability in this field because high performance computing servers
+provide more than one processor. But one has to consider that
+parallelization of sequential code is a difficult task and is indeed
+another access to writing programs. To help scientists and software
+developers standards and parallelizing techniques have been introduced
+to make work easier. Nevertheless, writing efficient code remains a
+challenging and time consuming task. The major aim of this thesis is to
+provide a good overview of the work which has been done in this field
+and most important to become familiar with the state of the art of
+parallel computing. 
+
+
+
+
+
+\section{Contributions}
+In the course of this thesis an extension to the R
+environment for statistical computing has been developed---the
+\pkg{paRc} package. First, it provides a benchmark environment for
+identifying performance gains of parallel algorithms. Second, a first
+attempt to use OpenMP in combination with R has been made. A
+C~Interface to OpenMP library calls have been implemented.
+ 
 \section{Organization of this Thesis}
 
 This Thesis is organized as follows. First I briefly summarize the
