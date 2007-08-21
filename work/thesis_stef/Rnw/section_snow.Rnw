@@ -1,9 +1,10 @@
-\section{The snow package}
+\section{The snow Package}
 \label{sec:snow}
-The aim of simple network of workstations (snow --
-\cite{rossini03snow}, \cite{tierney07snow}) is to provide a simple
-parallel computing environment in R. To make up a virtual cluster in R
-snow is based on three different message-passing environments.
+The aim of simple network of workstations
+(\pkg{snow}---\cite{rossini03snow}, \cite{tierney07snow}) is to provide a
+simple parallel computing environment in R. To make up a virtual
+cluster in R \pkg{snow} is based on three different message passing
+environments.
 
 \begin{itemize}
 \item PVM via R package rpvm (see section \ref{sec:rpvm})
@@ -15,7 +16,7 @@ When using snow one can rely on a good handful of high-level
 functions. Indeed snow uses existing interfaces to R and solely
 provides one new possibilty of message-passing namely TCP sockets. 
 
-\subsection{Initializing and process spawning}
+\subsection{Initialization}
 
 Initializing a snow cluster is rather easy if the system is prepared
 accordingly. When using MPI (achieved through Rmpi) a LAM/MPI
