@@ -93,7 +93,6 @@ mpi.get.processor.name()
 ## mpi.quit()
 
 @ 
-\caption{Simple queries using Rmpi}
 \label{ex:Rmpi-init}
 \end{Example}
 

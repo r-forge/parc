@@ -39,13 +39,13 @@ Certain environment variables affect the runtime behaviour of OpenMP
 programs. These environment variables are~(\cite{openMP05}):
 
 \begin{description}
-\item[\texttt{OMP_NUM_THREADS}] sets the number of threads to use in
+\item[\texttt{OMP\_NUM\_THREADS}] sets the number of threads to use in
   parallel regions of OpenMP programs. 
-\item[\texttt{OMP_SCHEDULE}] sets the runtime schedule type and
+\item[\texttt{OMP\_SCHEDULE}] sets the runtime schedule type and
   chunk size.
-\item[\texttt{OMP_DYNAMIC}] defines wether dynamic adjustments of threads
+\item[\texttt{OMP\_DYNAMIC}] defines wether dynamic adjustments of threads
   should be used in parallel regions.
-\item[\texttt{OMP_NESTED}] enables or disables nested parallelism.
+\item[\texttt{OMP\_NESTED}] enables or disables nested parallelism.
 \end{description}
 
 
@@ -73,7 +73,7 @@ omp.get.max.threads()
 
 \begin{description}
 \item[\texttt{omp.matrix.mult(X, Y, ncpu = 1)}] multiplies the matrix
-  \texttt{X} with matrix \texttt{Y} using \texttt{n_cpu} numbers of
+  \code{X} with matrix \code{Y} using \code{n\_cpu} numbers of
   processors.
 \end{description}
 

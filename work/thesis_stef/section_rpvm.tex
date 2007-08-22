@@ -72,16 +72,15 @@ started with SGE using 8 nodes
 \end{Sinput}
 \begin{Soutput}
   host.id    name    arch speed
-1  262144 node015 LINUX64  1000
-2  524288 node003 LINUX64  1000
-3  786432 node053 LINUX64  1000
-4 1048576 node001 LINUX64  1000
+1  262144 node039 LINUX64  1000
+2  524288 node055 LINUX64  1000
+3  786432 node037 LINUX64  1000
+4 1048576 node023 LINUX64  1000
 \end{Soutput}
 \begin{Sinput}
 > .PVM.exit()
 \end{Sinput}
 \end{Schunk}
-\caption{Query status of PVM}
 \label{ex:rpvminit}
 \end{Example}
 
@@ -148,4 +147,230 @@ started with SGE using 8 nodes
 [8,]  0.605 -0.076 -0.554  1.385 -0.436  0.249  0.338  1.369
 \end{Soutput}
 \begin{Sinput}
-> PVM.rapply(X, sum, n)
+> PVM.rapply(X, sum, 3)
+\end{Sinput}
+\begin{Soutput}
+Try to spawn tasks...
+Work sent to  524289 
+Work sent to  786433 
+Work sent to  1048577 
+[1]  2.5291297 -0.7840539  2.8572559 -3.3002539 -1.1275728  0.7329710  0.2431164
+[8]  2.8806456
+\end{Soutput}
+\end{Schunk}
+\label{ex:rpvm-rapply}
+\end{Example}
+
+Example~\ref{ex:rpvm-rapply} shows how the rows of a matrix \code{X}
+can be summed up in parallel via \code{PVM.rapply()}.
+
+Let us now examine the function to see how parallel programs using
+\pkg{rpvm} can be written.
+
+\begin{Example}
+\begin{Scode}
+PVM.rapply <- function (X, FUN = mean, NTASK = 1)
+{
+    WORKTAG <- 22
+    RESULTAG <- 33
+    if (!is.matrix(X)) {
+        stop("X must be a matrix!")
+    }
+    if (NTASK == 0) {
+        return(apply(X, 1, FUN))
+    }
+    end <- nrow(X)
+    chunk <- end%/%NTASK + 1
+    start <- 1
+    mytid <- .PVM.mytid()
+    children <- .PVM.spawnR(ntask = NTASK, slave = "slapply")
+    if (all(children < 0)) {
+        cat("Failed to spawn any task: ", children, "\n")
+        .PVM.exit()
+    }
+    else if (any(children < 0)) {
+        cat("Failed to spawn some tasks.  Successfully spawned ",
+            sum(children > 0), "tasks\n")
+        children <- children[children > 0]
+    }
+    for (id in 1:length(children)) {
+        .PVM.initsend()
+        range <- c(start, ifelse((start + chunk - 1) > end, end,
+            start + chunk - 1))
+        work <- X[(range[1]):(range[2]), , drop = F]
+        start <- start + chunk
+        .PVM.pkstr(deparse(substitute(FUN)))
+        .PVM.pkint(id)
+        .PVM.pkdblmat(work)
+        .PVM.send(children[id], WORKTAG)
+        cat("Work sent to ", children[id], "\n")
+    }
+    partial.results <- list()
+    for (child in children) {
+        .PVM.recv(-1, RESULTAG)
+        order <- .PVM.upkint()
+        partial.results[[order]] <- .PVM.upkdblvec()
+    }
+    .PVM.exit()
+    return(unlist(partial.results))
+}
+\end{Scode} 
+\label{ex:rpvm-rapplymaster}
+\end{Example}
+
+The corresponding slave R script looks as follows:
+
+\begin{Example}
+\begin{Scode}
+# $Id: slapply.R,v 1.2 2001/08/31 05:03:51 snake Exp $
+
+### Slave R script for the PVM apply.
+### Receive an 'order' and a matrix.  Process the matrix with apply()
+### and return the resulted vector and order.
+
+### To do: accept a string as the name of the function to be applied
+### on each row.  This way, this script can be more generic. 
+
+library (rpvm)
+WORKTAG <- 22
+RESULTAG <- 33
+
+mytid  <- .PVM.mytid ()
+myparent  <- .PVM.parent ()
+
+## Receive work from parent (a matrix)
+buf <- .PVM.recv (myparent, WORKTAG)
+
+## Function to apply
+func  <- .PVM.upkstr ()
+
+cat ("Function to apply: ", func, "\n")
+
+## Order
+order <- .PVM.upkint ()
+partial.work <- .PVM.upkdblmat ()
+
+print (partial.work)
+
+## actually work, take the mean of the rows
+partial.result <- apply (partial.work, 1, func)
+
+print (partial.result)
+
+## Send result back
+.PVM.initsend ()
+.PVM.pkint (order)
+.PVM.pkdblvec (partial.result)
+.PVM.send (myparent, RESULTAG)
+
+## Exit PVM
+.PVM.exit ()
+## Exit R
+q (save="no")
+\end{Scode}
+\label{ex:rpvm-rapplyslave}
+\end{Example}
+
+SpawnR: In 
+  PVM.rapply \code{NTASK} slaves sourcing ``slapply.R'' are
+  spawned. 
+
+Before we explain how \code{PVM.rapply} works the following \pkg{rpvm}
+functions have to be explained:
+
+\begin{description}
+
+\item[\code{.PVM.initsend()}] clears the default send buffer and
+  prepares it for packing a new message.
+\item[\code{.PVM.pkstr(data = ``'')} and \texttt{.PVM.pkint(data =
+    0, stride = 1)}] are low-level correspondents of the PVM packing
+    routines (see \cite{geist94pvm} for more information on packing
+    data). 
+\item[\code{.PVM.pkdblmat(data)}] packs a double matrix including
+  the dimension information. There are more packing routines
+  available. They are explained in \cite{nali07rpvm}.
+\item[\code{.PVM.send(tid, msgtag)}] sends the message stored in the
+  active buffer to the PVM process identified by \texttt{tid}. The
+  content is labeled by the identifier \texttt{msgtag}.
+\item[\code{.PVM.recv(tid = -1, msgtag = -1)}] blocks the process
+  until a message with label \texttt{msgtag} has arrived from
+  \texttt{tid}. -1 means any. The receive buffer is cleared
+  and the received message is placed there instead.
+\item[\code{.PVM.upkstr(), .PVM.upkint(), .PVM.upkdblvec()}] and
+  others are the correspondig unpack functions to the
+  pack functions explained before.
+\end{description}
+
+Example~\ref{ex:rpvm-rapplymaster} shows the implementation of the
+master routine \code{PVM.rapply()}. This funtion takes a matrix,
+the function which is going to be applied and the number of processors
+to use as arguments. At first 
+the message tags are specified. These tags are necessary to uniquely
+identify messages sent in a message passing environment. After
+input validation \code{NTASK} child processes are spawned using the
+\code{.PVM.spawnR()} command. After initializing the send buffer the
+partitioned data (packed in the buffer using the \code{.PVM.pk*}
+commands) is send to the corresponding child processes represented by
+their task IDs using
+\texttt{.PVM.send()}. PVM uses these task identifiers (tid) to
+address pvmds, tasks, and groups of tasks within a virtual
+machine.
+
+Meanwhile the spawned slave processes (see
+Example~\ref{ex:rpvm-rapplyslave}) have been idle because they wait
+for input (\code{.PVM.receive()} is a blocking command). After
+receiving data from the parent the data gets unpacked. Now the slaves
+apply the given function to their part of the matrix. Finally another
+send is initialized to provide the results to the parent process and
+the slaves are detached from the virtual machine by calling a
+\texttt{.PVM.exit()}. 
+
+\subsection{Other Important Functions}
+
+To complete the set of important functions supplied by the rpvm
+package two more functions have to be explained:
+
+\begin{description}
+\item[\texttt{.PVM.gather(x, count = length(x), msgtag, group,
+    rootginst = 0}] gathers data distributed on the nodes (x) to a
+  specific process (mostly the root) into a single array. It performs
+  a send of messages from each member of a group of processes. A
+  specific process (the root) accumulates this messages into a single
+  vector. 
+\item[\texttt{.PVM.scatter(x, count, msgtag, group, rootqinst = 0}]
+  sends to each member of a group a partition of  a vector x from a
+  specified member of the group (mostly the root) where \texttt{count}
+  is an integer specifying the number of elements to be sent to each
+  member. 
+\end{description}
+
+\subsubsection{Conclusion}
+
+The \code{PVM.rapply()} example shown in this section followed the
+Single Program Multiple Data (SPMD) paradigm. Data is splitted into
+different parts which are sent to different processes. I/O is handled
+solely by a master
+process. When loading rpvm in an R session this session becomes the
+master process. Slaves can easily be spawned provided that there are
+working slave scripts available.
+
+We encountered no problems when using the routines in \pkg{rpvm}. This
+package seem to be rather stable in contrast to \pkg{Rmpi}, where for
+unknown reasons the MPI environment crashed.
+
+A major disadvantage is that the rpvm
+package only has two higher level function. One of them can be used
+for calculations. That means when using this package for parallel
+computing one has 
+to deal with low level message passing which in turn provides high
+flexibility. New parallel functions can be constructed on the basis of
+the provided interface. 
+
+Another disadvantage is the missing support for interactive R
+slaves. Parallel tasks have to be created on the basis of separate
+slave source files which are sourced on the creation of the slaves.
+
+For further interface functions supplied by the rpvm package, a more
+detailed 
+description and further examples please consult the package description
+\cite{nali07rpvm}.

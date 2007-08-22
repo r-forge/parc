@@ -87,7 +87,6 @@ set.seed(1782)
 ##.PVM.halt()
 
 @ 
-\caption{Query status of PVM}
 \label{ex:rpvminit}
 \end{Example}
 
