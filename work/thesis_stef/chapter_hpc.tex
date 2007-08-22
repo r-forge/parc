@@ -431,8 +431,8 @@ reasonable price.
 New developments show that there are interesting alternatives. Some
 HPC platforms offer a global addressing scheme and therefore enable
 CPUs to directly access the entire system's memory. This can be done
-i.e., with ccNUMA (cache coherent nonuniform memory access) systems
-(for more information see i.e., \cite{kleen05:NUMA}) or
+e.g., with ccNUMA (cache coherent nonuniform memory access) systems
+(for more information see e.g., \cite{kleen05:NUMA}) or
 global arrays~(\cite{nieplocha96gan}).
 They have become an important improvement because they allow a
 processor to access local and remote memory with rather low latency.
@@ -659,7 +659,7 @@ and in PVM ``TaskIDs''.
 
 \subsubsection{Buffering}
 
-Communication can be buffered which means that i.e., the sending
+Communication can be buffered which means that e.g., the sending
 process can continue executing and need not wait for the receiving
 process signaling it is ready to receive. Otherwise you have a synchronous
 communication. 
@@ -694,7 +694,7 @@ is called a broadcast.
 A broadcast is a collective communication in which a single process
 sends the same data to every other process. Depending on the topology
 of the system normally there is an optimized broadcast available
-(i.e., tree-structured communication). See Chapter~5
+(e.g., tree-structured communication). See Chapter~5
 in~\cite{pacheco97mpi} for more details on collective communication in
 MPI.
 
@@ -1035,7 +1035,7 @@ The cluster consists of four workstation with four cores each and 16
 gigabytes of RAM. They are called ``bignodes'' as they offer more
 power to the grid user. The queue for running applications on these
 bignodes is called \texttt{bignode.q}. If a shared memory program is
-to be run (i.e., an OpenMP program), bignodes are the computers of choice.
+to be run (e.g., an OpenMP program), bignodes are the computers of choice.
 The other nodes consist of dual core CPUs and lesser
 memory. They are combined in the queue
 \texttt{node.q}. Table~\ref{tab:clusterWU} provides detailed

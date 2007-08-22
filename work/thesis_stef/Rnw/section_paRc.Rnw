@@ -1,11 +1,25 @@
-\section{paRc -- PARallel Computations in R}
+\section{paRc---PARallel Computations in R}
 \label{sec:paRc}
 
-The package paRc (\cite{theussl07paRc}) contains high-level functions to OpenMP compiled
-parallel functions.
+In the course of this thesis a package called \pkg{paRc}
+(\cite{theussl07paRc}) has been developed with the aim
+to evaluate performance of parallel computations and to show how
+interfacing high performance applications written in C can be done
+when using OpenMP ~(see Section~\ref{sec:OpenMP}.
+
+The package \pkg{paRc} contains interface functions to the OpenMP library
+and provides high level function to a few C implementations of
+parallel applications using OpenMP.
 Furthermore, it supplies a benchmark environment for performance
 evaluation of parallel programs.
 
+\pkg{paRc} can be obtained from \url{R-Forge.R-project.org}---the
+R-project community service. To install this package directly within R
+call \code{install.packages("paRc", repos = "R-Forge.r-project.org")}.
+To properly install this package you need either the Intel compiler
+with version 9.1 or newer (the Linux compiler is free for
+non-commercial use) or the GNU~C compiler with version 4.2 or
+newer. They are known to support OpenMP.
 
 \subsection{OpenMP interface functions}
 
@@ -22,8 +36,7 @@ evaluation of parallel programs.
 \subsubsection{OpenMP specific environment variables}
 
 Certain environment variables affect the runtime behaviour of OpenMP
-programs. These environment variables are as
-follows~(\cite{openMP05}):
+programs. These environment variables are~(\cite{openMP05}):
 
 \begin{description}
 \item[\texttt{OMP_NUM_THREADS}] sets the number of threads to use in
@@ -37,7 +50,7 @@ follows~(\cite{openMP05}):
 
 
 
-\textbf{Example:} OpenMP function calls using paRc \newline
+\begin{Example} OpenMP function calls using \pkg{paRc} \newline
 running on cluster@WU using a bignode which provides 4 cores.
 
 <<echo=TRUE>>=
@@ -50,10 +63,13 @@ omp.set.num.threads(2)
 omp.get.max.threads()
 
 @ 
+\label{ex:paRcOMP}
+\end{example}
+
 
 \subsection{Built-in high level functions}
 
-paRc provides the following high level OpenMP functions: 
+\pkg{paRc} provides the following high level OpenMP functions: 
 
 \begin{description}
 \item[\texttt{omp.matrix.mult(X, Y, ncpu = 1)}] multiplies the matrix
@@ -67,12 +83,11 @@ paRc provides the following high level OpenMP functions:
 handle benchmark objects
 
 \begin{description}
-\item[\code{benchmark.avail.cpu}]
-\item[\code{benchmark.cpu.range}]
-\item[\code{benchmark.data}]
-\item[\code{benchmark.functions.to.apply}]
-\item[\code{benchmark.is.parallel}]
-\item[\code{benchmark.task}]
+\item[\code{bm.cpu.range}]
+\item[\code{bm.data}]
+\item[\code{bm.functions.to.apply}]
+\item[\code{bm.is.parallel}]
+\item[\code{bm.task}]
 \item[\code{run.benchmark}]
 \end{description}
 
@@ -80,15 +95,13 @@ S3 methods
 
 \begin{description}
 \item[\code{print.benchmark}]
-\item[\code{ }]
-\item[\code{ }]
-\item[\code{ }]
+\item[\code{plot.benchresults}]
 \end{description}
 
 \subsection{Other important functions}
 
-To complete the set of important functions supplied by the paRc
-package the following functions have to be explained:
+To complete the set of important functions supplied by package
+\pkg{paRc} the following functions have to be explained:
 
 \subsection{Conclusion}
 
@@ -104,6 +117,6 @@ package the following functions have to be explained:
 %flexibility. New parallel functions can be constructed on the basis of
 %the provided interface.
 
-%For further interface functions supplied by the paRc package, a more detailed
+%For further interface functions supplied by the \pkg{paRc} package, a more detailed
 %description and further examples please consult the package description
 %\cite{yu06Rmpi}.

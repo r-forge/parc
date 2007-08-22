@@ -1,4 +1,4 @@
-\subsection{The rpvm Package}
+\section{The rpvm Package}
 \label{sec:rpvm}
 Parallel virtual machine uses the message passing model and makes a
 collection of computers appear as a single virtual machine (see Section
@@ -23,7 +23,7 @@ Provided functions are categorized as follows:
 \item Other Important Functions
 \end{itemize}  
 
-\subsubsection{Initialization and Status Queries}
+\subsection{Initialization and Status Queries}
 
 At first for using the PVM system \textit{pvmd3} has to be
 booted. This can be done via the command line using the \code{pvm}
@@ -309,7 +309,7 @@ send is initialized to provide the results to the parent process and
 the slaves are detached from the virtual machine by calling a
 \texttt{.PVM.exit()}. 
 
-\subsubsection{Other Important Functions}
+\subsection{Other Important Functions}
 
 To complete the set of important functions supplied by the rpvm
 package two more functions have to be explained:

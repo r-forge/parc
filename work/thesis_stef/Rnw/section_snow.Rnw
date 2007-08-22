@@ -1,10 +1,10 @@
 \section{The snow Package}
 \label{sec:snow}
 The aim of simple network of workstations
-(\pkg{snow}---\cite{rossini03snow}, \cite{tierney07snow}) is to provide a
-simple parallel computing environment in R. To make up a virtual
-cluster in R \pkg{snow} is based on three different message passing
-environments.
+(\pkg{snow}---\cite{rossini03snow}, \cite{tierney07snow}) is to
+provide a simple parallel computing environment in R. To make a
+collection of computers to appear as a virtual cluster in R \pkg{snow}
+three different message passing environments can be used:
 
 \begin{itemize}
 \item PVM via R package rpvm (see section \ref{sec:rpvm})
@@ -12,40 +12,59 @@ environments.
 \item SOCK via TCP sockets
 \end{itemize}
 
-When using snow one can rely on a good handful of high-level
-functions. Indeed snow uses existing interfaces to R and solely
-provides one new possibilty of message-passing namely TCP sockets. 
+The details of which mechanism is used and how it is used are hidden
+from the high level user.
+After setting up this virtual cluster developing parallel R functions
+can be achieved via an standardized interface to the computation
+nodes.
+Moreover, when using \pkg{snow} one can rely on a good handful of
+high level functions. This makes it rather easy to use the underlying
+parallel computational engine.
+Indeed \pkg{snow} uses existing interfaces to R namely \pkg{Rmpi} when
+using MPI (see Section~\ref{sec:Rmpi}), \pkg{rpvm} when using PVM (see
+Section~\ref{sec:rpvm}) and a new possibilty of message passing namely
+TCP sockets, which is a rather simple way of achieving communication
+between nodes (in most application this is not the optimal way).
+What follows is a description of high level functions supplied by the
+\pkg{snow} package. They are assigned to one of the topics:
+
+\begin{itemize}
+\item Initialization
+\item Built-in High Level Functions
+\item Fault Tolerance
+\end{itemize}
 
 \subsection{Initialization}
 
-Initializing a snow cluster is rather easy if the system is prepared
-accordingly. When using MPI (achieved through Rmpi) a LAM/MPI
-environment has to be booted prior starting the virtual cluster (see
-section \ref{sec:Rmpi}). Is PVM the method of choice the rpvm package
-must be available and an appropriate PVM has to be started (see
-section \ref{sec:rpvm}). For both MPI and PVM the parallel environment
+Initializing a \pkg{snow} cluster is rather easy if the system is
+prepared accordingly. When using MPI (achieved through \pkg{Rmpi}) a
+LAM/MPI environment has to be booted prior starting the virtual
+cluster (see section \ref{sec:Rmpi}). Is PVM the method of choice the
+\pkg{rpvm} package must be available and an appropriate PVM has to be
+started (see section \ref{sec:rpvm}). For both MPI and PVM the
+parallel environment 
 can be configured through a grid engine (see appendix
-\ref{app:gridengine}). TCP sockets can be set up directly with the
-package. When using either MPI or PVM status queries to the
-corresponding environment can be made using the functions supplied
-from the packages mentioned above.
+\ref{app:gridengine}). TCP sockets can be set up directly using the
+package. MPI or PVM have the possibility to query the status of the
+parallel environment. This can be done using the functions supplied
+from the corresponding package.
 
 
-snow management functions:
+\pkg{snow} management functions:
 
 \begin{description}
-\item[\texttt{makecluster(spec, type = getClusterOption(``type''))}]
-  starts a cluster of type \texttt{type} with \texttt{spec} numbers of
-  slaves. If the cluster is of connection type SOCK then \texttt{spec}
+\item[\code{makecluster(spec, type = getClusterOption(``type''))}]
+  starts a cluster of type \code{type} with \code{spec} numbers of
+  slaves. If the cluster is of connection type SOCK then \code{spec}
   must be a charactor vector containing the hostnames of the
   slavenodes to join the cluster. The return value is a list
-  containing the cluster specifications. It is necessary in further
-  function calls.
-\item[\texttt{stopCluster(cl)}] stops a cluster \texttt{cl}.
+  containing the cluster specifications. This object is necessary in
+  further function calls.
+\item[\code{stopCluster(cl)}] stops a cluster specified in \code{cl}.
 \end{description}
 
 
-\textbf{Example:} Start/stop cluster in snow \newline
+\begin{Example} Start/stop cluster in \pkg{snow} \newline
 running on cluster@WU using the node.q -- the parallel environment was
 started with the SGE using 8 nodes.
 
@@ -59,47 +78,48 @@ cl <- makeCluster(n, type = "MPI")
 stopCluster(cl)
 
 @ 
+\label{ex:snowstartstop}
+\end{Example}
 
+\subsection{Built-in High Level Functions}
 
-\subsection{Built-in high-level functions}
-
-snow provides a good handful of high-level functions: 
+\pkg{snow} provides a good handful of high-level functions: 
 
 
 %% TODO
 \begin{description}
-\item[\texttt{clusterEvalQ(cl, expr)}] evaluates an R expression
-  \texttt{expr} on
-  each cluster node provided by \texttt{cl}. 
-\item[\texttt{clusterCall(cl, fun, ...)}] calls a function
-  \texttt{fun} with arguments \ldots on each node found in \texttt{cl}
+\item[\code{clusterEvalQ(cl, expr)}] evaluates an R expression
+  \code{expr} on
+  each cluster node provided by \code{cl}. 
+\item[\code{clusterCall(cl, fun, ...)}] calls a function
+  \code{fun} with arguments \ldots on each node found in \code{cl}
   and returns a list of the results.
-\item[\texttt{clusterApply(cl, x, fun, ...)}] applies a function
-  \texttt{fun} with additional arguments \ldots to a specific part of
-  a vector \texttt{x}. The return value is of type list with the same
-  length as of \texttt{x}. The length of
-  \texttt{x} must not exceed the 
+\item[\code{clusterApply(cl, x, fun, ...)}] applies a function
+  \code{fun} with additional arguments \ldots to a specific part of
+  a vector \code{x}. The return value is of type list with the same
+  length as of \code{x}. The length of
+  \code{x} must not exceed the 
   number of R slaves spawned as each element of the vector is used
   exactly by one slave. To achieve some sort of load balancing please
   use the corresponding apply functions below.
-\item[\texttt{clusterApplyLB(cl, x, fun, ...)}] is a load balncing
-  version of \texttt{clusterApply()} which applies a function
-  \texttt{fun} with additional arguments \ldots to a specific part of
-  a vector \texttt{x} with the difference that the length of
-  \texttt{x} can exceed the number of cluster nodes. If a node
+\item[\code{clusterApplyLB(cl, x, fun, ...)}] is a load balancing
+  version of \code{clusterApply()} which applies a function
+  \code{fun} with additional arguments \ldots to a specific part of
+  a vector \code{x} with the difference that the length of
+  \code{x} can exceed the number of cluster nodes. If a node
   finished with the computation the next job is placed on the
   available node. This is repeated until all jobs have completed.
-\item[\texttt{clusterExport(cl, list)}] broadcasts a list of global
-  variables on the master (\texttt{list}) to all slaves.
-\item[\texttt{parApply(cl, x, fun, ...)}] is one of the parallel
-  versions of the \texttt{apply} functions available in R. I refer to
+\item[\code{clusterExport(cl, list)}] broadcasts a list of global
+  variables on the master (\code{list}) to all slaves.
+\item[\code{parApply(cl, x, fun, ...)}] is one of the parallel
+  versions of the \code{apply} functions available in R. We refer to
   the package documentation (\cite{tierney07snow}) for further details.
-\item[\texttt{parMM(cl, A,B)}] is a simple parallel implementation of
+\item[\code{parMM(cl, A,B)}] is a simple parallel implementation of
   matrix multiplication. 
 \end{description}
 
 
-\textbf{Example:} Using high-level functions of snow\newline
+\begin{Example} Using high-level functions of snow\newline
 running on cluster@WU using the node.q -- the parallel environment was
 started with SGE using 8 nodes
 
@@ -107,7 +127,7 @@ started with SGE using 8 nodes
 
 n <- 8
 # spawn n slaves
-cl <- makeCluster(n, type="MPI")
+cl <- makeCluster(n, type="PVM")
 # build up a n x n matrix in parallel
 x <- rep(n,n)
 rows <- clusterApply(cl, x, runif)
@@ -115,23 +135,25 @@ X <- matrix(unlist(rows), ncol = n, byrow=TRUE)
 X
 
 @ 
+\label{ex:snowapply}
+\end{Example}
+
+\subsection{Fault Tolerance}
 
 
 
-\subsection{conclusion}
+\subsection{Conclusion}
 
-%The \texttt{PVM.rapply()} example shown in this section followed the Single Program
-%Multiple Data (SPMD) paradigm. Data is splitted into different parts
-%which are sent to different processes. I/O is handled by a master
-%process. When loading rpvm in an R session this session becomes the
-%master process. Slaves can easily be spawned provided that there are
-%working slave scripts available. A major disadvantage is that the rpvm
-%package only has two higher-level function. One of them can be used
-%for calculations. That means when using this package for HPC one has
-%to deal with low-level message-passing which in turn provides high
-%flexibility. New parallel functions can be constructed on the basis of
-%the provided interface.
+The routines available in package \pkg{snow} are easy to understand
+and use, provided that there is a corresponding communication
+environment set up. Generally, the user need not know the underlying
+parallel infrastructure, she just ports her sequential code so that it
+uses the functions supplied by \pkg{snow}. All in all as the title
+suggests simple network of workstations is simple to get started with
+and is simple with respect to the possibilities of parallel
+computations. 
 
-For further interface functions supplied by the snow package, a more detailed
+For further interface functions supplied by the \pkg{snow} package, a
+more detailed 
 description and further examples please consult the package description
 \cite{tierney07snow}.

@@ -1,4 +1,4 @@
-\section{The \pkg{Rmpi}Package}
+\section{The Rmpi Package}
 \label{sec:Rmpi}
 The Message Passing Interface (MPI) is a set of library interface
 standards for message passing and there are many implementations using
@@ -116,7 +116,7 @@ R slave script.
     system.file(nslaves =
     mpi.universe.size(), ...)}] spawns \texttt{nslaves} number of R
   workhorses to those hosts automatically chosen by MPI. For other
-  arguments represented by \ldots to this function I refer to
+  arguments represented by \ldots to this function we refer to
   \cite{yu06Rmpi}.
 \item[\code{mpi.close.Rslaves(dellog = TRUE, comm = 1)}] closes
   previously spawned R slaves and returns 1 if succesful.
@@ -234,11 +234,11 @@ package the following functions have to be explained:
   specific process (\code{root}) accumulates this messages into a 
   single array or list prepared with the \code{rdata} command.
 \item[\code{.mpi.scatter(x, type, rdata, root = 0, comm = 1)}]
-  sends to each member of a comm a partition of  a vector \code{x}
-  from a
-  specified member of the group (mostly the root) where \code{count}
-  is an integer specifying the number of elements to be sent to each
-  member. 
+  sends to each member of a comm a partition of  a vector \code{x},
+  type \code{type} which can be integer, double or character,
+  from a specified member of the group (mostly the master). Each
+  member of the comm receive its part of \code{x} after preparing the
+  receive buffer with the argument \code{rdata}.
 \end{description}
 
 \subsection{Conclusion}
