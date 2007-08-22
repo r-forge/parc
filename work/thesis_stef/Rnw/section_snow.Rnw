@@ -127,7 +127,7 @@ started with SGE using 8 nodes
 
 n <- 8
 # spawn n slaves
-cl <- makeCluster(n, type="PVM")
+cl <- makeCluster(n, type="MPI")
 # build up a n x n matrix in parallel
 x <- rep(n,n)
 rows <- clusterApply(cl, x, runif)

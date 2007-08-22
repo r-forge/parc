@@ -1,45 +1,67 @@
-\section{The rpvm package}
+\section{The rpvm Package}
 \label{sec:rpvm}
-Parallel virtual machine uses the message-passing model and makes a
-collection of computers appear as a single virtual machine (see section
+Parallel virtual machine uses the message passing model and makes a
+collection of computers appear as a single virtual machine (see Section
 \ref{sec:PVM} for details).
-The package rpvm (\cite{nali07rpvm}) provides an interface to
-low-level PVM-functions and
-a few high-level parallel functions to R. It uses most of the
-facilities provided by the PVM system. A good selection of these
+The package \pkg{rpvm} (\cite{nali07rpvm}) provides an interface to
+low level PVM functions and
+a few high level parallel functions to R. It uses most of the
+facilities provided by the PVM system which makes \pkg{rpvm} ideal for
+prototyping parallel statistical applications in R. Generally, parallel
+applications can be either written in compiled languages like C or
+FORTRAN or can be called as R processes. The latter method is used in
+this thesis and therefore a good selection of \pkg{rpvm}
 functions are explained in this section to show how PVM and R can be
 used together.
 
-\subsection{Initializing and Status queries}
+Provided functions are categorized as follows:
+
+\begin{itemize}
+\item Initialization and Status Queries
+\item Process Spawning and Communication
+\item Built-in High Level Functions
+\item Other Important Functions
+\end{itemize}  
+
+\subsection{Initialization and Status Queries}
 
 At first for using the PVM system \textit{pvmd3} has to be
-booted. This can done via the command
-line or directly within R after loading the rpvm package.
+booted. This can be done via the command line using the \code{pvm}
+command (see pages 22 and 23 in \cite{geist94pvm}) or directly within
+R after loading the \pkg{rpvm} package using \code{.PVM.start.pvmd()}
+explained in this section.
 
-
-rpvm functions for managing the virtual machine:
+\pkg{rpvm} functions for managing the virtual machine:
 
 \begin{description}
-\item[\texttt{.PVM.start.pvmd()}] boots the \textit{pvmd3} daemon. The
+\item[\code{.PVM.start.pvmd()}] boots the \textit{pvmd3} daemon. The
   currently running R session becomes the master process. 
-\item[\texttt{.PVM.add.hosts(hosts)}] takes a vector of hostnames to
+\item[\code{.PVM.add.hosts(hosts)}] takes a vector of hostnames to
   be added to the current virtual machine. The syntax of the
   hostnames is similiar to the lines of a pvmd hostfile (for details
   see the man page of \textit{pvmd3}). 
-\item[\texttt{.PVM.del.hosts()}] simply deletes the given hosts from
+\item[\code{.PVM.del.hosts()}] simply deletes the given hosts from
   the virtual machine configuration.
-\item[\texttt{.PVM.halt()}] shuts down the entire PVM system and exits
+\item[\code{.PVM.config()}] returns information about the present
+  virtual machine.
+\item[\code{.PVM.exit()}] tells the PVM daemon that this process
+  leaves the parallel environment.
+\item[\code{.PVM.halt()}] shuts down the entire PVM system and exits
   the current R session.
 \end{description}
   
-It is better to use the Sun Grid Engine (SGE) to boot the PVM parallel
-environment as the developer is not engaged with
+When using a job queueing system like he Sun Grid Engine (SGE) to boot
+the PVM parallel environment the developer is not engaged with
 setting up and booting the environment anymore (see
 appendix \ref{app:gridengine} on how to do this).
 
+Example~\ref{ex:rpvm-init} shows how the configuration of the parallel
+environment can be obtained. First it returns the hosts connected to
+the parallel virtual machine. Finally the
+parallel environment is stopped. 
 
-\textbf{Example:} Query status of PVM \newline
-running on cluster@WU using the node.q -- the parallel environment was
+\begin{Example} Query status of PVM \newline
+running on cluster@WU using the node.q---the parallel environment was
 started with SGE using 8 nodes
 
 \begin{Schunk}
@@ -50,62 +72,61 @@ started with SGE using 8 nodes
 \end{Sinput}
 \begin{Soutput}
   host.id    name    arch speed
-1  262144 node057 LINUX64  1000
-2  524288 node044 LINUX64  1000
-3  786432 node002 LINUX64  1000
-4 1048576 node053 LINUX64  1000
+1  262144 node015 LINUX64  1000
+2  524288 node003 LINUX64  1000
+3  786432 node053 LINUX64  1000
+4 1048576 node001 LINUX64  1000
 \end{Soutput}
 \begin{Sinput}
-> mytid <- .PVM.mytid()
-> .PVM.tasks()
+> .PVM.exit()
 \end{Sinput}
-\begin{Soutput}
-$tid
-[1] 262146
-
-$parent
-[1] 0
-
-$host
-[1] 262144
-
-$status
-[1] "Unknown"
-
-$name
-[1] ""
-\end{Soutput}
-\begin{Sinput}
-> .PVM.pstats(mytid)
-\end{Sinput}
-\begin{Soutput}
-262146 
-  "OK" 
-\end{Soutput}
-\begin{Sinput}
-> .PVM.pstats(mytid + 9)
-\end{Sinput}
-\begin{Soutput}
-       262155 
-"Not Running" 
-\end{Soutput}
 \end{Schunk}
+\caption{Query status of PVM}
+\label{ex:rpvminit}
+\end{Example}
 
+\subsection{Process Spawning and Communication}
+
+The package \pkg{rpvm} uses the master-slave paradigm where one
+process is the master task and the others are slave tasks. \pkg{rpvm}
+provides a routine to spawn R slaves but these slaves cannot be used
+interactively like the slaves in \pkg{Rmpi}. The spawned R slaves
+source an R script which contains all the necessary function calls to
+set up communication and carry out the computation and after
+processing terminate.
+PVM uses task IDs (tid---a positive integer for identifying a task)
+and tags for communication (see
+also the fundamentals of message passing in
+Section~\ref{sec:messagepassing}).
+
+\begin{description}
+\item[\code{.PVM.spawnR(slave, ntask = 1, ...}] spawns \code{ntask}
+  copies 
+  of an executable or \code{slave} R processes. There are more
+  parameters indicated by the \ldots (we refer to
+  \cite{nali07rpvm}). The \code{tids} of the successfully spawned R
+  slaves are returned.
+\item[\code{.PVM.mytid()}] returns the \code{tid} of the calling
+  process.
+\item[\code{.PVM.parent()}] returns the \code{tid} of the parent
+  process that spawned the calling process.
+\item[\code{.PVM.siblings()}] returns the \code{tid} of the processes
+  that were spawned in a single spawn call.
+\end{description}
 
 \subsection{Built-in high level functions}
 
-rpvm provides two high level functions: 
+\pkg{rpvm} provides two high level functions: 
 
 \begin{description}
-\item[\texttt{PVM.rapply(X, FUN = mean, NTASK = 1))}] Apply a function
+\item[\code{PVM.rapply(X, FUN = mean, NTASK = 1))}] Apply a function
   \texttt{FUN} to the rows of a matrix \texttt{X} in
   parallel using \texttt{NTASK} tasks.
-\item[PVM.options(option, value)] Get or set values of libpvm options
-  (for details see \cite{nali07rpvm} and \cite{geist94pvm}).
+\item[\code{PVM.options(option, value)}] Get or set values of libpvm
+  options (for details see \cite{nali07rpvm} and \cite{geist94pvm}).
 \end{description}
 
-
-\textbf{Example:} Using PVM.rapply\newline
+\begin{Example} Using PVM.rapply\newline
 running on cluster@WU using the node.q -- the parallel environment was
 started with SGE using 8 nodes
 
@@ -126,175 +147,5 @@ started with SGE using 8 nodes
 [7,]  1.085  0.706 -0.034  0.929  0.057 -2.402 -1.233  1.135
 [8,]  0.605 -0.076 -0.554  1.385 -0.436  0.249  0.338  1.369
 \end{Soutput}
-\end{Schunk}
-
-Let us examine the function to see how parallel execution of rpvm
-functions should be done. 
-
-\begin{Schunk}
 \begin{Sinput}
-> PVM.rapply
-\end{Sinput}
-\begin{Soutput}
-function (X, FUN = mean, NTASK = 1) 
-{
-    WORKTAG <- 22
-    RESULTAG <- 33
-    if (!is.matrix(X)) {
-        stop("X must be a matrix!")
-    }
-    if (NTASK == 0) {
-        return(apply(X, 1, FUN))
-    }
-    end <- nrow(X)
-    chunk <- end%/%NTASK + 1
-    start <- 1
-    mytid <- .PVM.mytid()
-    children <- .PVM.spawnR(ntask = NTASK, slave = "slapply")
-    if (all(children < 0)) {
-        cat("Failed to spawn any task: ", children, "\n")
-        .PVM.exit()
-    }
-    else if (any(children < 0)) {
-        cat("Failed to spawn some tasks.  Successfully spawned ", 
-            sum(children > 0), "tasks\n")
-        children <- children[children > 0]
-    }
-    for (id in 1:length(children)) {
-        .PVM.initsend()
-        range <- c(start, ifelse((start + chunk - 1) > end, end, 
-            start + chunk - 1))
-        work <- X[(range[1]):(range[2]), , drop = F]
-        start <- start + chunk
-        .PVM.pkstr(deparse(substitute(FUN)))
-        .PVM.pkint(id)
-        .PVM.pkdblmat(work)
-        .PVM.send(children[id], WORKTAG)
-        cat("Work sent to ", children[id], "\n")
-    }
-    partial.results <- list()
-    for (child in children) {
-        .PVM.recv(-1, RESULTAG)
-        order <- .PVM.upkint()
-        partial.results[[order]] <- .PVM.upkdblvec()
-    }
-    .PVM.exit()
-    return(unlist(partial.results))
-}
-\end{Soutput}
-\end{Schunk}
-
-The corresponding slave R script looks as follows.
-
-\begin{Schunk}
-\begin{Sinput}
-> library(rpvm)
-> WORKTAG <- 22
-> RESULTAG <- 33
-> mytid <- .PVM.mytid()
-> myparent <- .PVM.parent()
-> buf <- .PVM.recv(myparent, WORKTAG)
-> func <- .PVM.upkstr()
-> cat("Function to apply: ", func, "\n")
-> order <- .PVM.upkint()
-> partial.work <- .PVM.upkdblmat()
-> print(partial.work)
-> partial.result <- apply(partial.work, 1, func)
-> print(partial.result)
-> .PVM.initsend()
-> .PVM.pkint(order)
-> .PVM.pkdblvec(partial.result)
-> .PVM.send(myparent, RESULTAG)
-> .PVM.exit()
-> q(save = "no")
-\end{Sinput}
-\end{Schunk}
-
-
-New rpvm functions used in \texttt{PVM.rapply()}:
-
-\begin{description}
-\item[\texttt{.PVM.spawnR(slave, ntask = 1, ...}] spawns \texttt{ntask} copies
-  of an executable or \texttt{slave} R processes. There are more
-  parameters indicated by the \ldots (again I refer to \cite{nali07rpvm}). In
-  PVM.rapply \texttt{NTASK} slaves sourcing ``slapply.R'' are
-  spawned. The \texttt{tids} of the successfully spawned R slaves are
-  returned.
-\item[\texttt{.PVM.exit()}] tells the local PVM daemon that this process leaves
-  the virtual machine.
-\item[\texttt{.PVM.initsend()}] clears the default send buffer and
-  prepares it for packing a new message.
-\item[\texttt{.PVM.pkstr(data = ``'')} and \texttt{.PVM.pkint(data =
-    0, stride = 1)}] are low-level correspondents of the PVM packing
-    routines (see \cite{geist94pvm} for more information on packing
-    data). 
-\item[\texttt{.PVM.pkdblmat(data)}] packs a double matrix including
-  the dimension information. There are more packing routines
-  available. They are explained in \cite{nali07rpvm}.
-\item[\texttt{.PVM.parent()}] returns the tid of the parent process
-  that spawned the calling process.
-\item[\texttt{.PVM.send(tid, msgtag)}] sends the message stored in the
-  active buffer to the PVM process identified by \texttt{tid}. The
-  content is labeled by the identifier \texttt{msgtag}.
-\item[\texttt{.PVM.recv(tid = -1, msgtag = -1)}] blocks the process
-  until a message with label \texttt{msgtag} has arrived from
-  \texttt{tid}. -1 means any. The receive buffer is cleared
-  and the received message is placed there instead.
-\item[\texttt{.PVM.upkstr(), .PVM.upkint(), .PVM.upkdblvec()}] and other unpack data functions are
-  the correspondig unpack functions to the pack functions explained above. 
-\end{description}
-
-\texttt{PVM.rapply()} takes a matrix, the function which is going to
-be applied and the number of processors to use as arguments. At first
-the message tags are specified. These tags are necessary to uniquely
-identify messages sent in a message-passing environment. After
-input validation \texttt{NTASK} child processes are spawned using the
-\texttt{.PVM.spawnR()} command. After initializing the send buffer the
-partitioned data (packed in the buffer using the \texttt{.PVM.pk*}
-commands) is send to the corresponding child processes represented by
-their task IDs using
-\texttt{.PVM.send()}. PVM uses these task identifiers (TID) to
-address pvmds, tasks, and groups of tasks within a virtual machine.
-Meanwhile the spawned slave processes have been idle because they wait
-for input (\texttt{.PVM.receive()} is a blocking command). After
-receiving data from the parent the data gets unpacked. Now the slaves
-apply the given function to their part of the matrix. At last another
-send is initialized to provide the results to the parent process and
-the slaves are detached from the virtual machine by calling a
-\texttt{.PVM.exit()}. 
-
-\subsection{Other important functions}
-
-To complete the set of important functions supplied by the rpvm
-package two more functions have to be explained:
-
-\begin{description}
-\item[\texttt{.PVM.gather(x, count = length(x), msgtag, group,
-    rootginst = 0}] gathers data distributed on the nodes (x) to a
-  specific process (mostly the root) into a single array. It performs
-  a send of messages from each member of a group of processes. A
-  specific process (the root) accumulates this messages into a single vector.
-\item[\texttt{.PVM.scatter(x, count, msgtag, group, rootqinst = 0}]
-  sends to each member of a group a partition of  a vector x from a
-  specified member of the group (mostly the root) where \texttt{count}
-  is an integer specifying the number of elements to be sent to each
-  member. 
-\end{description}
-
-\subsection{conclusion}
-
-The \texttt{PVM.rapply()} example shown in this section followed the Single Program
-Multiple Data (SPMD) paradigm. Data is splitted into different parts
-which are sent to different processes. I/O is handled by a master
-process. When loading rpvm in an R session this session becomes the
-master process. Slaves can easily be spawned provided that there are
-working slave scripts available. A major disadvantage is that the rpvm
-package only has two higher-level function. One of them can be used
-for calculations. That means when using this package for HPC one has
-to deal with low-level message-passing which in turn provides high
-flexibility. New parallel functions can be constructed on the basis of
-the provided interface.
-
-For further interface functions supplied by the rpvm package, a more detailed
-description and further examples please consult the package description
-\cite{nali07rpvm}.
+> PVM.rapply(X, sum, n)
