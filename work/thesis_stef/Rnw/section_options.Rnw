@@ -1,0 +1,317 @@
+\section{Derivatives}
+\label{sec:derivatives}
+Derivatives are important in todays financial markets. Futures and
+options have been increasingly traded since the last 20 years. Now,
+there are many different types of derivatives.
+\begin{description}
+\item[A derivative] is an financial instrument whose value depends on
+  the value of an other variable (or the values of other
+  variables). This variable is called \textit{Underlying}.
+\end{description}
+Derivatives are traded on exchange-traded markets (people trade
+standardized contracts defined by the exchange) or over-the-counter
+markets (trades are done in a computer linked network or over the
+phone - no physical contact).
+
+There are two main types of derivatives, namely forwards (or futures)
+and options.
+
+\begin{description}
+\item[A Forward] is a contract in which one party buys (long position)
+  or sells (short postion) an
+  asset at a certain time in the future for a certain price. Unlike
+  forward contracts, \textit{futures} are standardized and therefore
+  are normally traded on an exchange.
+\item[A call Option] is a contract, which gives the holder the right
+  to buy an asset at a certain time for a certain price. 
+\item[A put Option] is a contract, which gives the holder the right
+  to sell an asset at a certain time for a certain price. 
+\end{description}
+
+With this information given we can write down their payoff functions:\newline
+for the call option
+\begin{equation}\label{eq:call}
+C_T = \left\{ \begin{array}{lcl} 0 & \textrm{when}& S_T \leq K \\
+                         S_T - K & \textrm{when} & S_T > K, \end{array}\right.
+\end{equation}
+and
+\begin{equation}\label{eq:put}
+P_T = \left\{ \begin{array}{lcl} 0 & \textrm{when}& K \leq S_T \\
+                         K - S_T & \textrm{when} & K > S_T \end{array}\right.
+\end{equation}
+for the put option.
+
+Forward Prices (or Future Prices) can be determined in a simple way
+and therefore it is not of computational interest for this chapter.
+
+Figure \ref{fig:payoffs} shows the payoff functions of a call and
+a put option and the position of the investor (left:~long position,
+right:~short position).
+
+<<eval=TRUE, echo=FALSE>>=
+## initialization of rng
+set.seed(1707)
+## load libraries
+library("paRc")
+## define functions
+forwardPrice <- function(S0,r,T,I=0,q=0){
+(S0 - I)*exp((r - q)*T)
+}
+forwardValue <- function(S0,r,T,K,I=0,q=0){
+S0*exp(-q*T) - I - K*exp(-r*T)
+}
+createBinomialTree <- function(x0,u,d,n){
+x <- NULL
+for(i in 0:n)
+  x <- c(x,rep(NA,i),cumsum(c(x0+i*d,rep(u,n-i))))
+matrix(x,nrow=n+1,byrow=TRUE)
+}
+randomWalkBinomial <- function(x0, u, d, n, p = 0.5){
+step <- c(u,d)
+ts(x0 + cumsum(sample(step, n, prob = c(p, 1-p), replace = TRUE)))
+}
+randomWalkNorm <- function(x0,n,mu=0,sigma=1)
+  ts(c(x0,x0+cumsum(rnorm(n,mu,sigma))))
+
+@ 
+
+\subsubsection{An example in R}
+\label{sec:introexample}
+In the \pkg{paRc} package one can find infrastructure for pricing
+options. First we define an option (ie. with a list) and then we can
+coerce this to an object of class ``option''. There exist several
+extractor respectively replacement functions and methods for this
+class. What follows is an 
+overview of creating and working with such an object.
+
+<<echo=TRUE, eval=TRUE>>=
+
+## build example option
+myopt <- list()
+myopt$mu <- 0.1           ## expectation of underlying
+myopt$sigma <- 0.4        ## standard deviation of underlying
+myopt$type <- "Call"      ## type of the option
+myopt$strikeprice <- 100  ## strikeprice of the option
+myopt$present <- 100      ## present value of the underlying
+myopt$maturity <- 1/12    ## time to maturity (in years)
+
+myopt <- as.option(myopt)   ## coercing 'list' to 'option'
+myopt
+
+## use extractors
+underlying(myopt)
+optiontype(myopt)
+optionclass(myopt)
+strikeprice(myopt)
+maturity(myopt)
+priceof(myopt)
+
+## use of replacement functions
+underlying(myopt) <- c(0.2,0.5,100)
+underlying(myopt)
+
+priceof(myopt) <- 4
+priceof(myopt)
+
+## example on page 224 of [1]
+#newopt <- list()
+#newopt$mu <- 0.14
+#newopt$sigma <- 0.2
+
+@ 
+
+The plot method shows the payoff function of the delivered option.
+
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE>>=
+
+par(mfrow=c(2,2))
+plot(myopt)
+myopt$position <- "short"
+plot(myopt)
+myopt$type <- "put"
+myopt$position <- "long"
+plot(myopt)
+myopt$position <- "short"
+plot(myopt)
+
+@
+\label{fig:payoffs} 
+\end{figure}
+
+\subsection{Random Walk}\label{sec:randomwalk}
+Given a probability space ($\Omega,{\cal F},P$) we can differentiate
+between stochastic processes in discrete time (sequences of random
+variables $(X_n)_{n=0}^N$, $N \in\mathbf{N}$) and stochastic processes
+in continous time $(X_t)_{0 \leq t \leq T}$.
+
+A process $(X_n)_{n=0}^N$ with independent and identical distributed
+increments~($Z_i ~ Z_1$ for $n=1,\ldots,N$)is called random walk.
+$$ X_n = X_0 + Z_1 + Z_2 + \ldots + Z_n $$
+Figure~\ref{fig:randomwalk} shows a random walk starting from $X_0 =
+10$ and $Z_i ~ Z_1 ~ N(0,1)$.
+
+\begin{figure}
+\centering
+<<fig=TRUE,echo=TRUE>>=
+X0 <- 10
+n <- 100
+
+rw <- randomWalkNorm(X0,n)
+par(mfrow=c(1,1))
+plot(rw,main="Random Walk", ylab="price")
+
+@
+\label{fig:randomwalk} 
+\end{figure}
+
+
+\subsection{Binomial process}
+
+
+A random walk, which can only have 1 of 2 values $u$ and $d$ as increments, is
+called a binomial process.
+
+There is a $0 \leq p \leq 1$ where the probability $P(Z_n = u)$ equals
+$p$ and the probability $P(Z_n = d)$ equals $1 - p$.
+
+Figure~\ref{fig:binomial} shows a binomial tree (relevant for the
+pricing of the option) and a path of a binomial process. 
+
+\begin{figure}
+\centering
+<<echo=TRUE,fig=TRUE>>=
+
+library("fOptions")
+
+X0 <- 0
+p <- 0.5
+u <- 1
+d <- -1
+n <- 50
+
+par(mfrow=c(1,2))
+X <- createBinomialTree(X0,u,d,5)
+BinomialTreePlot(X)
+rw <- randomWalkBinomial(X0,u,d,n,p)
+plot(rw)
+
+@ 
+\label{fig:binomial} 
+\end{figure}
+
+%\subsection{Cox, Ross and Rubinstein Model}
+
+\subsection{Wiener process}
+
+A process $(W_t)_{0 \leq < \infty}$ is a Wiener process if
+\begin{enumerate}
+\item $W_0 = 0$,
+\item the paths are continous,
+\item all increments $W_{t_1}, W_{t_2} - W_{t_1}, \ldots W_{t_n} - W_{t_{n-1}}$
+  are independent and normal distributed for all $0 < t_1 < t_2 < \ldots < t_n$ 
+\end{enumerate}
+
+The Wiener process is a fundamental part of deriving option pricing
+formulas. In figure \ref{fig:wienerpath} one can see an example of a
+Wiener path. 
+
+\begin{figure}
+\centering
+<<echo=TRUE,fig=TRUE>>=
+
+X0 <- 0
+n<-500
+T<-5
+
+wp <- wienerPath(X0,n,T)
+plot(wp)
+
+@ 
+
+\label{fig:wienerpath} 
+\end{figure}
+
+\subsection{Black-Scholes model}
+
+There is a market which consists of
+\begin{itemize}
+\item a bank account process $B_t = e^{rt}$
+\item and a share $S_t = S_0 e^{(\mu - \frac{\sigma^2}{2}) t + \sigma W_t}$. 
+\end{itemize}
+
+Equation~\ref{eq:blackscholes} gives the price of a European call
+option of time $t$ with maturity $T$ and payoff function $h(S_T)$.
+
+\begin{equation}\label{eq:blackscholes}
+ F(t,x) = \int e^{-r(T-t)}h(xe^{(r - \frac{\sigma^2}{2})(T-t)+\sigma \sqrt{T-tz}})\phi(z)dz 
+\end{equation}
+
+TODO: implement bs model
+
+\subsection{Monte Carlo Methods}
+
+Given the option from chapter \ref{sec:introexample} we can now do an
+Monte Carlo simulation to price the option. The paramters for the
+following simulation are:
+\begin{itemize}
+\item[$r$] the yield of the alternative investment is $0.1$
+\item[$n$] the number of days to simulate is $30$
+\item[$length$] the number of simulated streams is $5000$
+\end{itemize}
+
+Furthermore, the default 
+
+<<>>=
+priced <- monteCarloSimulation(myopt,0.1,30,5000)
+
+priceof(priced)
+
+system.time(monteCarloSimulation(myopt,0.1,30,5000))
+
+@ 
+
+As one can see, the time of simulation is beyond 100 seconds. Thus we
+would like to reduce the duration without loss of accuracy. Therefore
+one can make use of parallel computation.
+
+TODO: implement parallel Monte Carlo Simulation
+
+\subsection{ToDo}
+
+\begin{itemize}
+\item parallel generation of random variables
+\item Cox, Ross, Rubinstein model
+\item more classes of options (American, Asian)
+\item fit methods for returns to calculate relevant option parameters
+\end{itemize}
+
+\subsection{further examples}
+
+<<echo=TRUE>>=
+
+## random walk normal distributed increments
+X0 <- 10
+n <- 100
+
+rw <- list()
+for(i in 1:4)
+  rw[[i]] <- randomWalkNorm(X0,n)
+ts.plot(rw[[1]],rw[[2]],rw[[3]],rw[[4]],col=c(1:4),main="Random Walk", ylab="price")
+
+
+## Random Walk binomial with drift
+
+X0 <- 0
+p <- c(0.5,0.7,0.3)
+u <- 1
+d <- -1
+n <- 50
+
+rw1 <- randomWalkBinomial(X0,u,d,n,p[1])
+rw2 <- randomWalkBinomial(X0,u,d,n,p[2])
+rw3 <- randomWalkBinomial(X0,u,d,n,p[3])
+ts.plot(rw1,rw2,rw3)
+
+@ 
