@@ -139,7 +139,7 @@ started with SGE using 8 nodes
 n <- 8
 X <- matrix(rnorm(n*n), nrow = n)
 round(X,3)
-PVM.rapply(X, sum, n) 
+PVM.rapply(X, sum, 3) 
 @ 
 \label{ex:rpvm-rapply}
 \end{Example}

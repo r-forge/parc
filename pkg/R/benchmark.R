@@ -7,7 +7,7 @@ create.benchmark <- function(task, data, type="normal", parallel=FALSE, cpu_rang
   out <- list()
   tasks <- c(
              "matrix multiplication",
-             "Monte Carlo Simulation"
+             "Monte Carlo simulation"
              )
   if(is.null(task)) stop("No task chosen to benchmark")
   else taskNr <- pmatch(tolower(task), tolower(tasks))
@@ -61,8 +61,7 @@ run.benchmark <- function(x){
   if(taskNr == 1) {
     results <- bm.matrix.multiplication(x)
   }else if(taskNr == 2) {
-    writeLines("Not implemented yet")
-    results <- NULL
+    results <- bm.MonteCarloSimulation(x)
   }
   results
 }
@@ -120,7 +119,7 @@ bm.data <- function(x) {
     stop("'x' not of class 'benchmark'")
   tasks <- c(
              "matrix multiplication",
-             "Monte Carlo Simulation"
+             "Monte Carlo simulation"
              )
   if(is.null(value)) stop("No task chosen to benchmark")
   else taskNr <- pmatch(tolower(value), tolower(tasks))
@@ -204,6 +203,12 @@ bm.function.to.apply <- function(x){
                   "PVM-wB" = mm.rpvm.C,
                   stop("no such type")
                   )
+  if(taskNr==2)
+    foo <- switch(type,
+                  "normal" = monteCarloSimulation,
+                  "MPI" = mcs.Rmpi,
+                  stop("no such type")
+                  )
   else
     stop("no such task")
   foo
@@ -223,6 +228,8 @@ bm.prepare <- function(x,n){
     if(!(require("Rmpi")))
       stop("Packages 'Rmpi' is required to run this benchmark")
     mpi.spawn.Rslaves(nslaves=n)
+    if(pmatch(bm.task(x), bm.tasks(x)) == 2) ## Initialize parallel RNG for MCS
+      mpi.setup.sprng()
     return(n)
   }
   if(type == "snow-PVM") {
@@ -286,6 +293,37 @@ bm.matrix.multiplication <- function(x){
   out$is_parallel <- as.logical(out$is_parallel)
   out
 }
+
+bm.MonteCarloSimulation <- function(x){
+  ## build dataframe for results
+  out <- bm.data.frame()
+  
+  data <- bm.data(x)
+  if(!length(data)==6)
+    stop("'data' supplied must be a list containing six parameters")
+  foo <- bm.function.to.apply(x)  
+  for( n_cpu in bm.cpu.range(x)){
+    if(n_cpu == 1)
+      out[n_cpu,] <- c(bm.task(x),bm.type(x),n_cpu,
+                   as.vector(system.time(foo(data[[1]],data[[2]],data[[3]],data[[4]],
+                                             data[[5]],data[[6]])))[1:3], bm.is.parallel(x))
+    else {
+      prep <- bm.prepare(x,n_cpu)
+      tmp <- c(bm.task(x), bm.type(x), n_cpu,
+               as.vector(system.time(foo(data[[1]],data[[2]],data[[3]],data[[4]],
+                                             data[[5]],data[[6]], prep)))[1:3], TRUE)
+      out[n_cpu,] <- tmp
+      bm.close(x, prep)     
+    }
+  }
+  ## format data.frame accordingly
+  out$time_usr <- as.numeric(out$time_usr)
+  out$time_sys <- as.numeric(out$time_sys)
+  out$time_ela <- as.numeric(out$time_ela)
+  out$is_parallel <- as.logical(out$is_parallel)
+  out
+}
+
 
 ## S3 generic
 ## generics

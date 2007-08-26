@@ -194,14 +194,14 @@ monteCarloSimulation <- function(x,r,n,length,
 mcs.Rmpi.slave <- function(){
   require("paRc")
   commrank <- mpi.comm.rank() - 1
-  monteCarloSlave <- function(x, r, n, length, n.simulations=50,
+  monteCarloSlave <- function(x, r, n, len, n.simulations=50,
                               antithetic=TRUE){
     price <- vector()
     dt <- maturity(x)/n
     mu <- underlying(x)[1]
     sigma <- underlying(x)[2]
     for( i in 1:n.simulations){
-      eps <- matrix(rnorm(n*length),nrow=n)
+      eps <- matrix(rnorm(n*len),nrow=n)
       
       if(antithetic)
         eps <- cbind(eps, -eps)
@@ -211,29 +211,31 @@ mcs.Rmpi.slave <- function(){
     }
     price
   }
-  if(commrank==(n_cpu - 1))
-    local_prices <- monteCarloSlave(x, r, n, length, nsim_on_last,
+  if(commrank==0)
+    local_prices <- monteCarloSlave(x, r, n, len, nsim_on_last,
                                          antithetic)
   else
-    local_prices <- monteCarloSlave(x, r, n, length, nsim, antithetic)
+    local_prices <- monteCarloSlave(x, r, n, len, nsim, antithetic)
   mpi.gather.Robj(local_prices, root=0, comm=1)    
 }
 
-mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
-                     n_cpu = 1, spawnRslaves=FALSE) {
+mcs.Rmpi <- function(x, r, n, len, n.simulations=50, antithetic = TRUE,
+                     n_cpu = 1, spawnRslaves=FALSE, debug=FALSE) {
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
   
   if( n_cpu == 1 )
-    return(monteCarloSimulation(x, r, n, length, n.simulations=50,
+    return(monteCarloSimulation(x, r, n, len, n.simulations=50,
                                 antithetic))
-  if( spawnRslaves == TRUE )
+  if( spawnRslaves == TRUE ){
     mpi.spawn.Rslaves(nslaves = n_cpu)
+    mpi.setup.sprng()
+    }
 
   ## broadcast data and functions necessary on slaves
   mpi.bcast.Robj2slave(x) 
   mpi.bcast.Robj2slave(r) 
   mpi.bcast.Robj2slave(n)
-  mpi.bcast.Robj2slave(length)
+  mpi.bcast.Robj2slave(len)
   mpi.bcast.Robj2slave(antithetic)
   
   
@@ -241,8 +243,7 @@ mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
   nsim_on_last <- n.simulations - (n_cpu - 1)*nsim
   mpi.bcast.Robj2slave(nsim)
   mpi.bcast.Robj2slave(nsim_on_last)
-  #mpi.bcast.Robj2slave(mcs.Rmpi.slave)
-
+  mpi.bcast.Robj2slave(mcs.Rmpi.slave)
   ## start partial matrix multiplication on slaves
   mpi.bcast.cmd(mcs.Rmpi.slave())
 
@@ -254,10 +255,11 @@ mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
   ## Rmpi returns a list when the vectors have different length (local_mm = NULL)
   #for(i in 1:n_cpu)
   #  out <- rbind(out,prices[[i+1]])
-  
   if( spawnRslaves == TRUE )
     mpi.close.Rslaves()
-  prices
+  if(debug==TRUE)
+    return(prices)
+  mean(unlist(prices))
 }
 
 
