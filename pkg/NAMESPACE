@@ -27,6 +27,7 @@ export(## OpenMP function wrappers
        "bm.data.frame",
        "create.benchmark",
        "run.benchmark",
+       "speedup",
 
        ## Application: option pricing
        "payoff",
@@ -47,13 +48,18 @@ export(## OpenMP function wrappers
        "monteCarloSimulation",
        "as.option",
        "wienerPath",
-       "returns"
-    )
+       "returns",
+       "blackscholesprice",
+       "mcs.Rmpi"
+       )
 
 ## S3methods
 ## benchmarking
-S3method("print","benchmark")
-S3method("plot","bm_results")
+S3method("print", "benchmark")
+S3method("plot", "bm_results")
+S3method("speedup", "default")
+S3method("speedup", "numeric")
+S3method("speedup", "bm_results")
 
 ## option pricing
 S3method("as.option","default")

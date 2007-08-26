@@ -149,6 +149,25 @@ position <- function(x){
   x
 }
 
+## black scholes model
+
+blackscholesprice <- function(x, r){
+  if(!inherits(x,"option")) stop("'x' must be of class 'option'")
+  if(optionclass(x)!="european")
+    stop("Only European options can be analytically priced.")
+  sigma <- underlying(x)[2]
+  S0 <- underlying(x)[3]
+  X <- strikeprice(x)
+  T <- maturity(x)
+  d1 <- (log(S0/X) + (r + sigma^2/2)*T)/(sigma * sqrt(T))
+  d2 <- d1 - sigma*sqrt(T)
+  type <- optiontype(x)
+  if(type=="call")
+    out <- S0*pnorm(d1) - X*exp(-r*T)*pnorm(d2)
+  if(type=="put")
+    out <-  X*exp(-r*T)*pnorm(-d2) - S0*pnorm(-d1)
+  out
+}
     
 ## monte carlo simulation
 
@@ -167,10 +186,80 @@ monteCarloSimulation <- function(x,r,n,length,
     path <- (mu - sigma^2/2)*dt + sigma*sqrt(dt)*eps
     payoffs <- apply(path,2,payoff,x=x,r=r)
     price[i] <- mean(payoffs)
-    }
+  }
   x$price <- mean(price)
   x
 }
+
+mcs.Rmpi.slave <- function(){
+  require("paRc")
+  commrank <- mpi.comm.rank() - 1
+  monteCarloSlave <- function(x, r, n, length, n.simulations=50,
+                              antithetic=TRUE){
+    price <- vector()
+    dt <- maturity(x)/n
+    mu <- underlying(x)[1]
+    sigma <- underlying(x)[2]
+    for( i in 1:n.simulations){
+      eps <- matrix(rnorm(n*length),nrow=n)
+      
+      if(antithetic)
+        eps <- cbind(eps, -eps)
+      path <- (mu - sigma^2/2)*dt + sigma*sqrt(dt)*eps
+      payoffs <- apply(path,2,payoff,x=x,r=r)
+      price[i] <- mean(payoffs)
+    }
+    price
+  }
+  if(commrank==(n_cpu - 1))
+    local_prices <- monteCarloSlave(x, r, n, length, nsim_on_last,
+                                         antithetic)
+  else
+    local_prices <- monteCarloSlave(x, r, n, length, nsim, antithetic)
+  mpi.gather.Robj(local_prices, root=0, comm=1)    
+}
+
+mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
+                     n_cpu = 1, spawnRslaves=FALSE) {
+  if(!inherits(x,"option")) stop("'x' must be of class 'option'")
+  
+  if( n_cpu == 1 )
+    return(monteCarloSimulation(x, r, n, length, n.simulations=50,
+                                antithetic))
+  if( spawnRslaves == TRUE )
+    mpi.spawn.Rslaves(nslaves = n_cpu)
+
+  ## broadcast data and functions necessary on slaves
+  mpi.bcast.Robj2slave(x) 
+  mpi.bcast.Robj2slave(r) 
+  mpi.bcast.Robj2slave(n)
+  mpi.bcast.Robj2slave(length)
+  mpi.bcast.Robj2slave(antithetic)
+  
+  
+  nsim <- ceiling(n.simulations/n_cpu)
+  nsim_on_last <- n.simulations - (n_cpu - 1)*nsim
+  mpi.bcast.Robj2slave(nsim)
+  mpi.bcast.Robj2slave(nsim_on_last)
+  #mpi.bcast.Robj2slave(mcs.Rmpi.slave)
+
+  ## start partial matrix multiplication on slaves
+  mpi.bcast.cmd(mcs.Rmpi.slave())
+
+  ## gather partial results from slaves
+  local_prices <- NULL
+  prices <- mpi.gather.Robj(local_prices, root=0, comm=1)
+  #out <- NULL
+
+  ## Rmpi returns a list when the vectors have different length (local_mm = NULL)
+  #for(i in 1:n_cpu)
+  #  out <- rbind(out,prices[[i+1]])
+  
+  if( spawnRslaves == TRUE )
+    mpi.close.Rslaves()
+  prices
+}
+
 
 ## generics
 as.option <- function(x, ...){

@@ -1,4 +1,5 @@
-\section{Derivatives}
+\section{Option Pricing Theory}
+\subsection{Derivatives}
 \label{sec:derivatives}
 Derivatives are important in todays financial markets. Futures and
 options have been increasingly traded since the last 20 years. Now,
@@ -28,25 +29,209 @@ and options.
   to sell an asset at a certain time for a certain price. 
 \end{description}
 
-With this information given we can write down their payoff functions:\newline
-for the call option
-\begin{equation}\label{eq:call}
-C_T = \left\{ \begin{array}{lcl} 0 & \textrm{when}& S_T \leq K \\
-                         S_T - K & \textrm{when} & S_T > K, \end{array}\right.
-\end{equation}
-and
-\begin{equation}\label{eq:put}
-P_T = \left\{ \begin{array}{lcl} 0 & \textrm{when}& K \leq S_T \\
-                         K - S_T & \textrm{when} & K > S_T \end{array}\right.
-\end{equation}
-for the put option.
+\begin{description}
+\item[A forward] is a contract in which one party buys (long position)
+  or sells (short postion) an
+  asset at a certain time in the future for a certain price. Unlike
+  forward contracts, \textit{futures} are standardized and therefore
+  are normally traded on an exchange.
+\item[A call option] is a contract, which gives the holder the right
+  to buy an asset at a certain time for a certain price (strike
+  price). 
+\item[A put option] is a contract, which gives the holder the right
+  to sell an asset at a certain time for a certain price. 
+\end{description}
 
 Forward Prices (or Future Prices) can be determined in a simple way
 and therefore it is not of computational interest for this chapter.
 
-Figure \ref{fig:payoffs} shows the payoff functions of a call and
-a put option and the position of the investor (left:~long position,
-right:~short position).
+Options on the other hand are more sophisticated. There exist many
+variants of options on financial markets. European and American
+options are the most common of them.
+
+\begin{description}
+\item[European option] is an option with the right to buy the
+  underlying $S$ at a certain time $T$ (expiration date or maturity)
+  paying a previously defined price $X$ (call option). If one sells
+  this right it is called a put option. $C_t$ ($P_t$) denotes the value of the
+  call option (put option) at a certain time $t$. $S_t$ denotes the
+  value of the underlying at a specific time $t$.
+  The price of a call option is defined as follows:
+  \begin{equation}\label{eq:call}
+    C_T = \left\{ \begin{array}{lcl} 0 & \textrm{if}& S_T \leq X \\
+        S_T - X & \textrm{if} & S_T > X, \end{array}\right
+    \textrm{or} max{S_T - X, 0},
+  \end{equation}
+  and for the put option:
+  \begin{equation}\label{eq:put}
+    P_T = \left\{ \begin{array}{lcl} 0 & \textrm{if}& X \leq S_T \\
+        X - S_T & \textrm{if} & X > S_T \end{array}\right
+    \textrm{or} max{X - S_T, 0}.
+  \end{equation}
+  Figure \ref{fig:payoffs} shows the payoff functions of a call and
+  a put option and the position of the investor (left:~long position,
+  right:~short position).
+\item[American Option] are most often traded on an exchange. The
+  difference to its European counterpart is the fact, that it can be
+  exercised at any time $t$ within the maturity $0...T$. The option
+  expires if it is not exercised.
+  The price of an American call option is 
+  \begin{equation}\label{eq:call}
+    C_t = \left\{ \begin{array}{lcl} 0 & \textrm{if}& S_t \leq X \\
+        S_t - X & \textrm{if} & S_t > X, \end{array}\right
+    \textrm{or} max{S_t - X, 0},
+  \end{equation}
+  and for the put option:
+  \begin{equation}\label{eq:put}
+    P_t = \left\{ \begin{array}{lcl} 0 & \textrm{if}& X \leq S_t \\
+        X - S_t & \textrm{if} & X > S_t \end{array}\right
+    \textrm{or} max{X - S_t, 0}.
+  \end{equation}
+\end{description}
+
+In this chapter the pricing of European options is shown as we can
+obtain the prices analytically (using the Black-Scholes-Merton model)
+and compare it to the prices estimated with Monte Carlo simulation.
+
+\subsection{Black-Scholes Model}
+
+In the 1970s \cite{blackscholes73options} and \cite{merton73options}
+made a major breakthrough in the pricing of options. This soon became
+known as the Black-Scholes model. They were awarded with the Nobel
+prize for economics in 1997 for their work (Fischer Black died in
+1995, otherwise he would have get this prize too).
+
+
+In the model developed by Black, Scholes and merton, price changes are
+described mathematically by the Markov  
+processes. The Brownian motion (or Wiener process) is one of the forms
+of Markov processes, used as a model for stock price movements (this
+goes back to \cite{bachelier00theorie}). 
+
+\subsubsection{Brownian Motion or Wiener process}
+
+A process $(W_t)_{0 \leq < \infty}$ is a Brownian motion or a Wiener
+process if 
+\begin{enumerate}
+\item $W_0 = 0$,
+\item the paths are continous,
+\item all increments $W_{t_1}, W_{t_2} - W_{t_1}, \ldots W_{t_n} - W_{t_{n-1}}$
+  are independent and normal distributed for all $0 < t_1 < t_2 < \ldots < t_n$ 
+\end{enumerate}
+
+The Wiener process is a fundamental part of deriving option pricing
+formulas. An example of a Wiener path can be seen in
+Figure~\ref{fig:wienerpath}. 
+
+\begin{figure}
+\centering
+<<echo=FALSE,fig=TRUE>>=
+X0 <- 0
+n<-500
+T<-5
+wp <- wienerPath(X0,n,T)
+plot(wp)
+@ 
+\label{fig:wienerpath} 
+\end{figure}
+
+\subsubsection{Stock Price Behaviour}
+The value $S$ of an underlying security follows the most widely used
+model for stock price behaviour, the stochastic process
+\begin{equation}
+\label{eq:pathofstock}
+dS = \mu Sdt + \sigma SdW
+\end{equation}
+or
+$$ \frac{dS}{S} = \mu dt + \sigma dW $$
+
+where $\mu$ is the drift rate (or expected return) and $\sigma$ is the
+volatility. $W_{(t)}$ is a standard
+Brownian motion and $dt$ is a time increment. At $t = 0$ the value
+$S_{(0)}$ is $S_0$.
+If a volatility of zero is assumed the stock price would grow at a
+continously compounded rate of $\mu$ as
+$$ \frac{dS}{S} = \mu dt $$
+and integrated between $0$ and $T$ is
+$$ S_T = S_0 e^{\mu T}. $$
+
+\subsubsection{Black-Scholes Differential Equation}
+Generally, the price of a derivative is a function of the stochastic
+variable underlying the derivative (e.g., the stock $S$) and time $t$. In
+this case the stock price process is assumed to be like in
+Equation~\ref{eq:pathofstock}. If we suppose that $V$ is the value
+(price) of an option or other derivative, the variable $V$ must be
+some function of $S$ and $t$. After applying It\^o's Lemma
+(\cite{ito1951sde}) we get
+
+\begin{equation}
+\label{eq:BSM_diff}
+\frac{\delta V}{\delta t} + \frac{1}{2} \sigma^2S^2
+\frac{\delta^2V}{\delta S^2} + rS\frac{\delta V}{\delta S} - rV = 0.
+\end{equation}
+
+Equation~\ref{eq:BSM_diff} is the Black-Scholes-Merton differential equation.
+Solving this equation depends on the boundary conditions that are used
+for a particular derivative. In the case of a European option the
+boundary condition equals at $t=T$ to the payoff $V(T,S)$.
+For a call option the value is derived as follows
+$$ V(T,S) = max(S(T)-X,0) $$
+and for a put option
+$$ V(T,S) = max(X - S(T),0) .$$
+
+\subsubsection{Black-Scholes pricing formulas}
+
+This yields to te Black-Scholes formulas for the prices at time zero
+of a European options on a non-dividend paying stock. The price of a
+call option $c$ is
+\begin{equation}
+\label{eq:BS_call}
+c = S_0 N(d_1) - Xe^{-rT}N(d_2)
+\end{equation}
+and the price of the corresponding put option $p$ is
+\begin{equation}
+\label{eq:BS_put}
+p = Xe^{-rT}N(-d_2) - S_0 N-d_1)
+\end{equation}
+where
+$$ d_1 = \frac{ln(\frac{S_0}{X}) + (r + \frac{\sigma^2}{2})T}
+{\sigma \sqrt{T}} $$
+$$ d_2 = \frac{ln(\frac{S_0}{X}) + (r - \frac{\sigma^2}{2})T}
+{\sigma \sqrt{T}} = d_1 - \sigma \sqrt{T}$$
+
+The function $N(x)$ denotes the cumulative probability distribution
+function for a standard normal distribution. It returns the
+probability that $\phi (0,1)$ is less than $x$.
+They are
+considered to be constants (for simplicity).
+
+The European options can be solved analytically as we saw in this
+section. Other derivatives can only be priced by numerical
+solutions. In the following section the use of Monte Carlo simulation
+is shown. Again we use European option so that we can compare the
+analytical exact solution with the numerical approximation.
+
+\subsection{Monte Carlo Evaluation of the Option Prices}
+
+
+\subsection{Black-Scholes model}
+
+There is a market which consists of
+\begin{itemize}
+\item a bank account process $B_t = e^{rt}$
+\item and a share $S_t = S_0 e^{(\mu - \frac{\sigma^2}{2}) t + \sigma W_t}$. 
+\end{itemize}
+
+Equation~\ref{eq:blackscholes} gives the price of a European call
+option of time $t$ with maturity $T$ and payoff function $h(S_T)$.
+
+\begin{equation}\label{eq:blackscholes}
+ F(t,x) = \int e^{-r(T-t)}h(xe^{(r - \frac{\sigma^2}{2})(T-t)+\sigma \sqrt{T-tz}})\phi(z)dz 
+\end{equation}
+
+TODO: implement bs model
+
+
 
 <<eval=TRUE, echo=FALSE>>=
 ## initialization of rng
@@ -73,6 +258,17 @@ ts(x0 + cumsum(sample(step, n, prob = c(p, 1-p), replace = TRUE)))
 randomWalkNorm <- function(x0,n,mu=0,sigma=1)
   ts(c(x0,x0+cumsum(rnorm(n,mu,sigma))))
 
+## build example option
+myopt <- list()
+myopt$mu <- 0.1           ## expectation of underlying
+myopt$sigma <- 0.4        ## standard deviation of underlying
+myopt$type <- "Call"      ## type of the option
+myopt$strikeprice <- 100  ## strikeprice of the option
+myopt$present <- 100      ## present value of the underlying
+myopt$maturity <- 1/12    ## time to maturity (in years)
+
+myopt <- as.option(myopt)   ## coercing 'list' to 'option'
+
 @ 
 
 \subsubsection{An example in R}
@@ -85,19 +281,6 @@ class. What follows is an
 overview of creating and working with such an object.
 
 <<echo=TRUE, eval=TRUE>>=
-
-## build example option
-myopt <- list()
-myopt$mu <- 0.1           ## expectation of underlying
-myopt$sigma <- 0.4        ## standard deviation of underlying
-myopt$type <- "Call"      ## type of the option
-myopt$strikeprice <- 100  ## strikeprice of the option
-myopt$present <- 100      ## present value of the underlying
-myopt$maturity <- 1/12    ## time to maturity (in years)
-
-myopt <- as.option(myopt)   ## coercing 'list' to 'option'
-myopt
-
 ## use extractors
 underlying(myopt)
 optiontype(myopt)
@@ -113,14 +296,8 @@ underlying(myopt)
 priceof(myopt) <- 4
 priceof(myopt)
 
-## example on page 224 of [1]
-#newopt <- list()
-#newopt$mu <- 0.14
-#newopt$sigma <- 0.2
 
 @ 
-
-The plot method shows the payoff function of the delivered option.
 
 \begin{figure}
 \centering
@@ -139,33 +316,6 @@ plot(myopt)
 @
 \label{fig:payoffs} 
 \end{figure}
-
-\subsection{Random Walk}\label{sec:randomwalk}
-Given a probability space ($\Omega,{\cal F},P$) we can differentiate
-between stochastic processes in discrete time (sequences of random
-variables $(X_n)_{n=0}^N$, $N \in\mathbf{N}$) and stochastic processes
-in continous time $(X_t)_{0 \leq t \leq T}$.
-
-A process $(X_n)_{n=0}^N$ with independent and identical distributed
-increments~($Z_i ~ Z_1$ for $n=1,\ldots,N$)is called random walk.
-$$ X_n = X_0 + Z_1 + Z_2 + \ldots + Z_n $$
-Figure~\ref{fig:randomwalk} shows a random walk starting from $X_0 =
-10$ and $Z_i ~ Z_1 ~ N(0,1)$.
-
-\begin{figure}
-\centering
-<<fig=TRUE,echo=TRUE>>=
-X0 <- 10
-n <- 100
-
-rw <- randomWalkNorm(X0,n)
-par(mfrow=c(1,1))
-plot(rw,main="Random Walk", ylab="price")
-
-@
-\label{fig:randomwalk} 
-\end{figure}
-
 
 \subsection{Binomial process}
 
@@ -203,52 +353,6 @@ plot(rw)
 
 %\subsection{Cox, Ross and Rubinstein Model}
 
-\subsection{Wiener process}
-
-A process $(W_t)_{0 \leq < \infty}$ is a Wiener process if
-\begin{enumerate}
-\item $W_0 = 0$,
-\item the paths are continous,
-\item all increments $W_{t_1}, W_{t_2} - W_{t_1}, \ldots W_{t_n} - W_{t_{n-1}}$
-  are independent and normal distributed for all $0 < t_1 < t_2 < \ldots < t_n$ 
-\end{enumerate}
-
-The Wiener process is a fundamental part of deriving option pricing
-formulas. In figure \ref{fig:wienerpath} one can see an example of a
-Wiener path. 
-
-\begin{figure}
-\centering
-<<echo=TRUE,fig=TRUE>>=
-
-X0 <- 0
-n<-500
-T<-5
-
-wp <- wienerPath(X0,n,T)
-plot(wp)
-
-@ 
-
-\label{fig:wienerpath} 
-\end{figure}
-
-\subsection{Black-Scholes model}
-
-There is a market which consists of
-\begin{itemize}
-\item a bank account process $B_t = e^{rt}$
-\item and a share $S_t = S_0 e^{(\mu - \frac{\sigma^2}{2}) t + \sigma W_t}$. 
-\end{itemize}
-
-Equation~\ref{eq:blackscholes} gives the price of a European call
-option of time $t$ with maturity $T$ and payoff function $h(S_T)$.
-
-\begin{equation}\label{eq:blackscholes}
- F(t,x) = \int e^{-r(T-t)}h(xe^{(r - \frac{\sigma^2}{2})(T-t)+\sigma \sqrt{T-tz}})\phi(z)dz 
-\end{equation}
-
-TODO: implement bs model
 
 \subsection{Monte Carlo Methods}
 

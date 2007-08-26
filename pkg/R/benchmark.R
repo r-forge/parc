@@ -330,17 +330,17 @@ plot.bm_results <- function(x, task="all", ... ){
   ntypes <- length(unique(x$type))
   ntasks <- length(unique(x$task))
 
-  if(ntypes > 5)
-    stop("more than 5 functions in a benchmark are not supported yet")
+  if(ntypes > 11)
+    stop("more than 11 functions in a benchmark are not supported yet")
 
   
   ## define plot region, colorspace and other plot parameters
-  xlim <- c(0,max(as.numeric(x$n_cpu))+1)
-  ylim <- c(0,max(x$time_ela)+1)
+  xlim <- c(0,max(as.numeric(x$n_cpu),na.rm=TRUE)+1)
+  ylim <- c(0,max(x$time_ela,na.rm=TRUE)+1)
   ncolors <- ntypes*ntasks
   colors <- rainbow_hcl(ncolors, c=80, l=65, start = 20, end = 340)
-  ltys <- c(1:6)
-  pchs <- c(21:25)
+  ltys <- c(1:6,1:6)
+  pchs <- c(21:25,21:25,21)
   par(mar=c(5,4,4,5))
   main=paste("Task:",task)
 
@@ -368,5 +368,5 @@ plot.bm_results <- function(x, task="all", ... ){
   ##mtext("Speedup", side = 4, line = 3)
 
   ## legend
-  legend("topleft", c(ref,results.to.plot), col=colors[1:ntypes], lty = ltys[1:ntypes], bty = "n", pch = pchs[1:ntypes])
+  legend("topright", c(ref,results.to.plot), col=colors[1:ntypes], lty = ltys[1:ntypes], bty = "n", pch = pchs[1:ntypes])
 }
