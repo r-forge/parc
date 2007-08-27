@@ -145,7 +145,20 @@ round(X,3)
 
 \subsection{Fault Tolerance}
 
-
+Providing fault tolerance, computational reproducibility and dynamic
+adjustment of the cluster configuration is required for practical
+real-world parallel applications according to
+\cite{sevcikova04pragmatic}. Failure detection and recovery, dynamic
+cluster resizing and the possibility to obtain intermediate results of
+a parallel computation is implemented in the package \pkg{snowFT}
+(\cite{sevcikova04snowFT}). A detailed introduction to fault tolerance
+in statistical simulations can be found in
+\cite{sevcikova04simulations}. As we pointed out in
+Section~\ref{sec:MPI} and Section~\ref{sec:PVM} MPI does not provide
+tools for implementing fault tolerance and therefore package
+\pkg{rpvm} is required for \pkg{snowFT}. For more details on the fault
+tolerant version of \pkg{snow} we refer to the package documentation
+(\cite{sevcikova04snowFT}).
 
 \subsection{Conclusion}
 

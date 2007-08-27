@@ -670,6 +670,7 @@ is what one would asume when speaking of MIMD architectures but both
 models (SPMD and MPMD) form the MIMD programming paradigm.
 
 \subsubsection{History}
+
 When parallel computing came up there have been a lot of programming
 languages developed (see ie., \cite{gehani88:concurrentprog} and
 \cite{wilson96:parallelprog}). Only few of them experienced any real use. There
@@ -969,6 +970,48 @@ and disadvantages are:
   of implicit programming
 \item scalability is limited by the architecture
 \end{itemize}
+
+\subsection{Granularity of a Parallel Program}
+
+Having the parallel hardware available, the developer has to be aware
+of the software like the available compilers and
+libraries (parallel programming models) to use for parallel
+computations.
+
+Granularity of parallel programs. Granularity is refered to as the
+number of instructions performed in parallel. 
+\subsubsection{Levels of Parallelism}
+
+\begin{description}
+\item[Instruction level parallelism] single instructions are processed
+  concurrently.
+\item[Data level parallelism] the same instruction is processed on
+  different data at the same time.
+\item[Loop level parallelism] a block instruction from a loop can be
+  run for each loop iteration in parallel.
+\item[Procedure level parallelism] larger program parts (mostly
+  program procedures) are run in parallel.
+\end{descriptopn}
+
+Choice of grain size involves a tradeoff: a fine-grained 
+program provides considerable flexibility with respect to load
+balancing, but it also involves 
+a high overhead of processing time due to a larger management need and
+communication 
+expense. Thus, the available hardware architecture has to be taken
+into consideration. For 
+example, a program running in parallel at the instruction level would
+not benefit much in 
+a system with distributed memory where the cost for data transfer via
+a network is high 
+relative to the runtime of the instruction itself. 
+
+\subsubsection{Types  of Parallelism}
+\begin{description}
+\item[Implicit parallelism]
+\item[Explicit parallelism with implicit decomposition]
+\item[Explicit parallelism]
+\end{descriptopn}
 
 
 %%\subsection{Global Arrays}

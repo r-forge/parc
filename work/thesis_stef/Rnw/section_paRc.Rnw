@@ -3,15 +3,17 @@
 
 In the course of this thesis a package called \pkg{paRc}
 (\cite{theussl07paRc}) has been developed with the aim
-to evaluate performance of parallel computations and to show how
+to evaluate performance of parallel applications and to show how
 interfacing high performance applications written in C can be done
-when using OpenMP ~(see Section~\ref{sec:OpenMP}.
+using OpenMP~(see Section~\ref{sec:OpenMP}).
 
 The package \pkg{paRc} contains interface functions to the OpenMP library
 and provides high level function to a few C implementations of
-parallel applications using OpenMP.
+parallel applications using OpenMP (e.g., matrix multiplication---see Chapter~\ref{chap:matrix}).
 Furthermore, it supplies a benchmark environment for performance
-evaluation of parallel programs.
+evaluation of parallel programs and a framework for pricing options
+with parallel Monte Carlo simulation (see
+Chapter~\ref{chap:options}).
 
 \pkg{paRc} can be obtained from \url{R-Forge.R-project.org}---the
 R-project community service. To install this package directly within R
@@ -21,8 +23,18 @@ with version 9.1 or newer (the Linux compiler is free for
 non-commercial use) or the GNU~C compiler with version 4.2 or
 newer. They are known to support OpenMP.
 
-\subsection{OpenMP interface functions}
+Examples in this section are produced on a bignode of
+cluster@WU. Bignodes provide a shared memory platform with up to 4
+CPUs. Shared memory platforms are necessary for running parallel
+OpenMP applications.
 
+\subsection{OpenMP Interface Functions}
+
+The user is provided with a few interface functions to the OpenMP
+library. They are used to query the internal variables of the compiled
+parallel environment or to change them.
+
+\subsubsection{OpenMP routines}
 \begin{description}
 \item[\texttt{omp.get.num.procs()}] returns the number of threads
   available to the program.
@@ -32,11 +44,10 @@ newer. They are known to support OpenMP.
   used in subsequent parallel executions.
 \end{description}
 
-
 \subsubsection{OpenMP specific environment variables}
 
-Certain environment variables affect the runtime behaviour of OpenMP
-programs. These environment variables are~(\cite{openMP05}):
+Moreover, environment variables can affect the runtime behaviour of
+OpenMP programs. These environment variables are~(\cite{openMP05}):
 
 \begin{description}
 \item[\texttt{OMP\_NUM\_THREADS}] sets the number of threads to use in
@@ -48,11 +59,13 @@ programs. These environment variables are~(\cite{openMP05}):
 \item[\texttt{OMP\_NESTED}] enables or disables nested parallelism.
 \end{description}
 
+Example~\ref{ex:paRcOMP} shows the use of the OpenMP library calls in
+R. First the number of available processors is queried. Then the
+number of threads a parallel application may use is set to 2. With the
+last call the current available CPUs to a parallel program is queried.
 
-
-\begin{Example} OpenMP function calls using \pkg{paRc} \newline
-running on cluster@WU using a bignode which provides 4 cores.
-
+\begin{Example} OpenMP function calls using \pkg{paRc}
+\label{ex:paRcOMP}
 <<echo=TRUE>>=
 library("paRc")
 
@@ -63,13 +76,11 @@ omp.set.num.threads(2)
 omp.get.max.threads()
 
 @ 
-\label{ex:paRcOMP}
 \end{example}
 
+\subsection{High Level OpenMP Functions}
 
-\subsection{Built-in high level functions}
-
-\pkg{paRc} provides the following high level OpenMP functions: 
+\pkg{paRc} provides the following high level OpenMP function: 
 
 \begin{description}
 \item[\texttt{omp.matrix.mult(X, Y, ncpu = 1)}] multiplies the matrix
@@ -77,46 +88,84 @@ omp.get.max.threads()
   processors.
 \end{description}
 
-
 \subsection{Benchmark}
 
-handle benchmark objects
+\pkg{paRc} provides a benchmark environment for measuring the
+performance of parallel programs. Two main functions exist in this
+context---one for creating a benchmark object and one for running the
+benchmark described by the object.
 
+\subsubsection{Main routines}
+\begin{description}
+\item[\code{create.benchmark()}]
+\item[\code{run.benchmark()}]
+\end{description}
+
+
+\subsubsection{Extractor and Replacement Functions}
 \begin{description}
 \item[\code{bm.cpu.range}]
 \item[\code{bm.data}]
-\item[\code{bm.functions.to.apply}]
 \item[\code{bm.is.parallel}]
 \item[\code{bm.task}]
-\item[\code{run.benchmark}]
+\item[\code{bm.tasks}]
+\item[\code{bm.type}]
+\item[\code{bm.types}]
+
 \end{description}
 
-S3 methods
+\subsubsection{Generic}
+
+\begin{description}
+\item[\code{speedup}]
+\end{description}
+
+\subsubsection{S3 methods}
 
 \begin{description}
 \item[\code{print.benchmark}]
-\item[\code{plot.benchresults}]
+\item[\code{plot.bm_results}]
+\item[\code{speedup.default}]
+\item[\code{speedup.numeric}]
+\item[\code{speedup.bm_results}]
 \end{description}
 
-\subsection{Other important functions}
+\subsection{Environment for Option Pricing}
 
 To complete the set of important functions supplied by package
 \pkg{paRc} the following functions have to be explained:
 
+\subsubsection{Main routines}
+\begin{description}
+\item[\code{define.option()}]
+\item[\code{blackscholesprice(x)}]
+\item[\code{monteCarloSimulation(x)}]
+\item[\code{mcs.Rmpi}]
+\end{description}
+
+
+\subsubsection{Extractor and Replacement Functions}
+\begin{description}
+\item[\code{maturity}]
+\item[\code{strikeprice}]
+\item[\code{underlying}]
+\item[\code{optiontype}]
+\item[\code{optionclass}]
+\item[\code{priceof}]
+\item[\code{position}]
+\end{description}
+
+\subsubsection{S3 methods}
+
+\begin{description}
+\item[\code{print.option}]
+\item[\code{plot.option}]
+\end{description}
+
+\subsection{Other Functions}
+
+\begin{description}
+\item[\code{serial.matrix.mult(X,Y)}]
+\end{description}
+
 \subsection{Conclusion}
-
-%The \texttt{PVM.rapply()} example shown in this section followed the Single Program
-%Multiple Data (SPMD) paradigm. Data is splitted into different parts
-%which are sent to different processes. I/O is handled by a master
-%process. When loading rpvm in an R session this session becomes the
-%master process. Slaves can easily be spawned provided that there are
-%working slave scripts available. A major disadvantage is that the rpvm
-%package only has two higher-level function. One of them can be used
-%for calculations. That means when using this package for HPC one has
-%to deal with low-level message-passing which in turn provides high
-%flexibility. New parallel functions can be constructed on the basis of
-%the provided interface.
-
-%For further interface functions supplied by the \pkg{paRc} package, a more detailed
-%description and further examples please consult the package description
-%\cite{yu06Rmpi}.

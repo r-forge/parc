@@ -76,12 +76,13 @@ collaborative software development for the R community
 \section{Other Packages Providing HPC Functionality}
 \label{sec:otherpackages}
 There are a few other packages which supply the user with parallel
-computing functions or extend other high performance computing
+computing functionality or extend other high performance computing
 packages. In this section a short description of each of these
 packages is given.
 
 \begin{description}
-\item[rsprng] (\cite{li07rsprng}) is an R interface to SPRNG (Scalable Parallel Random
+\item[rsprng] (\cite{li07rsprng}) is an R interface to SPRNG (Scalable
+  Parallel Random 
   Number Generators---\cite{mascagni00ssl}). SPRNG is a package for parallel
   pseudo random number generation with the aim to be easy to use on a
   variety of architectures, especially in large-scale parallel Monte
@@ -106,15 +107,15 @@ packages is given.
   to lapply and apply but distributes the processing evenly among the
   nodes of a cluster. \pkg{papply} uses the package \pkg{Rmpi} (see
   Section~\ref{sec:Rmpi}) for
-  communication but supports more error messages for debugging.
+  communication but supports in addition error messages for debugging.
 \item[biopara] (\cite{lazar06biopara}) allows users to distribute
   execution of large problems over multiple machines. It uses R socket
   connections (TCP) for communication. \pkg{biopara} supplies two high
   level functions, one for distributing work (represented by function
   and its arguments) among ``workers'' and the other for doing
   parallel bootstrapping like the native R function boot(). 
-\item[taskPR] (\cite{samatova04taskPR}) provides a parallel execution environment on
-  the basis of TCP or MPI-2.
+\item[taskPR] (\cite{samatova04taskPR}) provides a parallel execution
+  environment on the basis of TCP or MPI-2.
 \end{description}
 
 \section{Conclusion}
