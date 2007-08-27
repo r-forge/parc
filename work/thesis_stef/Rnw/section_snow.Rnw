@@ -3,7 +3,7 @@
 The aim of simple network of workstations
 (\pkg{snow}---\cite{rossini03snow}, \cite{tierney07snow}) is to
 provide a simple parallel computing environment in R. To make a
-collection of computers to appear as a virtual cluster in R \pkg{snow}
+collection of computers to appear as a virtual cluster in R 
 three different message passing environments can be used:
 
 \begin{itemize}
@@ -12,11 +12,14 @@ three different message passing environments can be used:
 \item SOCK via TCP sockets
 \end{itemize}
 
-The details of which mechanism is used and how it is used are hidden
-from the high level user.
-After setting up this virtual cluster developing parallel R functions
-can be achieved via an standardized interface to the computation
+The details of the mechanism used and how it implemented are hidden
+from the high level user. As the name suggests it should be simple to
+use.
+
+After setting up a virtual cluster developing parallel R functions
+can be achieved via a standardized interface to the computation
 nodes.
+
 Moreover, when using \pkg{snow} one can rely on a good handful of
 high level functions. This makes it rather easy to use the underlying
 parallel computational engine.
@@ -39,19 +42,17 @@ What follows is a description of high level functions supplied by the
 Initializing a \pkg{snow} cluster is rather easy if the system is
 prepared accordingly. When using MPI (achieved through \pkg{Rmpi}) a
 LAM/MPI environment has to be booted prior starting the virtual
-cluster (see section \ref{sec:Rmpi}). Is PVM the method of choice the
+cluster (see Section~\ref{sec:Rmpi}). Is PVM the method of choice the
 \pkg{rpvm} package must be available and an appropriate PVM has to be
-started (see section \ref{sec:rpvm}). For both MPI and PVM the
+started (see Section~\ref{sec:rpvm}). For both MPI and PVM the
 parallel environment 
-can be configured through a grid engine (see appendix
+can be configured through a grid engine (see Appendix
 \ref{app:gridengine}). TCP sockets can be set up directly using the
-package. MPI or PVM have the possibility to query the status of the
+package. MPI or PVM offer the possibility to query the status of the
 parallel environment. This can be done using the functions supplied
 from the corresponding package.
 
-
-\pkg{snow} management functions:
-
+\subsubsection{Management Functions}
 \begin{description}
 \item[\code{makecluster(spec, type = getClusterOption(``type''))}]
   starts a cluster of type \code{type} with \code{spec} numbers of
@@ -63,11 +64,10 @@ from the corresponding package.
 \item[\code{stopCluster(cl)}] stops a cluster specified in \code{cl}.
 \end{description}
 
+Example~\ref{ex:snowstartstop} shows how a virtual cluster can be
+created using MPI. 
 
-\begin{Example} Start/stop cluster in \pkg{snow} \newline
-running on cluster@WU using the node.q -- the parallel environment was
-started with the SGE using 8 nodes.
-
+\begin{Example} Start/stop cluster in \pkg{snow}
 <<echo=TRUE>>=
 library("snow")
 set.seed(1782)
@@ -76,17 +76,16 @@ n <- 8
 cl <- makeCluster(n, type = "MPI")
 ## Stop cluster
 stopCluster(cl)
-
 @ 
 \label{ex:snowstartstop}
 \end{Example}
 
 \subsection{Built-in High Level Functions}
 
-\pkg{snow} provides a good handful of high-level functions: 
+\pkg{snow} provides a good handful of high-level functions. They can
+be used as building blocks for further high level routines.
 
-
-%% TODO
+\subsubsection{High Level Functions}
 \begin{description}
 \item[\code{clusterEvalQ(cl, expr)}] evaluates an R expression
   \code{expr} on
@@ -118,13 +117,20 @@ stopCluster(cl)
   matrix multiplication. 
 \end{description}
 
+Example~\ref{ex:snowapply} shows the use of \code{clusterApply()} on a
+virtual cluster of 8 nodes using MPI as communication layer. Like in
+Example~\ref{ex:Rmpi3} a vector of $n$ random numbers is generated on
+each of the $n$ slaves and are returned to the master as a
+list (each list element representing one row). Finally a $n  \times n$
+matrix is formed and printed. The output of the matrix shows again for
+each row the same random numbers. This is because of the fact, that
+each slave has the same seed. This problem is more specific treated in
+Chapter~\ref{chap:options}. For more information about parallel random
+number generators see the descriptions of the packages \pkg{rsprng}
+and \pkg{rlecuyer} in Section~\ref{sec:otherpackages}. 
 
-\begin{Example} Using high-level functions of snow\newline
-running on cluster@WU using the node.q -- the parallel environment was
-started with SGE using 8 nodes
-
+\begin{Example} Using high level functions of snow
 <<echo=TRUE>>=
-
 n <- 8
 # spawn n slaves
 cl <- makeCluster(n, type="MPI")
@@ -132,8 +138,7 @@ cl <- makeCluster(n, type="MPI")
 x <- rep(n,n)
 rows <- clusterApply(cl, x, runif)
 X <- matrix(unlist(rows), ncol = n, byrow=TRUE)
-X
-
+round(X,3)
 @ 
 \label{ex:snowapply}
 \end{Example}

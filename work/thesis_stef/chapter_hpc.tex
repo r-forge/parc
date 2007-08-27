@@ -1,7 +1,7 @@
 \chapter{Parallel Computing}
 \label{chap:parallelcomputing}
 \section{Introduction}
-
+\label{sec:parallelintro}
 In 1965 a director in the Fairchild Semiconductor division of
 Fairchild Camera and Instrument Corporation predicted: ``The complexity
 (of integrated circuits, annotation of the author)
@@ -16,11 +16,30 @@ has approximately doubled every 18 months).
 Furthermore, with greater speed more memory is needed, otherwise you have
 the situation that a computer capable of performing trillions of
 operations in every second only has access to a small memory which is
-rather useless for performing data driven calculations. In addition to
+rather useless for performing huge data driven calculations. In addition to
 that the amount of data being available to analysts today has rapidly
 increased. Data collection and mining is done nearly everywhere. This
-bulk of data implies that enough memory is available to process it.
+bulk of data implies that enough memory is available to process
+it. With this development a new field in computer science established
+and has become increasingly important over the last decades---high
+performance computing.
 
+\subsubsection{High Performance Computing}
+
+The term high performance computing (HPC) refers to the use of (parallel)
+supercomputers and computer clusters (\cite{wiki:hpc}). Indeed it can
+be explained as computing on a high performance computing
+machine. This machines can be clusters of workstations or huge shared
+memory machines (see Secion~\ref{sec:hpcserver} for more details on
+high performance computing servers).
+
+Furthermore, HPC is a branch of computer science that concentrates on
+developing high performance computers and software to run on these
+computers. An important area of this discipline is the development of
+parallel processing algorithms or software referred to as
+\textbf{parallel computing}.
+ 
+\subsubsection{Trends Constituting High Performance Computing}
 Now, more than 40 years later desktop systems with two to four
 processors and lots of memory are available. This means that standard
 stock computers can be compared with high performance workstations of
@@ -55,38 +74,29 @@ research include:
 \item and astronomy.
 \end{itemize}
 
-The R project for Statistical Computing and Graphics is an open-source
+The R project for Statistical Computing and Graphics is an open source
 software environment available for different
-platforms~\cite{Rcore07R}. With the 
+platforms~(\cite{Rcore07R}). With the 
 development mentioned above there have come up some extensions (called
-packages) for High Performance Computing.
+packages) for high performance computing. That means R is already
+prepared to be used in this field. A more detailed overview of high
+performance computing in connection with R can be found in a separate
+Chapter~\ref{chap:Rhpc}.
+
 
 In this chapter the fundamentals of parallel computing are
-presented. It provides a general overview of the field of High
-Performance Computing and how performance of applications can be
+presented. It provides a general overview of the field of high
+performance computing and how performance of applications can be
 analyzed in this field.
 
 \section{Terms and Definitions}
 \label{sec:termsdef}
 
-Before we go into further details the term high performance computing
-should be defined. Furthermore, it is important to know the difference
-between parallelism and concurrency. They are explained in this
-section.
-
-\subsection{High Performance Computing}
-
-The term high performance computing (HPC) refers to the use of (parallel)
-supercomputers and computer clusters (\cite{wiki:hpc}). Indeed it can
-be explained as computing on a high performance computing
-machine. This machines can be clusters of workstations or huge shared
-memory machines (see Secion~\ref{sec:hpcserver} for more details on
-high performance computing servers).
-
-Furthermore, HPC is a branch of computer science that concentrates on
-developing high performance computers and software to run on these
-computers. An important area of this discipline is the development of
-parallel processing algorithms or software.
+Before we go into further details the two important terms have to be
+defined. It is important to know the difference between processes
+and threads as they are the key figures in parallel computing.
+Then, the difference between parallelism and concurrency is explained
+as they are often confused or said to be the same.
 
 \subsection{Process vs. Thread}
 
@@ -99,12 +109,12 @@ program). Processes have their own state information, use their own
 address space and interact with other processes only via an
 interprocess communication mechanism generally managed by the operating
 system. A master process may spawn subprocesses which are logically
-separeted from the functionality of the master process and other
+separated from the functionality of the master process and other
 subprocesses.
 
 In contrast to processes, threads are typically spawned from processes
-for a short time to achieve a certain task and then terminate
-(fork-join principle). Threads within a process
+for a short time to achieve a certain task and then
+terminate---\textbf{fork-join principle}. Threads within a process
 share the same state and same memory space, and can communicate with
 each other directly through shared variables.
 
@@ -117,7 +127,7 @@ whereas \textbf{concurrency} is logically simultanous processing of
 threads or processes regardless of a performance gain (this does not
 imply multiple processing elements). I.e., concurrent execution of
 processes can be interleaved execution on a single processing
-element. Table~\ref{tab:concurrency}) shows interleaved execution of 3
+element. Table~\ref{tab:concurrency} shows interleaved execution of 3
 processes. In every cycle the process executed (X) changes: in the
 first cycle process $1$ is executed, in the second cycle process $2$
 and after process $3$ has started in cycle $3$, process $1$ continues
@@ -186,18 +196,23 @@ parallel and concurrent and use them interchangeably.
 \section{Computer Architecture}
 
 In this section computer architectures are briefly described. This
-knowledge is of great advantage to
+knowledge is of major interest to
 understand how performance can be maximized when using parallel
 computing. First it is important to know how to make an application fast
-on a single processor and second how to supply data efficiently to
-these processors. The beginning of this chapter deals with a taxonomy of
+on a single processor. As recently as this is done one may begin to
+parallelize this application and think of how to supply data efficiently to
+more than one processors. In this section we try to summarize the key
+concepts in computer architecture and to show what we have to keep in
+mind when parallelizing code.
+
+The beginning of this chapter deals with a taxonomy of
 the design alternatives for multiprocessors. After that a brief look
-into processor design and memory hierarchies is given. The section
+into processor design and memory hierarchies is given. This section
 closes with a description of high performance computing servers.
 
 \subsection{Beyond Flynn's Taxonomy}
-
-Providing a high-level standard for programming HPC applications is a
+\label{sec:flynn}
+Providing a high level standard for programming HPC applications is a
 major challenge nowadays. There is a variety of architectures for
 large-scale computing. They all have specific features and 
 therefore there should be a taxonomy in which such architectures can
@@ -223,12 +238,12 @@ known as Flynn's taxonomy:
 \end{description}
 
 But these distinctions are insufficient for classifying modern
-computers according to~\cite{duncan90survey}. There are e.g.
+computers according to~\cite{duncan90survey}. There are e.g.,
 pipelined vector processors capable of concurrent arithmetic execution and
 manipulating hundreds of vector elements in parallel.
 
 Therefore,~\cite{duncan90survey} defines that a parallel architecture
-provides an explicit, high-level framework for 
+provides an explicit, high level framework for 
 the development of parallel programming solutions by providing
 multiple processors that cooperate to solve problems through
 concurrent execution:
@@ -267,21 +282,34 @@ concurrent execution:
   dataflow execution.
 \end{description}
 
+These paradigms have to be kept in mind when designing high performance
+software as each architecture implies a specific way of writing
+efficient code. Luckily, platform specific libraries and compilers
+tuned to run optimal on the corresponding hardware are available to
+developers. They help to reduce the amount of work necessary to
+create a parallel application.
+
 \subsection{Processor and Memory}
 \label{sec:processorandmemory}
-A reduction of the execution time can be achieved with parallel
-computing and this is the most important method for improving
+A reduction of the execution time can be achieved when taking
+advantage of parallel
+computing and this is an essential possibility for improving
 performance. But a programmer can only achieve best performance when
-he is aware of the underlying hardware. In fact parallelism can be
+he is aware of the underlying hardware. Before making use of
+parallelism the performance of the sequential parts of the code has to
+be maximized. This means the serial routines of a parallel program
+have to be optimized to run on a single processor. In fact parallelism can be
 exploited at different levels starting with the processor
-itself. Furthermore, processors have to be provided with data
-sufficiently fast. If the memory is too slow having a faster processor
+itself (e.g., pipelining).
+
+Furthermore, processors have to be provided with data
+sufficiently fast. If the memory is too slow having a fast processor
 does not pay. Normally memory which delivers good performance is too
 expensive to be economically feasible. This situation has led to the
 development of memory hierarchies.
 
 \subsubsection{Instruction Level Parallelism}
-A technique called pipelining allows a processor to execute different
+A technique called \textbf{pipelining} allows a processor to execute different
 stages of different instructions at the same time.
 For example in the classic von Neumann architecture (SISD), processors
 complete consecutive instructions in a fetch-execute
@@ -347,18 +375,20 @@ compiler.
 
 \subsubsection{Memory Hierarchies}
 
+The best way to
+make a program fast would be to take advantage entirely of the fastest memory
+available. But this would make the price of a computer extremely
+high. Memory hierarchies have become an economical solution in a
+cost-performance sense. Between the processor and the main memory one
+or more levels of fast (smaller in size) memory is inserted---cache
+memory.
+
 Programs tend to reuse data and instructions they have used
 recently. Therefore one wants to predict what instructions and data a
-program will use in the near future. This is also known as the
-Principle of Locality (\cite{C1quant07}). The best way to
-make a program fast would be to take advantage of the fastest memory
-available. But this would make the price of a computer extremely
-high.
-
-Memory hierarchies have become an economical solution in a
-cost-performance sense. Between the processor and the main memory one
-or more levels of fast (smaller in size) memory is inserted -- cache
-memory. Fulfilling the principle of locality, cache memory stores the
+program will use in the near future and keep them in higher (faster)
+levels of the memory hierarchy. This is also known as the
+\textbf{principle of locality} (\cite{C1quant07}). Fulfilling the
+principle of locality, cache memory stores the 
 instructions and data which are predicted to be used next or in
 subsequent steps. This increases the throughput of the data provided that
 the predictions made were correct.
@@ -366,7 +396,14 @@ the predictions made were correct.
 \subsection{High Performance Computing Server}
 \label{sec:hpcserver}
 
-Traditionally computers can be categorized as follows:
+High performance computing refers to the use of (parallel)
+supercomputers and computer clusters (see
+Sectio~\ref{sec:parallelintro}). This Section gives an overview of
+high performance computing servers and where they are classified
+among all computer types.
+
+
+Traditionally computers have been categorized as follows:
 \begin{itemize}
 \item personal computers
 \item workstations
@@ -376,7 +413,7 @@ Traditionally computers can be categorized as follows:
 \end{itemize}
 
 This has changed rapidly in the last years, as the requirements of
-people went through an interesting process. Microprocessor-based
+people are now different than they were before. Microprocessor-based
 computers dominate the market. PCs and workstations have emerged as
 major products in the computer industry. Servers based on
 microprocessors have replaced minicomputers and mainframes have almost
@@ -390,41 +427,42 @@ such a computer can have reaches from hundred to several thousand. The
 trend is to use 64 bit processors as this kind allows addressing more
 memory (and they have become commonplace now). 
 This category of computers can be devided into the following
-categories: ``vector computers'' or ``parallel computers''.
+categories: ``vector computers'' and ``parallel computers''.
 The amount of memory they have varies according to the type of
-these servers or applications, which is running on them. The maximum
+these servers or applications, which are running on them. The maximum
 amount of memory can absolutely be beyond several tera bytes.  
 
 This development started in the 1990's where parallel programming 
-became more and more important. With the increasing need of powerful
+experienced major interest. With the increasing need of powerful
 hardware computer vendors started to build supercomputers capable of
 executing more and more instructions in parallel. In the beginning
 vector supercomputing system using a single shared memory were widely
 used to run large-scale applications. Due to the fact that vector
 systems were rather expensive in both purchasing and operation and
-bus-based shared-memory parallel systems were technologically bounded
+bus based shared memory parallel systems were technologically bounded
 to smaller CPU counts, the first distributed memory parallel platforms (DMPs)
-came up. The big advantage was that they were inexpensive and could be
+came up. The advantage of these platforms was that they were
+inexpensive with respect to their computational power and could be 
 built in many different sizes. DMPs could be rather small like a
-connection of workstations connected via a network to form a cluster of
-workstations (COW) or arbitrarily large. In fact individual
+few workstations connected via a network to form a cluster of
+workstations (COW) or arbitrarily large. In fact, individual
 organizations could buy clusters of a size that suited their
-budgets. The big disadvantage DMPs have is the higher transportation
-time of messages passing through a network in comparison to a shared
-memory system. Although the technology has improved (Infiniband), there
-is still space for improvements. 
+budgets. The major disadvantage DMPs have is the higher latency and
+smaller throughput of messages passing through a network in comparison
+to a shared memory system. Although the technology has improved
+(Infiniband), there is still space for improvements. 
 
 Current HPC systems are still formed of vector supercomputers
 (providing highest level of performance, but only for certain
 applications), SMPs with two to over 100 hundred CPUs and DMPs. As
 more than one CPU has become commonplace in desktop machines, clusters
 can nowadays provide both small SMPs and big DMPs. When it comes to a
-decition which architecture to buy, companies, laboratories or
+decision which architecture to buy, companies, laboratories or
 universities often choose to use a cluster of workstations because the
 cost of networking has decreased as mentioned before and performance
 has increased since systems of this kind already dominate the Top500
 list. Furthermore, COWs are so successful because they can be
-configured from commodity chips and network and set up with the open-source
+configured from commodity chips and network and set up with the open source
 Linux operating system and therefore offer high performance for a
 reasonable price.
 
@@ -432,7 +470,7 @@ New developments show that there are interesting alternatives. Some
 HPC platforms offer a global addressing scheme and therefore enable
 CPUs to directly access the entire system's memory. This can be done
 e.g., with ccNUMA (cache coherent nonuniform memory access) systems
-(for more information see e.g., \cite{kleen05:NUMA}) or
+(for more information see e.g., \cite{kleen05NUMA}) or
 global arrays~(\cite{nieplocha96gan}).
 They have become an important improvement because they allow a
 processor to access local and remote memory with rather low latency.
@@ -447,13 +485,25 @@ shared memory subsystem like in Cluster OpenMP
 \section{MIMD Computers}
 \label{sec:mimd_computers}
 
+Recalling Section~\ref{sec:flynn} we know that the architecture of
+computers plays an important role for designing parallel programs and from 
+Section~\ref{sec:hpcserver} we know how high performance computing
+servers have developed since the last decade. We are now
+interested in an architecture which support parallel process execution
+and how distributed processing entities can be connected to
+form a single unit. According to Flynn's taxonomy this would be MIMD
+or SIMD architectures combined in a shared or distributed memory system.
+
+
 On MIMD architectural based computers one has the highest flexibility
 in parallel computing. Whereas in SIMD based architectures a single
 instruction is applied to multiple data the MIMD paradigm allows to
 apply different instructions to different data at the same time. But
 SIMD architectures have become popular again recently. The Cell
-processor of IBM is one of the promising CPUs of its kind. The focus in
+processor of IBM (\cite{kahle05cell}) is one of the promising CPUs of
+its kind. The focus in 
 this thesis is on MIMD computers though.
+
 
 There are two different categories in which such a system can be
 classified. The classification is based on how the CPU access
@@ -527,24 +577,24 @@ MIMD computers.
 \subsubsection{The Grid}
 
 Another (new) type of achieving high performance computing is to use a
-Grid (\cite{foster99gbf}). In a Grid, computer which participate are
+grid (\cite{foster99gbf}). In a grid, computer which participate are
 connected to each other
 via the internet (or other wide area networks). These distributed
 resources are shared via a 
-Grid-software. The software monitors separate resources and if
+grid software. The software monitors separate resources and if
 necessary supplies them with jobs. The research project SETI@home
 (\cite{korpela01shm} and \cite{anderson02she}) can
 be said to be the first grid-like computing endeavor. Over 3 million
 users work together in processing data acquired by the Acribo radio
 telescope, searching for extraterrestial signals. Most of the power is
-gained by utilizing unused computers (ie. with a screen saver).
+gained by utilizing unused computers (e.g., with a screen saver).
 
 The idea behind it is that computers connected to a grid can combine
 their computational power with other available computing resources in the
-Grid. Then, researchers or customers are able to use the combined
-resources for their project. The aim of development of Grid computing
-is to find certain standards so that Grid computing becomes popular
-not only in certain academic institutes but also in industry. Today
+grid. Then, researchers or customers are able to use the combined
+resources for their projects. The aim of development of grid computing
+is to find standards so that grid computing becomes popular
+not only in academic institutes but also in industry. Today
 there are several initiatives in europe. For example D-Grid
 (\url{http://www.d-grid.de}) funded
 by by BMBF, the Federal Ministry of Education and Research of Germany
@@ -552,8 +602,10 @@ or the Austrian Grid (\url{http://www.austriangrid.at}) funded by the
 bm:bwk, the Federal Ministry for Education, Science and Culture of
 Austria.
 
-In a Grid more attention has to be made on heterogeneous network
-computing than in smaller DMPs. Computers connected to a grid are made
+In a grid more attention has to be made on heterogeneous network
+computing than in smaller DMPs which normally consist of many machines
+with the same architecture and are most likely from the same
+vendor. Computers connected to a grid are made 
 from different vendors, have different architectures and different
 compilers. All in all they may differ in the following areas:
 
@@ -576,20 +628,26 @@ and thus enable full interoperability between them.
 \section{Parallel Programming Models}
 \label{sec:programming_models}
 
-Programmers who like to create an application which should run in
-parallel have to face a challenging task. They have to distribute all
+In Section~\ref{sec:hpcserver} and~\ref{sec:mimd_computers} we
+presented the hardware used when dealing with parallelism which is
+more or less given to the developers. The major task for a programmer
+is to use the given infrastructure and provide efficient solutions for
+computational intensive applications.
+
+Creating a parallel application is a challenging task for every
+programmer. They have to distribute all
 the computation involved to a large number of processors. It is
 important that this is done in a way so that each of these computation
 nodes performs roughly the same work. Furthermore, developers have to
-ensure that the data required for the computation is available to the
+ensure that data required for the computation is available to the
 processor with as little delay as possible. Therefore some sort of
 coordination is required for the locality of data in the memory.
-One might think that this could be hard work, and indeed it is. But
-there are programming models for HPC already available which make life
-easier.
+One might think that this would be hard work, and indeed it is. But
+there are programming models for high performance parallel computing
+already available which make the developer's life easier.
 
-But first a fundamental differentiation of parallel programs is going
-to be explained. Programs by HPC developers can be done either
+But first a fundamental differentiation of parallel programs on MIMD
+platforms has to be explained. Parallel programs can be written either
 as the single program multiple data (SPMD) or multiple program
 multiple data paradigm (MPMD).
 
@@ -598,30 +656,33 @@ multiple data paradigm (MPMD).
 With SPMD there is only one program available
 to all computation nodes. Data is distributed equally amongst all
 nodes in the program. Then each node applies the same program on its
-own data. One should not confuse SPMD with the SIMD paradigm as in the
-latter case the
-distribution of the data is done prior execution of the program.
+own part of the data. One should not confuse SPMD with the SIMD
+paradigm as in the latter case low level instructions (direclty from
+the CPU) are applied to previously distributed data and therefore is a
+own form of programming.
 
 \subsubsection{Multiple Program Multiple Data}
 
 With MPMD you have a thread like paradigm. On each node it is possible
-to run different programs with either the same or different data. This
-is what one would asume when speaking of MIMD architectures.  
+to run different programs with either the same or different data. Each
+program forms a separate functional unit. This
+is what one would asume when speaking of MIMD architectures but both
+models (SPMD and MPMD) form the MIMD programming paradigm.
 
 \subsubsection{History}
 When parallel computing came up there have been a lot of programming
 languages developed (see ie., \cite{gehani88:concurrentprog} and
 \cite{wilson96:parallelprog}). Only few of them experienced any real use. There
-have also been many implementations of computer vendors for their own
+have also existed many implementations of computer vendors for their own
 machines. For a long time there has been no standard in sight as no
 agreement between hardware vendors and developers emerged. It was
 common that application developers have to write seperate HPC
 applications for each architecture.
 
-In the 1990's broad commonity efforts produced the first defacto
+In the 1990's broad community efforts produced the first defacto
 standards for parallel computing. Commonalities were identified
 between all the implementations available and the field of parallel
-computing had been understood better. Since then libraries and certain
+computing had been understood better. Since then libraries and concrete
 implementations as well as compiler driven parallelizer have been
 developed.
 
@@ -629,10 +690,10 @@ developed.
 The programming models presented in this section are common and widely
 used. First we start with a description of fundamental concepts of
 message passing as they are needed in subsequent sections. Then the
-first generation the Message Passing Interface 
+first generation, the Message Passing Interface 
 (MPI---see~\cite{forum94:MPI}) and Parallel Virtual Machine
-(PVM---see~\cite{geist94pvm})
-are going to be described. The second generation of HPC programming
+(PVM---see~\cite{geist94pvm}),
+are described. The second generation of HPC programming
 models involve OpenMP (see~\cite{openMP05}) among others. These
 programming models are not the only ones 
 but are, as mentioned above, commonly used. 
@@ -640,27 +701,34 @@ but are, as mentioned above, commonly used.
 \subsection{Fundamentals of Message Passing}
 \label{sec:messagepassing}
 
+To understand subsequent sections it is important to know what exactly
+message passing means and what building blocks exist.
 On a distributed memory platform
-(Section~\ref{sec:distributedmemorysystems})data has to be transmitted
+(Section~\ref{sec:distributedmemorysystems}) data has to be transmitted
 from one computation node to the other to carry out computations in
 parallel. The most commonly used method for distributing data among
 the nodes is message passing.
   
-A message passing function is a function which explicitly transmits
-data from one process to another. With these
-functions, creating parallel programs can be extremely
-efficient. Developers do not have to care about low level
-message passing anymore.
+\begin{description}
+\item[A message passing function] is a function which explicitly transmits
+  data from one process to another. With these
+  functions, creating parallel programs can be extremely
+  efficient. Developers do not have to care about low level
+  message passing anymore.
+\end{description}
 
 To identify a process in a communication environment message passing
 libraries make use of identifiers. In MPI they are called ``ranks''
 and in PVM ``TaskIDs''.
 
+Often used concepts in message passing are buffering,
+blocking/non-blocking communication, load balancing and collective
+communication. 
 
 \subsubsection{Buffering}
 
 Communication can be buffered which means that e.g., the sending
-process can continue executing and need not wait for the receiving
+process can continue execution and need not wait for the receiving
 process signaling it is ready to receive. Otherwise you have a synchronous
 communication. 
 
@@ -675,10 +743,10 @@ the process checks if the message has arrived in the meantime.
 
 \subsubsection{Load Balancing}
 
-To distribute data as evenly as possible to among the processes load
+To distribute data as evenly as possible among the processes, load
 balancing is a good method. This can be achieved either through data
 decomposition (identical programs or functions operate on different
-portions of the date) or function decomposition (different programs or
+portions of the data) or function decomposition (different programs or
 functions perform different operations). For more details on workload
 allocation see Section~4.2 in~\cite{geist94pvm} 
 
@@ -693,7 +761,7 @@ avoided when involving more than one process in sending of data. This
 is called a broadcast.
 A broadcast is a collective communication in which a single process
 sends the same data to every other process. Depending on the topology
-of the system normally there is an optimized broadcast available
+of the system there is an optimized broadcast available
 (e.g., tree-structured communication). See Chapter~5
 in~\cite{pacheco97mpi} for more details on collective communication in
 MPI.
@@ -724,9 +792,13 @@ MPI is now a library providing higher level
 routines and abstractions built upon lower level message passing
 routines which can be called from various programming
 languages like C or Fortran. It contains all the infrastructure for
-inter process communication. Last but not least an interface wrapper
-is available for R. MPI communication can be set up using the R extension
+inter-process communication. Last but not least an interface wrapper
+is available to R. MPI communication can be set up using the R extension
 ``Rmpi'' (see Section~\ref{sec:Rmpi} for details).
+
+
+Compared to other parallel programming MPI has the following
+advantages and disadvantages:
 
 \subsubsection{Advantages}
 \begin{itemize}
@@ -756,7 +828,7 @@ and~\cite{gropp02ggd}.
 
 As MPI is only a standard, specific implementations are needed to use
 message passing routines as library calls in programming languages
-like C or Fortran. There has been huge effort to provide good
+like C or FORTRAN. There has been huge effort to provide good
 implementations and indeed there are a lot of them available. But
 only a few of them are widely used. This is because of the fact that
 the primary goal was portability. A lot of different platforms are now
@@ -764,9 +836,9 @@ supported. What follows is a description of commonly used and well
 known MPI implementations.
 
 \begin{description}
-\item[LAM/MPI] is an open-source implementation of MPI. It runs on a
+\item[LAM/MPI] is an open source implementation of MPI. It runs on a
   network of UNIX machines connected via a local area network or via
-  the Internet. On each node runs one UNIX daemon which is a
+  the Internet. On each node runs a UNIX daemon which is a
   micro-kernel plus a dozen system processes responsible for network
   communication among other things. The micro-kernel is
   responsible for the communication between local processes
@@ -812,11 +884,15 @@ system can be found on~\url{http://www.csm.ornl.gov/pvm/}. How to
 setup this system on a linux machine and how to start a PVM job on a
 cluster is shown in Appendix~\ref{app:mpi_imp}.
 
+
+PVM has like other message passing implemenations its advantages and
+disadvantages:
+
 \subsubsection{Advantages}
 \begin{itemize}
 \item virtual machine concept
 \item good support of heterogenous NOWs
-\item high portability -- available for many different platforms
+\item high portability---available for many different platforms
 \item resource management, load balancing and process control
 \item self-contained software package
 \item dynamic process creation
@@ -832,15 +908,11 @@ cluster is shown in Appendix~\ref{app:mpi_imp}.
 \item not as many message passing functionality as MPI has
 \end{itemize}
 
-
-For a detailed comparison of PVM and MPI see~\cite{geist96pam}
-and~\cite{gropp02ggd}.
-
 \subsection{OpenMP}
 \label{sec:OpenMP}
 
 A completely other approach in the parallel programming model context
-is the use of shared memory. message passing is built upon this shared
+is the use of shared memory. Message passing is built upon this shared
 memory model which means that every processor has direct access to the
 memory of every other processor in the system
 (see Section~\ref{sec:sharedmemorysystems}). This class of
@@ -858,9 +930,9 @@ was an increasing demand for a simple and scalable programming model and
 the desire to begin parallelizing existing code without having to
 completely rewrite it, the OpenMP Architecture Review Board released a
 set of compiler directives and callable runtime library routines
-called the OpenMP API (see~\cite{openMP05}). This directives and
+known as the OpenMP API (see~\cite{openMP05}). This directives and
 routines extend the
-programming languages Fortran and C or C++ respectively to express
+programming languages FORTRAN and C or C++ respectively to express
 shared memory parallelism.
 
 Furthermore this programming model is based on the fork/join execution
@@ -873,28 +945,29 @@ a multiprocessor system~(\cite{dagum1997opi}). The specification and
 further information can be found on the following website:
 \url{http://www.openmp.org/}.
 
+
+OpenMP has a major advantage---it is easy to use. Further advantages
+and disadvantages are:
+
 \subsubsection{Advantages}
 
 \begin{itemize}
-\item writing parallel programs with OpenMP is easy -- incrementally
+\item writing parallel programs with OpenMP is easy---incrementally
   parallelizing of sequential code is possible
 \item dynamic creation of threads
-\item unified code -- if OpenMP is not available directives are
+\item unified code---if OpenMP is not available directives are
   treaten as comments 
-\item 
 \end{itemize}
 
 \subsubsection{Disadvantages}
 
 \begin{itemize}
-\item requires a compiler which supports OpenMP
+\item the use of OpenMP depends on the availabilty of a corresponding
+  compiler
 \item a shared memory platform is needed for efficient programs
 \item a lot more overhead compared to message passing functions because
   of implicit programming
-\item the use of OpenMP depends on the availabilty of a corresponding
-  compiler
 \item scalability is limited by the architecture
-
 \end{itemize}
 
 
@@ -911,8 +984,8 @@ in Section~\ref{sec:processorandmemory} there are other possibilities
 to make a program run faster like following the principle of locality
 or making use of pipelining. This is somehow architecture
 dependent and therefore developers should try to parallelize their
-code. A rule of thumb is to make the frequent case fast (that means
-parallelizing of this case). How this improvements can be analyzed is
+code. A rule of thumb is to make the frequent case fast, that means
+parallelizing of this case. How this improvements can be analyzed is
 discussed in this section.
 
 \subsection{Execution Time and Speedup}
@@ -927,7 +1000,6 @@ equation~\ref{eq:speedup}.
 \label{eq:speedup}
 Speedup = \frac{t_s}{t_e}
 \end{equation}
-
 where
 \begin{description}
 \item[$t_s$] denotes the execution time for a program without
@@ -946,7 +1018,6 @@ parallel execution time $t_p$ would be as in equation~\ref{eq:naive_t}
 \label{eq:naive_t}
 t_p = \frac{t_s}{p}
 \end{equation}
-
 and consequently the speedup would be equal to the number of
 processors $p$.
 But this is an ideal scenario. Linear speedup can hardly be achieved
@@ -956,7 +1027,7 @@ different speeds and/or use different resources.
 
 To find an estimate of good quality the program has to be separated in its
 different parts which in turn can be subject to
-enhancements. \cite{amdahl67vsp} made significant initial work in this
+enhancements. \cite{amdahl67vsp} made significant initial work on this
 topic.
 
 If we asume that a fraction $f$ of an algorithm can be ideally
@@ -967,12 +1038,12 @@ be as shown in equation~\ref{eq:t_amdahl}.
 
 \begin{equation}
 \label{eq:t_amdahl}
-t_p = f /frac{t_s}{p} + (1 - f) t_s = \frac{t_s ( f + ( 1 - f) p )}{p}
+t_p = f \frac{t_s}{p} + (1 - f) t_s = \frac{t_s ( f + ( 1 - f) p )}{p}
 \end{equation}
 
 \textit{The speedup of an algorithm that results from increasing the speed of
 its fraction $f$ is inversely proportional to the size of the fraction
-that has to be executed at the slower speed} (interpration from
+that has to be executed at the slower speed} (interpretation from
 Section~1.5 of \cite{kontoghiorghes06handbookpcstat}).
 
 Equation~\ref{eq:amdahl_speedup} shows the corresponding speedup that
@@ -991,7 +1062,7 @@ has became known as \textit{Amdahl's Law for parallel
   computing}. Figure~\ref{fig:amdahl} shows the speedup possible for 1
 to 10 processors if
 the fraction of parallelizable code is 100\% (linear speedup), 90\%,
-75\% and 50\%
+75\% and 50\%.
 
 \begin{equation}
 \label{eq:amdahl_parallel}
@@ -1018,14 +1089,14 @@ Methods (FIRM---\url{http://www.wu-wien.ac.at/firm}) hosts a high
 performance computing server, a cluster of Intel workstations, known
 as cluster@WU.
 Furthermore, for experimenting and interactive testing an AMD Opteron
-server with four computation cores has been available at the
+server with four computation cores is available at the
 Department of Statistics and Mathematics. 
 
 \subsubsection{Cluster@WU}
 All of the programs
 have been tested as well as benchmarked on this cluster of
-workstations running the Sun Grid 
-Engine (\cite{gentzsch02sge} and \cite{sge07}---see also
+workstations running the resource management system Sun Grid 
+Engine~(\cite{gentzsch02sge} and~\cite{sge07}---see also
 Appendix~\ref{app:gridengine} for more information on the 
 grid engine). With a total of 152 64-bit computation nodes and a total
 of 336 gigabytes of RAM, Cluster@WU is by now amongst the fastest
@@ -1087,7 +1158,7 @@ running code of this thesis. The operating system is Debian GNU
 Linux~(\url{http://www.debian.org}).
  
 \begin{description}
-\item[Sun Grid Engine] is an open-source cluster resource management
+\item[Sun Grid Engine] is an open source cluster resource management
   and scheduling software. On cluster@WU version 6.0 of the Grid
   Engine manages the remote execution of cluster jobs. It can be obtained
   from~\url{http://gridengine.sunsource.net/}, the commercial version
@@ -1102,9 +1173,9 @@ Linux~(\url{http://www.debian.org}).
   OpenMP code the 
   Intel compiler is being used since the GNU compiler supports this
   parallelizing techniques as of version 4.2.
-\item[R] is a free software environment for statistical computing and
-  graphics (\cite{Rcore07R}. R-patched 2.5.1 is used in this
-  thesis. There is an own
+\item[R] is a free software environment for Statistical Computing and
+  Graphics (\cite{Rcore07R}). R-patched 2.5.1 is used in this
+  thesis. There is a separate
   chapter about R and high performance computing (Chapter~\ref{chap:Rhpc}).
 \item[PVM] version 3.4 is used for running the corresponding programs
   (see Section~\ref{sec:PVM}).
@@ -1113,4 +1184,28 @@ Linux~(\url{http://www.debian.org}).
 \end{description}
 
 \section{Conclusion}
+
+This chapter provided an overview of the state of the art in parallel
+computing. The ongoing development of computer architectures shows that
+parallel computing becomes increasingly important as already the newest
+commodity processors are equipped with two to four computation
+cores. At the same time in the high performance computing segment
+further substantial increase in parallel computational power is taken
+place. An interesting development is certainly grid computing. Sharing
+unused resources and on the other hand having access to a tremendous
+amount of computational power maybe the approach for large-scale
+computing in the future. Increasing network bandwidth and a growing
+amount of unused computational resources makes this possible.
+
+
+Tools for creating programs exist for every kind of platform. The most
+promising of them is certainly OpenMP which may be the paradigm of
+choice for the mainstream. A lack in performance and the limitation to
+shared memory platforms compared to message
+passing environments has to be considered though. MPI and PVM are
+still commonly used as they deliver highest performance on many
+different platforms through their portability. A major disadvantage is
+the complexity of writing programs using message passing. Years of
+experience are needed to write efficient algorithms. Nevertheless, it
+remains to be an interesting challenge.
 

@@ -11,14 +11,14 @@ MPI-1.2 is required which is available in the LAM/MPI implementation
 as LAM/MPI (version 7.1.3) supports a large portions of the MPI-2
 standard. This is necessary if one likes to use interactive spawning
 of R processes. With MPI versions prior to MPI-1.2 separate R
-processes have to be created by hand using mpirun (part of many MPI
-implementations) for example.
+processes have to be created by hand using \code{mpirun} (part of many
+MPI implementations) for example.
 
 \pkg{Rmpi} contains a lot of low level interface functions to the MPI
-C-library available. 
+C-library. 
 Furthermore, a handful of high level functions are supplied. A
-selection of functions is going to be presented in this section sorted
-by the following topics:
+selection of routines is going to be presented in this section arranged
+into the following topics:
 
 \begin{itemize}
 \item Initialization and Status Queries
@@ -28,7 +28,7 @@ by the following topics:
 \end{itemize}  
 
 A windows implementation of this package (which uses MPICH2)
-is also available.
+is available from~\url{http://www.stats.uwo.ca/faculty/yu/Rmpi}.
 
 \subsection{Initialization and Status Queries}
 
@@ -44,8 +44,7 @@ setting up and booting the environment anymore (see
 appendix \ref{app:gridengine} on how to do this). On a cluster of
 workstations this is the method of choice. 
 
-
-\pkg{Rmpi} management and query functions:
+\subsubsection{Management and Query Functions}
 
 \begin{description}
 \item[\code{lamhosts()}] finds the hostname associated with its node
@@ -66,20 +65,17 @@ workstations this is the method of choice.
   environment and quits R.  
 \end{description}
 
-Example~\ref{ex:Rmpi-init}shows how the configuration of the
+Example~\ref{ex:Rmpi-init} shows how the configuration of the
 parallel environment can be obtained. First it returns the hosts
 connected to the parallel environment and then prints the number of
 CPUs available in it. After a query if this process is the master
-process the hostname where the current process runs on is
+process, the hostname the current process runs on is
 returned. 
 
-\begin{Example} Simple queries using \pkg{Rmpi}\newline
-running on cluster@WU using the node.q---the parallel environment was
-started with the SGE using 8 nodes.
-
+\begin{Example} Queries to the MPI communication environment
+\label{ex:Rmpi-init}
 <<echo=TRUE>>=
 library("Rmpi")
-set.seed(1782)
 ## Query the configuration of the parallel environment 
 lamhosts()
 ## how many CPU's are available in the parallel environment
@@ -88,12 +84,9 @@ mpi.universe.size()
 mpi.is.master()
 ## what is the hostname of the master process
 mpi.get.processor.name()
-
 ## stop LAM/MPI and exit R 
 ## mpi.quit()
-
 @ 
-\label{ex:Rmpi-init}
 \end{Example}
 
 \subsection{Process Spawning and Communication}
@@ -109,11 +102,11 @@ Section~\ref{sec:messagepassing}). The big advantage of \pkg{Rmpi}
 slaves is, that they can be used interactively when using the default
 R slave script.
 
+\subsubsection{Process Management  Functions}
 \begin{description}
-
 \item[\code{mpi.spawn.Rslaves(Rscript =
     system.file(nslaves =
-    mpi.universe.size(), ...)}] spawns \texttt{nslaves} number of R
+    mpi.universe.size(), ...)}] spawns \code{nslaves} number of R
   workhorses to those hosts automatically chosen by MPI. For other
   arguments represented by \ldots to this function we refer to
   \cite{yu06Rmpi}.
@@ -124,17 +117,18 @@ R slave script.
 \item[\code{mpi.comm.rank()}] returns the rank (identifier) of the
   process in a communicator.
 \item[\code{mpi.remote.exec(cmd, ..., comm = 1, ret = TRUE)}]
-  executes a command \texttt{cmd} on R slaves with \ldots arguments to
-  \texttt{cmd} and return executed results if \texttt{TRUE}.
+  executes a command \code{cmd} on R slaves with \ldots arguments to
+  \code{cmd} and returns executed results if \code{ret} is
+  \code{TRUE}.
 \end{description}
 
-In example~\ref{ex:Rmpi2} as many slaves are spawned as are available
+In Example~\ref{ex:Rmpi2} as many slaves are spawned as are available
 in the parallel environment. The size of the communicator is returned
 (1 master plus the spawned slaves) and a remote query of the commrank
 is carried out. Before the slaves are closed the commrank of the
 master is printed.
 
-\begin{Example}
+\begin{Example} Process management and communication 
 
 <<echo=TRUE>>=
 ## spawn as many slaves as CPUs available in the parallel environment
@@ -155,9 +149,12 @@ mpi.close.Rslaves()
  
 \subsection{Built-in High Level Functions}
 
-\pkg{Rmpi} provides the following high level functions (this is only a
-selection):
+\pkg{Rmpi} provides many high level functions. We selected a few
+of them which we think are commonly used. Most of them have been
+utilized to build parallel programs presented in the subsequent
+chapters.
 
+\subsubsection{High Level Functions}
 \begin{description}
 \item[\code{mpi.apply(x, fun, ..., comm = 1)}] applies a function
   \code{fun} with additional arguments \ldots to a specific part of
@@ -181,17 +178,24 @@ selection):
   object \code{obj} to all R slaves from the master process. 
 \item[\code{mpi.parSim( ... )}] carries out a Monte Carlo simulation
   in parallel. For details on this function see the package manual
-  (\cite{yu06Rmpi}) and
+  (\cite{yu06Rmpi}) and on Monte Carlo simulation
   the applications in chapter \ref{chap:options}.
 \end{description}
 
+How to use the high level function \code{mpi.apply()} is shown in
+Example~\ref{ex:Rmpi3}. A vector of $n$ random numbers is generated on
+each of the $n$ slaves and are returned to the master as a
+list (each list element representing one row). Finally a $n  \times n$
+matrix is formed and printed. The output of the matrix shows for each
+row the same random numbers. This is because of the fact, that each
+slave has the same seed. This problem is more specific treated in
+Chapter~\ref{chap:options}. For more information about parallel random
+number generators see the descriptions of the packages \pkg{rsprng}
+and \pkg{rlecuyer} in Section~\ref{sec:otherpackages}.
 
-\begin{Example} Using mpi.apply\newline
-running on cluster@WU using the node.q -- the parallel environment was
-started with SGE using 8 nodes
-
+\begin{Example} Using mpi.apply
+\label{ex:Rmpi3}
 <<echo=TRUE>>=
-
 n <- 8
 # spawn n slaves
 mpi.spawn.Rslaves(nslaves = n)
@@ -201,27 +205,15 @@ rows <- mpi.apply(x, runif)
 X <- matrix(unlist(rows), ncol = n, byrow=TRUE)
 round(X,3)
 mpi.close.Rslaves()
-
 @ 
-\label{ex:Rmpi3}
 \end{Example}
-
-How to use the high level function \code{mpi.apply()} is shown in
-Example~\ref{ex:Rmpi3}. A vector of $n$ random numbers is generated on
-each of the $n$ slave and they are returned to the master as a
-list (each list element representing one row). Finally a $n$x$n$
-matrix is formed and printed. The output of the matrix shows for each
-row the same random numbers. This is because of the fact, that each
-slave has the same seed. This problem is more specific treated in
-Chapter~\ref{chap:options}. For more information about parallel random
-number generators see the descriptions of the packages \pkg{rsprng}
-and \pkg{rlecuyer} in Section~\ref{sec:otherpackages}.
 
 \subsection{Other Important Functions}
 
 To complete the set of important functions supplied by the \pkg{Rmpi}
-package the following functions have to be explained:
+package the following functions have to be explained.
 
+\subsubsection{Collective Communication Routines}
 \begin{description}
 \item[\code{.mpi.gather(x, type, rdata, root = 0, comm = 1)}] gathers
   data distributed on the nodes (\code{x}) to a 
@@ -244,16 +236,17 @@ package the following functions have to be explained:
 
 The package \pkg{Rmpi} implements many of the routines available in
 MPI-2. But there are some that have to be ommitted or are not included
-because they are not needed for use in R (i.e., data management
+because they are not needed for use in R (e.g., data management
 routines are not necessary as R has its own tools for data handling).
 A really interesting aspect of the \pkg{Rmpi} package is the
-possibilty to spawn R slaves. That enables the user to interactively
+possibilty to spawn interactive R slaves. That enables the user to
+interactively 
 define functions which can be executed remotely on the slaves in
 parallel. An example how one can do this is shown in
 Chapter~\ref{chap:matrix}, where the implementation of matrix
 multiplication is shown. A major disadvantage is that MPI in its
 current implementations lack in fault tolerance. This results in a
-rather instable execution of MPI applications. Furthermore, debugging
+rather instable execution of MPI applications. Moreover, debugging
 is really difficult as there is no support for it in \pkg{Rmpi}.
 
 All in all this package is a good start in creating parallel programs

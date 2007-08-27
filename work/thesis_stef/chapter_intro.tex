@@ -1,61 +1,87 @@
 \chapter{Introduction}
 \section{Motivation}
 During the last decades the demand for computing power has steadily
-increased, since problems like climate prediction, difficult
-computations in biology and data mining or optimization in economics
+increased, since problems like climate prediction, data mining, difficult
+computations in physics, or optimizations in various fields
 make use of more accurate and therefore time consuming models. It is
-obvious that minimizing time a calculation needs to finish has become
+obvious that minimizing time needed for these calculations has become
 an important task. Therefore a new field in computer science have come
 up---high performance computing.
+
 Being able to write code which can be executed in parallel is a key
 ability in this field because high performance computing servers
-provide more than one processor. But one has to consider that
+provide in general more than just one processor. But one has to
+consider that
 parallelization of sequential code is a difficult task and is indeed
-another access to writing programs. To help scientists and software
-developers standards and parallelizing techniques have been introduced
-to make work easier. Nevertheless, writing efficient code remains a
-challenging and time consuming task. The major aim of this thesis is to
+another access in writing programs. To help scientists and software
+developers standards and parallelizing techniques like MPI or PVM have
+been introduced 
+to make their work easier. Nevertheless, sequential programs have to
+be rewritten, or completely new applications have to be designed to
+make use of this enormous parallel computing power. Another approach
+has become popular again recently---compiler driven
+parallelization. Though writing parallel programs can be achieved
+easier the performance cannot be compared to manual parallelized ones.
+All in all,
+writing efficient code remains a challenging, time consuming task and
+need years of experience. 
+
+Therefore, the major aim of this thesis is not only to 
 provide a good overview of the work which has been done in this field
-and most important to become familiar with the state of the art of
-parallel computing. 
+but more important to become familiar with the state of the art of
+parallel computing.
 
-
-
-
+Moreover, a lot of  time consuming models exist in a scientific field
+called computational statistics; a field which has many connections to other
+scientific areas (e.g., economics, physics, biology or
+engineering). As a computational environment a software called the
+R-project for statistical computing and graphics is available to
+users and scientists. This project is on its way to provide 
+high performance computing to computational statistics through various
+extensions. To become familiar with the capabilities of R in
+this area is of major interest as it would be a key for solving many
+problems not only in statistics but also in all other areas where
+computational statistics plays a major role. In this thesis parallel
+Monte Carlo simulation used in finance to price options has been
+chosen as a case study.
 
 \section{Contributions}
 In the course of this thesis an extension to the R
 environment for statistical computing has been developed---the
 \pkg{paRc} package. First, it provides a benchmark environment for
-identifying performance gains of parallel algorithms. Second, a first
-attempt to use OpenMP in combination with R has been made. A
-C~Interface to OpenMP library calls have been implemented.
+identifying performance gains of parallel algorithms. Results of
+parallel matrix multiplication were produced using this benchmark
+environment. Second, a first
+attempt to use OpenMP in combination with R has been made and a
+C~interface to OpenMP library calls has been implemented. Finally,
+a framework for pricing options with parallel Monte Carlo simulation
+has been developed.
  
 \section{Organization of this Thesis}
 
-This Thesis is organized as follows. First I briefly summarize the
-fundamentals of parallel processing in
+This thesis is organized as follows. First I briefly summarize the
+fundamentals of high performance computing and parallel processing in
 Chapter~\ref{chap:parallelcomputing}. In the course of this chapter
 computer architectures and programming models are described as well as the
 principles of performance analysis.
 
 Chapter~\ref{chap:Rhpc} includes explanations of how to use these
 paradigms in R. This part of
-the thesis provides an overview of the
+this thesis provides an overview of the
 available extensions supplying parallel computing functionality to R.
 
-In the remaining chapters selected applications for High Performance
-Computing are going to be
-described. Each of these chapters has the following structure: First,
+In the remaining chapters case studies for high performance
+computing are presented. Each of these chapters has the following
+structure: First,
 a description of the topic is given in a comprehensive way. Second
 details of the implementations are explained. Finally, results of the
 comparison between each implementation are presented. The selected
 topics are
 \begin{itemize}
-\item Parallel Matrix Multiplication in Chapter~\ref{chap:matrix},
-\item Parallel Greedy Randomized Adaptive Search procedure in
-  Chapter~\ref{chap:pgrasp},
-\item Option Pricing using Parallel Monte Carlo Simulation in
+\item Parallel matrix multiplication in Chapter~\ref{chap:matrix},
+%\item Parallel Greedy Randomized Adaptive Search procedure in
+%  Chapter~\ref{chap:pgrasp},
+\item Option pricing using Parallel Monte Carlo simulation in
   Chapter~\ref{chap:options}. 
 \end{itemize}
 Eventually Chapter~\ref{chap:conclusion} summarizes
