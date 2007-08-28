@@ -213,7 +213,7 @@ maxcpu <- omp.get.num.procs()
 dat <- list()
 dat[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
 dat[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
-bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+bm <- create.benchmark(task="matrix multiplication", data=dat,
                        type="OpenMP", parallel=TRUE, cpu_range=1:maxcpu)
 bm
 bmres <- run.benchmark(bm)

@@ -173,7 +173,7 @@ bm.function.to.apply <- function(x){
   taskNr <- pmatch(bm.task(x), bm.tasks(x))
   type <- bm.type(x)
   
-  if(taskNr==1)
+  if(taskNr==1){
     foo <- switch(type,
                   "normal" = serial.matrix.mult,
                   "native-BLAS" = function(X,Y){X%*%Y},
@@ -203,15 +203,17 @@ bm.function.to.apply <- function(x){
                   "PVM-wB" = mm.rpvm.C,
                   stop("no such type")
                   )
-  if(taskNr==2)
+    return(foo)
+  }
+  if(taskNr==2){
     foo <- switch(type,
                   "normal" = monteCarloSimulation,
                   "MPI" = mcs.Rmpi,
                   stop("no such type")
                   )
-  else
-    stop("no such task")
-  foo
+    return(foo)
+  }
+  stop("no such task")
 }
 
 bm.prepare <- function(x,n){
@@ -340,7 +342,7 @@ speedup.numeric <- function(x){
   x[1]/x
 }
 
-speedup.bm_results <- function(xp){
+speedup.bm_results <- function(x){
   vec <- x$time_ela
   names(vec) <- x$type
   speedup(vec)

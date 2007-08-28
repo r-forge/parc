@@ -30,6 +30,7 @@ export(## OpenMP function wrappers
        "speedup",
 
        ## Application: option pricing
+       "define.option",
        "payoff",
        "maturity",
        "strikeprice",

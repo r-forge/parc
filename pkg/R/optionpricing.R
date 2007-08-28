@@ -12,6 +12,30 @@
 ## - monte carlo simulation: n =30 depends on T?
 ## - binomial tree plot method and creat method see options, futures, ... p211
 
+define.option <- function(underlying, strikeprice, maturity, type = "Call", class = "European", position = "long"){
+  x <- list()
+  available_types<- c("call","put")
+  available_positions<- c("long","short")
+  available_classes <- c("european","american")
+  if(!(is.numeric(underlying)||(length(underlying==3)))) stop("'underlying' must be a numeric vector of length 3")
+  x$mu <- underlying[1]
+  x$sigma <- underlying[2]
+  x$present <- underlying[3]
+  x$maturity <- maturity
+  if(!is.numeric(strikeprice)) stop("'strikeprice' must be a numeric")
+  x$strikeprice <- strikeprice
+  if(!is.numeric(maturity)) stop("'maturity' must be a numeric")
+  x$maturity <- maturity
+  x$type <- tolower(type)
+  if(!any(x$type==available_types)) stop(paste("'type' must be either",available_types[1],"or",available_types[2]))
+  x$kind <- tolower(class)
+  if(!any(x$kind==available_classes)) stop(paste("'class' must be either",available_classes[1],"or",available_classes[2]))
+  x$position <- tolower(position)
+  if(!any(x$position==available_positions)) stop(paste("'position' must be either",available_positions[1],"or",available_positions[2]))     
+  class(x) <- "option"
+  x
+}
+
 payoff <- function(path,x,r) {
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
   cl <- optionclass(x)

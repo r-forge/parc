@@ -7,14 +7,14 @@ The package \pkg{rpvm} (\cite{nali07rpvm}) provides an interface to
 low level PVM functions and
 a few high level parallel functions to R. It uses most of the
 facilities provided by the PVM system which makes \pkg{rpvm} ideal for
-prototyping parallel statistical applications in R. Generally, parallel
-applications can be either written in compiled languages like C or
+prototyping parallel statistical applications in R.
+
+Generally, parallel applications can be either written in compiled
+languages like C or 
 FORTRAN or can be called as R processes. The latter method is used in
 this thesis and therefore a good selection of \pkg{rpvm}
 functions are explained in this section to show how PVM and R can be
-used together.
-
-Provided functions are categorized as follows:
+used together. Provided functions are categorized as follows:
 
 \begin{itemize}
 \item Initialization and Status Queries
@@ -31,8 +31,7 @@ command (see pages 22 and 23 in \cite{geist94pvm}) or directly within
 R after loading the \pkg{rpvm} package using \code{.PVM.start.pvmd()}
 explained in this section.
 
-\pkg{rpvm} functions for managing the virtual machine:
-
+\subsubsection{Functions for Managing the Virtual Machine}
 \begin{description}
 \item[\code{.PVM.start.pvmd()}] boots the \textit{pvmd3} daemon. The
   currently running R session becomes the master process. 
@@ -56,14 +55,13 @@ setting up and booting the environment anymore (see
 appendix \ref{app:gridengine} on how to do this).
 
 Example~\ref{ex:rpvm-init} shows how the configuration of the parallel
-environment can be obtained. First it returns the hosts connected to
-the parallel virtual machine. Finally the
+environment can be obtained. \code{.PVM.config()} returns the hosts
+connected to 
+the parallel virtual machine. After that the
 parallel environment is stopped. 
 
-\begin{Example} Query status of PVM \newline
-running on cluster@WU using the node.q---the parallel environment was
-started with SGE using 8 nodes
-
+\begin{Example} Query status of PVM 
+\label{ex:rpvm-init}
 \begin{Schunk}
 \begin{Sinput}
 > library("rpvm")
@@ -72,34 +70,34 @@ started with SGE using 8 nodes
 \end{Sinput}
 \begin{Soutput}
   host.id    name    arch speed
-1  262144 node039 LINUX64  1000
-2  524288 node055 LINUX64  1000
-3  786432 node037 LINUX64  1000
-4 1048576 node023 LINUX64  1000
+1  262144 node059 LINUX64  1000
+2  524288 node048 LINUX64  1000
+3  786432 node012 LINUX64  1000
+4 1048576 node004 LINUX64  1000
 \end{Soutput}
 \begin{Sinput}
 > .PVM.exit()
 \end{Sinput}
 \end{Schunk}
-\label{ex:rpvminit}
 \end{Example}
 
 \subsection{Process Spawning and Communication}
 
-The package \pkg{rpvm} uses the master-slave paradigm where one
+The package \pkg{rpvm} uses the master-slave paradigm meaning that one
 process is the master task and the others are slave tasks. \pkg{rpvm}
 provides a routine to spawn R slaves but these slaves cannot be used
 interactively like the slaves in \pkg{Rmpi}. The spawned R slaves
 source an R script which contains all the necessary function calls to
 set up communication and carry out the computation and after
 processing terminate.
-PVM uses task IDs (tid---a positive integer for identifying a task)
+PVM uses task IDs (\code{tid}---a positive integer for identifying a task)
 and tags for communication (see
 also the fundamentals of message passing in
 Section~\ref{sec:messagepassing}).
 
+\subsubsection{Process Management  Functions}
 \begin{description}
-\item[\code{.PVM.spawnR(slave, ntask = 1, ...}] spawns \code{ntask}
+\item[\code{.PVM.spawnR(slave, ntask = 1, ...)}] spawns \code{ntask}
   copies 
   of an executable or \code{slave} R processes. There are more
   parameters indicated by the \ldots (we refer to
@@ -111,24 +109,30 @@ Section~\ref{sec:messagepassing}).
   process that spawned the calling process.
 \item[\code{.PVM.siblings()}] returns the \code{tid} of the processes
   that were spawned in a single spawn call.
+\item[\code{.PVM.pstats(tids)}] returns the status of the PVM
+  process(es) with task ID(s) \code{tids}.
 \end{description}
 
 \subsection{Built-in high level functions}
 
-\pkg{rpvm} provides two high level functions: 
+\pkg{rpvm} provides only two high level functions. One of them is a
+function to get or set values in the virtual machine settings. This is
+certainly because each new high level functions needs separate source
+files for the slaves and this is not what developers do intuively. 
 
+\subsubsection{High Level Functions}
 \begin{description}
 \item[\code{PVM.rapply(X, FUN = mean, NTASK = 1))}] Apply a function
-  \texttt{FUN} to the rows of a matrix \texttt{X} in
-  parallel using \texttt{NTASK} tasks.
+  \code{FUN} to the rows of a matrix \code{X} in
+  parallel using \code{NTASK} tasks.
 \item[\code{PVM.options(option, value)}] Get or set values of libpvm
   options (for details see \cite{nali07rpvm} and \cite{geist94pvm}).
 \end{description}
 
-\begin{Example} Using PVM.rapply\newline
-running on cluster@WU using the node.q -- the parallel environment was
-started with SGE using 8 nodes
+Example~\ref{ex:rpvm-rapply} shows how the rows of a matrix \code{X}
+can be summed up in parallel via \code{PVM.rapply()}.
 
+\begin{Example} Using PVM.rapply
 \begin{Schunk}
 \begin{Sinput}
 > n <- 8
@@ -161,8 +165,42 @@ Work sent to  1048577
 \label{ex:rpvm-rapply}
 \end{Example}
 
-Example~\ref{ex:rpvm-rapply} shows how the rows of a matrix \code{X}
-can be summed up in parallel via \code{PVM.rapply()}.
+Before we explain how \code{PVM.rapply} works the following \pkg{rpvm}
+functions have to be explained:
+
+\subsubsection{Other Important functions}
+\begin{description}
+\item[\code{.PVM.initsend()}] clears the default send buffer and
+  prepares it for packing a new message.
+\item[\code{.PVM.pkstr(data = "")} and \texttt{.PVM.pkint(data =
+    0, stride = 1)}] are low-level correspondents of the PVM packing
+    routines (see \cite{geist94pvm} for more information on packing
+    data). 
+\item[\code{.PVM.pkdblmat(data)}] packs a double matrix including
+  the dimension information. There are more packing routines
+  available. They are explained in \cite{nali07rpvm}.
+\item[\code{.PVM.send(tid, msgtag)}] sends the message stored in the
+  active buffer to the PVM process identified by \texttt{tid}. The
+  content is labeled by the identifier \texttt{msgtag}.
+\item[\code{.PVM.recv(tid = -1, msgtag = -1)}] blocks the process
+  until a message with label \texttt{msgtag} has arrived from
+  \texttt{tid}. -1 means any. The receive buffer is cleared
+  and the received message is placed there instead.
+\item[\code{.PVM.upkstr(), .PVM.upkint(), .PVM.upkdblvec()}] and
+  others are the correspondig unpack functions to the
+  pack functions explained before.
+\item[\texttt{.PVM.gather(x, count = length(x), msgtag, group,
+    rootginst = 0}] gathers data distributed on the nodes (x) to a
+  specific process (mostly the root) into a single array. It performs
+  a send of messages from each member of a group of processes. A
+  specific process (the root) accumulates this messages into a single
+  vector. 
+\item[\texttt{.PVM.scatter(x, count, msgtag, group, rootqinst = 0}]
+  sends to each member of a group a partition of  a vector x from a
+  specified member of the group (mostly the root) where \texttt{count}
+  is an integer specifying the number of elements to be sent to each
+  member. 
+\end{description}
 
 Let us now examine the function to see how parallel programs using
 \pkg{rpvm} can be written.
@@ -218,7 +256,7 @@ PVM.rapply <- function (X, FUN = mean, NTASK = 1)
 \label{ex:rpvm-rapplymaster}
 \end{Example}
 
-The corresponding slave R script looks as follows:
+The corresponding slave R script (slapply.R) looks as follows:
 
 \begin{Example}
 \begin{Scode}
@@ -271,35 +309,6 @@ q (save="no")
 \label{ex:rpvm-rapplyslave}
 \end{Example}
 
-SpawnR: In 
-  PVM.rapply \code{NTASK} slaves sourcing ``slapply.R'' are
-  spawned. 
-
-Before we explain how \code{PVM.rapply} works the following \pkg{rpvm}
-functions have to be explained:
-
-\begin{description}
-
-\item[\code{.PVM.initsend()}] clears the default send buffer and
-  prepares it for packing a new message.
-\item[\code{.PVM.pkstr(data = ``'')} and \texttt{.PVM.pkint(data =
-    0, stride = 1)}] are low-level correspondents of the PVM packing
-    routines (see \cite{geist94pvm} for more information on packing
-    data). 
-\item[\code{.PVM.pkdblmat(data)}] packs a double matrix including
-  the dimension information. There are more packing routines
-  available. They are explained in \cite{nali07rpvm}.
-\item[\code{.PVM.send(tid, msgtag)}] sends the message stored in the
-  active buffer to the PVM process identified by \texttt{tid}. The
-  content is labeled by the identifier \texttt{msgtag}.
-\item[\code{.PVM.recv(tid = -1, msgtag = -1)}] blocks the process
-  until a message with label \texttt{msgtag} has arrived from
-  \texttt{tid}. -1 means any. The receive buffer is cleared
-  and the received message is placed there instead.
-\item[\code{.PVM.upkstr(), .PVM.upkint(), .PVM.upkdblvec()}] and
-  others are the correspondig unpack functions to the
-  pack functions explained before.
-\end{description}
 
 Example~\ref{ex:rpvm-rapplymaster} shows the implementation of the
 master routine \code{PVM.rapply()}. This funtion takes a matrix,
@@ -325,52 +334,34 @@ send is initialized to provide the results to the parent process and
 the slaves are detached from the virtual machine by calling a
 \texttt{.PVM.exit()}. 
 
-\subsection{Other Important Functions}
-
-To complete the set of important functions supplied by the rpvm
-package two more functions have to be explained:
-
-\begin{description}
-\item[\texttt{.PVM.gather(x, count = length(x), msgtag, group,
-    rootginst = 0}] gathers data distributed on the nodes (x) to a
-  specific process (mostly the root) into a single array. It performs
-  a send of messages from each member of a group of processes. A
-  specific process (the root) accumulates this messages into a single
-  vector. 
-\item[\texttt{.PVM.scatter(x, count, msgtag, group, rootqinst = 0}]
-  sends to each member of a group a partition of  a vector x from a
-  specified member of the group (mostly the root) where \texttt{count}
-  is an integer specifying the number of elements to be sent to each
-  member. 
-\end{description}
-
-\subsubsection{Conclusion}
+\subsection{Conclusion}
 
 The \code{PVM.rapply()} example shown in this section followed the
-Single Program Multiple Data (SPMD) paradigm. Data is splitted into
+Single Program Multiple Data (SPMD) paradigm. Data is split into
 different parts which are sent to different processes. I/O is handled
 solely by a master
-process. When loading rpvm in an R session this session becomes the
+process. When loading \pkg{rpvm} in an R session this session becomes the
 master process. Slaves can easily be spawned provided that there are
 working slave scripts available.
 
 We encountered no problems when using the routines in \pkg{rpvm}. This
 package seem to be rather stable in contrast to \pkg{Rmpi}, where for
-unknown reasons the MPI environment crashed.
+unknown reasons the MPI environment sometimes crashed.
 
-A major disadvantage is that the rpvm
+A major disadvantage is that the \pkg{rpvm}
 package only has two higher level function. One of them can be used
 for calculations. That means when using this package for parallel
 computing one has 
-to deal with low level message passing which in turn provides high
-flexibility. New parallel functions can be constructed on the basis of
-the provided interface. 
+to deal with low level message passing but which in turn may provide
+higher flexibility. New parallel functions can be constructed on the
+basis of the provided interface. The \code{PVM.rapply} code
+can be taken as a template for further routines. 
 
 Another disadvantage is the missing support for interactive R
 slaves. Parallel tasks have to be created on the basis of separate
 slave source files which are sourced on the creation of the slaves.
 
-For further interface functions supplied by the rpvm package, a more
+For further interface functions supplied by the \pkg{rpvm} package, a more
 detailed 
 description and further examples please consult the package description
 \cite{nali07rpvm}.

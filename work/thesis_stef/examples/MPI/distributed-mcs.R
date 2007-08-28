@@ -39,7 +39,7 @@ bm.data(bm) <- bmdata
     writeLines(paste("Starting",type,"benchmark..."))
     results <- run.benchmark(bm) 
 
-    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),".Rda",sep=""))
+    save(results,file=paste(paste(paradigm,taskID,type,sep="-"),".Rda",sep=""))
   }
 #}
 
