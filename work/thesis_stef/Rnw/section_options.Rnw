@@ -99,10 +99,10 @@ In the 1970s \cite{blackscholes73options} and \cite{merton73options}
 made a major breakthrough in the pricing of options. This soon became
 known as the Black-Scholes model. They were awarded with the Nobel
 prize for economics in 1997 for their work (Fischer Black died in
-1995, otherwise he would have get this prize too).
+1995, otherwise he would have received this prize too).
 
 
-In the model developed by Black, Scholes and merton, price changes are
+In the model developed by Black, Scholes and Merton, price changes are
 described mathematically by the Markov  
 processes. The Brownian motion (or Wiener process) is one of the forms
 of Markov processes, used as a model for stock price movements (this
@@ -214,22 +214,6 @@ analytical exact solution with the numerical approximation.
 \subsection{Monte Carlo Evaluation of the Option Prices}
 
 
-\subsection{Black-Scholes model}
-
-There is a market which consists of
-\begin{itemize}
-\item a bank account process $B_t = e^{rt}$
-\item and a share $S_t = S_0 e^{(\mu - \frac{\sigma^2}{2}) t + \sigma W_t}$. 
-\end{itemize}
-
-Equation~\ref{eq:blackscholes} gives the price of a European call
-option of time $t$ with maturity $T$ and payoff function $h(S_T)$.
-
-\begin{equation}\label{eq:blackscholes}
- F(t,x) = \int e^{-r(T-t)}h(xe^{(r - \frac{\sigma^2}{2})(T-t)+\sigma \sqrt{T-tz}})\phi(z)dz 
-\end{equation}
-
-TODO: implement bs model
 
 
 
@@ -281,17 +265,6 @@ class. What follows is an
 overview of creating and working with such an object.
 
 <<echo=TRUE, eval=TRUE>>=
-## use extractors
-underlying(myopt)
-optiontype(myopt)
-optionclass(myopt)
-strikeprice(myopt)
-maturity(myopt)
-priceof(myopt)
-
-## use of replacement functions
-underlying(myopt) <- c(0.2,0.5,100)
-underlying(myopt)
 
 priceof(myopt) <- 4
 priceof(myopt)
@@ -299,23 +272,6 @@ priceof(myopt)
 
 @ 
 
-\begin{figure}
-\centering
-<<fig=TRUE,echo=FALSE>>=
-
-par(mfrow=c(2,2))
-plot(myopt)
-myopt$position <- "short"
-plot(myopt)
-myopt$type <- "put"
-myopt$position <- "long"
-plot(myopt)
-myopt$position <- "short"
-plot(myopt)
-
-@
-\label{fig:payoffs} 
-\end{figure}
 
 \subsection{Binomial process}
 

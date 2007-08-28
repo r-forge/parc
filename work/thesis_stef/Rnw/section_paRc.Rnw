@@ -203,7 +203,39 @@ The following S3 methods are provided for the benchmark environment:
   \class{numeric}. 
 \end{description}
 
+\subsubsection{Example}
+
+\begin{Example} Running a benchmark using OpenMP
+\label{ex:benchrun}
+<<echo=TRUE, eval=TRUE>>=
+n <- 1000
+maxcpu <- omp.get.num.procs()
+dat <- list()
+dat[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
+dat[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+bm <- create.benchmark(task="matrix multiplication", data=bmdata,
+                       type="OpenMP", parallel=TRUE, cpu_range=1:maxcpu)
+bm
+bmres <- run.benchmark(bm)
+bmres
+speedup(bmres)
+@
+\end{Example}
+
+Running a dedicated benchmark is shown in
+Example~\ref{ex:benchrun}. The object \code{bm} contains all the
+information to carry out the benchmark. The task to run is matrix
+multiplication of two $1000 \times 1000$ matrices. The parallel
+paradigm to use is OpenMP using 1 up to the maximum of CPUs available
+on the machine. The resulting data.frame is printed and the speedup is
+calculated.
+
 \subsection{Environment for Option Pricing}
+
+In package \pkg{paRc} a framework for pricing financial derivatives,
+in particular options, is available. The framework is built around the
+main function namely Monte Carlo simulation and its parallel
+derivative. 
 
 \subsubsection{Class \class{option}}
 
@@ -283,6 +315,46 @@ The following S3 methods are provided for the option pricing environment:
 \item[\code{print.option}] defines the print method for class \class{option}.
 \item[\code{plot.option}] plots the payoff of the given \class{option}.
 \end{description}
+
+\subsubsection{Example}
+
+\begin{Example} Handling class \class{option}
+\label{ex:option}
+<<echo = TRUE, eval = TRUE>>=
+## build example option
+european <- define.option(c(0.1,0.4,100),100,1/12)
+european
+
+## use extractors
+underlying(european)
+optiontype(european)
+optionclass(european)
+strikeprice(european)
+maturity(european)
+
+## use of replacement functions
+underlying(european) <- c(0.2,0.5,100)
+underlying(european)
+
+@
+\end{Example}
+
+In Example~\ref{ex:option} the variable \code{european} is assigned an
+object of class \class{option}. It is defined as an European option
+with strikeprice 100 and maturity 1/12 (30 days). The underlying has a
+present value of 100, a return of 0.1 and volatility of 0.4. Invoking the print
+method returns a short summary of the object. The rest
+of the example shows the use of different extractor functions and an
+replacement function. Figure~\ref{fig:payoff} shows the payoff of the
+defined option.
+
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE>>=
+plot(european)
+@
+\label{fig:payoff} 
+\end{figure}
 
 \subsection{Other Functions}
 
