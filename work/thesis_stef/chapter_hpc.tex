@@ -193,6 +193,23 @@ models see \cite{gehani88:concurrentprog}.
 In the rest of this thesis we do not distinguish between the terms
 parallel and concurrent and use them interchangeably.
 
+\subsection{Computational Overhead}
+
+An often used term when dealing with implementations of parallel
+program is overhead.
+
+Overhead is generally considered any combination of excess or indirect
+computation time, memory, bandwidth, or other
+resources that are required to be utilized or expanded to enable a
+particular goal (\cite{wiki:overhead}).
+
+In parallel computing this can be the excess of computation time to
+send data between one process to another.
+
+Overhead may also be a criterium to decide wheter a feature or not
+should be included in a parallel program or wheter a parallel
+programming paradigm should be used or not.
+
 \section{Computer Architecture}
 
 In this section computer architectures are briefly described. This
@@ -641,35 +658,12 @@ important that this is done in a way so that each of these computation
 nodes performs roughly the same work. Furthermore, developers have to
 ensure that data required for the computation is available to the
 processor with as little delay as possible. Therefore some sort of
-coordination is required for the locality of data in the memory.
+coordination is required for the locality of data in the memory (for
+more information of the design of a parallel program see Section \ref{}).
 One might think that this would be hard work, and indeed it is. But
 there are programming models for high performance parallel computing
 already available which make the developer's life easier.
 
-But first a fundamental differentiation of parallel programs on MIMD
-platforms has to be explained. Parallel programs can be written either
-as the single program multiple data (SPMD) or multiple program
-multiple data paradigm (MPMD).
-
-\subsubsection{Single Program Multiple Data}
-
-With SPMD there is only one program available
-to all computation nodes. Data is distributed equally amongst all
-nodes in the program. Then each node applies the same program on its
-own part of the data. One should not confuse SPMD with the SIMD
-paradigm as in the latter case low level instructions (direclty from
-the CPU) are applied to previously distributed data and therefore is a
-own form of programming.
-
-\subsubsection{Multiple Program Multiple Data}
-
-With MPMD you have a thread like paradigm. On each node it is possible
-to run different programs with either the same or different data. Each
-program forms a separate functional unit. This
-is what one would asume when speaking of MIMD architectures but both
-models (SPMD and MPMD) form the MIMD programming paradigm.
-
-\subsubsection{History}
 
 When parallel computing came up there have been a lot of programming
 languages developed (see ie., \cite{gehani88:concurrentprog} and
@@ -749,7 +743,7 @@ balancing is a good method. This can be achieved either through data
 decomposition (identical programs or functions operate on different
 portions of the data) or function decomposition (different programs or
 functions perform different operations). For more details on workload
-allocation see Section~4.2 in~\cite{geist94pvm} 
+allocation see Section~4.2 in~\cite{geist94pvm}.
 
 \subsubsection{Collective Communication}
 
@@ -971,17 +965,39 @@ and disadvantages are:
 \item scalability is limited by the architecture
 \end{itemize}
 
-\subsection{Granularity of a Parallel Program}
+\section{Design of Parallel Programs}
+
+In this section design issues when dealing with parallel programming
+are presented.
+
+First, the granularity of parallel programs plays an important when
+designing a parallel application although the grain size is in a small
+extent limited by the architecture. It is a classification of the
+numbers of instructions performed in parallel.
+
+Second, a fundamental differentiation of parallel programs
+(particularely on MIMD platforms) is explained. Programs are
+categorized based on the organization of the computing tasks.
+
+Eventually, this section concludes with a differentiation of how
+parallelism can be achieved. It is a summary of the three fundamental
+approaches of writing parallel programs.
+
+\subsection{Granularity of Parallel Programs}
 
 Having the parallel hardware available, the developer has to be aware
 of the software like the available compilers and
 libraries (parallel programming models) to use for parallel
 computations.
 
-Granularity of parallel programs. Granularity is refered to as the
-number of instructions performed in parallel. 
+What goes hand in hand with the decision of a parallel programming
+model on a specific architecture is the granularity of the resulting
+parallelism. Granularity is in this case refered to as the
+number of instructions performed in parallel. This reaches from
+fine-grained (instruction level) parallelism to coarse-grained (task
+or procedure level) parallelism:
+ 
 \subsubsection{Levels of Parallelism}
-
 \begin{description}
 \item[Instruction level parallelism] single instructions are processed
   concurrently.
@@ -989,34 +1005,105 @@ number of instructions performed in parallel.
   different data at the same time.
 \item[Loop level parallelism] a block instruction from a loop can be
   run for each loop iteration in parallel.
-\item[Procedure level parallelism] larger program parts (mostly
+\item[Task level parallelism] larger program parts (mostly
   program procedures) are run in parallel.
-\end{descriptopn}
+\end{description}
 
-Choice of grain size involves a tradeoff: a fine-grained 
-program provides considerable flexibility with respect to load
+With choosing a specific grain size the developer has to be aware of
+the following tradeoff: a fine-grained program provides considerable
+flexibility with respect to load 
 balancing, but it also involves 
 a high overhead of processing time due to a larger management need and
-communication 
-expense. Thus, the available hardware architecture has to be taken
-into consideration. For 
-example, a program running in parallel at the instruction level would
-not benefit much in 
-a system with distributed memory where the cost for data transfer via
-a network is high 
-relative to the runtime of the instruction itself. 
+communication expense (\cite{sevcikova04simulations}).
 
-\subsubsection{Types  of Parallelism}
+Furthermore, the available hardware architecture has to be taken
+into consideration. Fine-grained parallel programs would not benefit
+much in a distributed memory system. Indeed the cost for transfering
+data over the network would be too high with respect to the runtime of
+the instruction itself. In contrast coarse grained parallelism would
+perform better, as communication is held at a minimum as larger
+program parts are run in parallel.
+
+\subsection{Organization of Parallel Tasks}
+
+Parallel programming paradigms can be structured according to the
+process structure. That means how the task are organized in a parallel
+application. According to \cite{geist94pvm} three different
+programming approaches:
+
 \begin{description}
-\item[Implicit parallelism]
-\item[Explicit parallelism with implicit decomposition]
-\item[Explicit parallelism]
-\end{descriptopn}
+\item[Crowd computation] is if a collection of closely related
+  processes, typically executing the same code, perform computations
+  on different portions of the workload. This paradigm can be further
+  subdivided into
+  \begin{itemize}
+  \item[Master-slave] or host-node model in which one process (the
+    master) is responsibel for process spawning (this means creation
+    of a new process), initialization, collection and display of
+    results. Slave programs perform the actual computation involved.
+  \item[Node-only] model have no master process but autonomous
+    processes from which one takes over the non-computational parts
+    in addition to the computation itself.
+  \end{itemize}
+\item[Tree computations] exhibit a tree-like process control
+  structure. It can also be seen as a tree-like parent-child
+  relationship.
+\item[Hybrid] is a combination of the crowd and the tree model.
+\end{description}
+
+Furthermore, parallel programs can be further classified either as the
+single program multiple data (SPMD) or multiple program multiple data
+paradigm (MPMD). 
+
+\begin{description}
+\item[Single program multiple data] means that there is only one
+  program available to all computation nodes. Data is distributed
+  equally amongst all nodes in the program (\textbf{data
+    decomposition}). Then each node applies the
+  same program on its own part of the data. One should not confuse
+  SPMD with the SIMD paradigm as in the latter case low level
+  instructions (direclty from the CPU) are applied to previously
+  distributed data and therefore is a own form of programming.
+\item[Multiple program multiple data] is a thread like
+  paradigm. On each node it is possible to run different programs with
+  either the same or different data (\textbf{function
+    decomposition}). Each program forms a separate
+  functional unit. This is what one would asume when speaking of MIMD
+  architectures but both models (SPMD and MPMD) form the MIMD
+  programming paradigm. 
+\end{description}
+
+\subsection{Types  of Achieving Parallelism}
+
+Providing parallelism to a program can be achieved with one of the
+following approaches. They are different in the complexity of writing
+parallel programs.
+
+\begin{description}
+\item[Implicit parallelism] is writing a sequential program and using
+  an advanced compiler to create parallel executables. The developer
+  does not need to know how a program has to be parallelized. This
+  involves a lot of overhead as automated parallelization is difficult
+  to achieve.
+\item[Explicit parallelism with implicit decomposition] is writing a
+  sequential program und marking regions for parallel processing. In
+  this case the compiler does not need to analyze the code as the
+  developer defines which regions are to be parallelized. With this
+  type of parallelism not as much overhead as with implicit
+  parallelism is involved. This can be achieved via extensions to
+  standard programming (e.g., OpenMP). 
+\item[Explicit parallelism] is writing explicit parallel tasks and
+  handling communication the communication between processes
+  manually. Overhead is only produced through communication und thus
+  offer the possibility of creating very efficient code. This type of
+  parallelism is achieved thrrough parallel programming libraries like
+  MPI or PVM.
+\end{description}
 
 
-%%\subsection{Global Arrays}
-%%\label{globalArrays}
-%% 
+With the information given in this section we now know the design
+issues of parallel programs. The next step is to analyze performance
+of parallel applications.
 
 \section{Performance Analysis}
 \label{sec:perf_analysis}
@@ -1024,7 +1111,7 @@ relative to the runtime of the instruction itself.
 In high performance computing one of the most important method of
 improving performance is taking advantage of parallelism. As explained
 in Section~\ref{sec:processorandmemory} there are other possibilities
-to make a program run faster like following the principle of locality
+to make a program run fast like following the principle of locality
 or making use of pipelining. This is somehow architecture
 dependent and therefore developers should try to parallelize their
 code. A rule of thumb is to make the frequent case fast, that means
@@ -1032,7 +1119,7 @@ parallelizing of this case. How this improvements can be analyzed is
 discussed in this section.
 
 \subsection{Execution Time and Speedup}
-
+\label{sec:speedup}
 The best way to analyze the performance of an application is to
 measure the execution time. Consequently an application can be compared
 with an improved version through the execution times.
@@ -1230,8 +1317,8 @@ Linux~(\url{http://www.debian.org}).
 
 This chapter provided an overview of the state of the art in parallel
 computing. The ongoing development of computer architectures shows that
-parallel computing becomes increasingly important as already the newest
-commodity processors are equipped with two to four computation
+parallel computing becomes increasingly important as the newest
+commodity processors are already equipped with two to four computation
 cores. At the same time in the high performance computing segment
 further substantial increase in parallel computational power is taken
 place. An interesting development is certainly grid computing. Sharing
@@ -1251,4 +1338,3 @@ different platforms through their portability. A major disadvantage is
 the complexity of writing programs using message passing. Years of
 experience are needed to write efficient algorithms. Nevertheless, it
 remains to be an interesting challenge.
-

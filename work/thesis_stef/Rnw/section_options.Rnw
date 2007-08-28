@@ -94,7 +94,7 @@ obtain the prices analytically (using the Black-Scholes-Merton model)
 and compare it to the prices estimated with Monte Carlo simulation.
 
 \subsection{Black-Scholes Model}
-
+\label{sec:blackscholes}
 In the 1970s \cite{blackscholes73options} and \cite{merton73options}
 made a major breakthrough in the pricing of options. This soon became
 known as the Black-Scholes model. They were awarded with the Nobel
