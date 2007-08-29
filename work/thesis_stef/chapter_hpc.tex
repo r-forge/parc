@@ -92,11 +92,13 @@ analyzed in this field.
 \section{Terms and Definitions}
 \label{sec:termsdef}
 
-Before we go into further details the two important terms have to be
+Before we go into further details the terms, which are commonly used
+when dealing with parallel computing, have to be
 defined. It is important to know the difference between processes
 and threads as they are the key figures in parallel computing.
-Then, the difference between parallelism and concurrency is explained
-as they are often confused or said to be the same.
+Then, the difference between parallelism and concurrency is illustrated
+as they are often confused or said to be the same. Eventually
+computational overhead and scalabilty are explained.
 
 \subsection{Process vs. Thread}
 
@@ -209,6 +211,18 @@ send data between one process to another.
 Overhead may also be a criterium to decide wheter a feature or not
 should be included in a parallel program or wheter a parallel
 programming paradigm should be used or not.
+
+\subsection{Scalability}
+
+When using more than one processor to carry out a computation one is
+interested in the increase of performance which can be achieved by
+adding CPUs. The capability of a system to increase the performance
+under an increased load when resources (in this case CPUs) are added
+is refered to as \textbf{scalability}. For example, when the number of
+CPUs is doubled and the computation of the same task takes nearly half
+the time, the 
+system scales well. If this is not the case because it only reduces
+time by 1 or 2 percent then bad scalability is given. 
 
 \section{Computer Architecture}
 

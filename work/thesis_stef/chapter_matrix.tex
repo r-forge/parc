@@ -1,18 +1,90 @@
-\chapter{Parallel Matrix Multiplication}
+%% For standalone compile
+
+\documentclass[12pt,a4paper]{report}
+% zur Kontrolle des Umbruchs Klassenoption draft verwenden
+%\usepackage[ngerman]{babel}
+\usepackage[latin1]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{latexsym}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{ifpdf}
+\usepackage{url}
+%% \usepackage{/usr/share/R/share/texmf/Sweave} see below new environment
+\usepackage[round]{natbib}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% Seitenlayout
+% DIV# gibt den Divisor für die Layoutberechnung an.
+% Vergrößern des Divisors vergrößert den Textbereich.
+% BCOR#cm gibt die Breite des Bundstegs an.
+%\usepackage[DIV11,BCOR2cm]{typearea}
+
+% Abstand obere Blattkante zur Kopfzeile ist 2.54cm - 15mm
+\setlength{\topmargin}{-5mm}
+
+
+%% commands, environments, etc.
+\let\code=\texttt
+\newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\newcommand{\proglang}[1]{\textsf{#1}}
+\newcommand{\class}[1]{`\code{#1}'}
+
+
+\newtheorem{Example}{Example}[chapter]
+
+%% example for newenvironment
+%% \newenvironment{Proof}{\noindent{Proof:}}{%
+%%    \hspace*{\fill}$\Box$\par\vskip2ex}
+
+\RequirePackage{fancyvrb}
+\RequirePackage{color}
+
+\newenvironment{Schunk}{\par\begin{minipage}{\textwidth}}{\end{minipage}}
+
+\definecolor{Sinput}{rgb}{0,0,0.56}
+\definecolor{Scode}{rgb}{0,0,0.56}
+\definecolor{Soutput}{rgb}{0.56,0,0}
+
+\DefineVerbatimEnvironment{Sinput}{Verbatim}
+{formatcom={\color{Sinput}},fontsize=\small}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}
+{formatcom={\color{Soutput}},fontsize=\small}
+\DefineVerbatimEnvironment{Scode}{Verbatim}
+{formatcom={\color{Scode}},fontsize=\small}
+
+
+\begin{document}
+
+%%% standalone compile
+
+%% new commands for algorithmics environment
+\newcommand{\NROW}{\textbf{nrow}}
+\newcommand{\NCOL}{\textbf{ncol}}
+
+\chapter{Matrix Multiplication}
 \label{chap:matrix}
 \section{Introduction}
 
 If we think of applications in parallel computing matrix
-multiplication comes into mind. Because of its nature it is prime
-example for data parallelism. There are many algorithms for
-parallelizing matrix multiplication available.
+multiplication comes into mind. Because of its nature it is a prime
+example for data parallelism. There has been done a lot of work in
+this area. E.g., \cite{golub96mc} give a comprehensive introduction to the
+field of matrix computation. 
 
 
-In this chapter a short introduction to matrix multiplication is
-given. Subsequently implementations of a selection of parallel
-algorithms are presented. Eventually results of the comparison are
-presented.
-
+In this chapter a short introduction to one of the fundamental methods
+in linear algebra namely matrix multiplication is
+given. Subsequently an implementation of a serial version of the matrix
+multiplication algorithm is compared with implementations from high
+performance linear algebra libraries. The remaining parts of this
+chapter deals with the parallel implementation of matrix
+multiplication and uses it as a task to benchmark parallel
+multiplication routines provided from packages presented in
+Chapter~\ref{chap:Rhpc}. Algorithms from the R package \pkg{paRc} are
+explained in more detail as they have been developed in the course of
+this thesis. Eventually, results of the comparisons are presented.
 
 \section{Notation}
 
@@ -27,11 +99,10 @@ a_{m1} & \ldots & a_{mn}
 \end{array} \right)
 a_{ij} \in \mathbb{R}
  $$
-
 The lower case letter of the letter which denotes the matrix with
 subsripts $ij$ refers to the entry in the matrix. 
 
-\subsubsection{Column and Row Partitioning}
+\subsection{Column and Row Partitioning}
 
 A matrix $A$ can be accessed through its rows as it is a stack of row
 vectors:
@@ -42,8 +113,7 @@ a_{1}^T \\
 a_{m}^T 
 \end{array} \right)
 a_{k} \in \mathbb{R}^n 
- $$
-
+$$
 This is called a \textit{row partition} of $A$.
 
 
@@ -54,23 +124,18 @@ $$ A(k,) = \left( \begin{array}{ccc}
 a_{k1}, & \ldots, & a_{kn}
 \end{array} \right)
 $$
-
-
 The other alternative is to see a matrix as a collection of column
 vectors:
-
 $$ A \in \mathbb{R}^{m \times n} \Longleftrightarrow A = 
 \left( \begin{array}{ccc}
 a_{1}, & \ldots, & a_{n}
 \end{array} \right)
 a_{k} \in \mathbb{R}^m 
  $$
-
 This is called a \textit{column partition} of $A$.
 
-
 If $A \in \mathbb{R}^{m \times n}$ the $k$th column of $A$ can be notated
-as $A(,k)$ (according to the row access in R). I.e.,
+as $A(,k)$ (according to the column access in R). I.e.,
 
 $$ A(,k) = \left( \begin{array}{c}
 a_{1k} \\
@@ -79,7 +144,7 @@ a_{mk}
 \end{array} \right)
  $$
 
-\subsubsection{Block Notation}
+\subsection{Block Notation}
 
 Block matrices are central in many algorithms. They have become very
 important in high performance computing because it enables
@@ -103,10 +168,10 @@ matrix.
 Now we can see that column and row partitionings are special cases of
 block matrices.
 
-\section{Naive Parallel Algorithm}
+\section{Basic Matrix Multiplication Algorithm}
 
-\subsection{Basic Multiplication Algorithm}
 
+\subsection{Dot Product Matrix Multiply}
 In the usual matrix multiplication procedure the array $C$ is computed
 through dot products one at a time from left to right and top to
 bottom order.
@@ -116,17 +181,107 @@ bottom order.
 
 $$ C = AB \Longrightarrow c_{ij} = \sum_{k=1}^r a_{ik}b_{kj} $$
 
+Algorithm~\ref{alg:basicmm} shows the implementation of the basic dot
+product matrix multiplication.
+
+\begin{algorithm}
+\caption{Basic matrix multiplication algorithm}
+\label{alg:basicmm}
+\begin{algorithmic}[1]
+
+  \REQUIRE $A \in \mathbb{R}^{m \times r}$ and $B \in \mathbb{R}^{r
+    \times n}$.
+
+  \STATE $m \leftarrow \NROW (A)$
+  \STATE $r \leftarrow \NCOL (A)$
+  \STATE $n \leftarrow \NROW (B)$
+
+  \FOR{$i = 1:m$}
+    \FOR{$j = 1:n$}
+       \FOR{$k = 1:r$}
+         \STATE $C(i,j) \leftarrow A(i,k)B(k,j)$
+       \ENDFOR
+    \ENDFOR
+  \ENDFOR
+  \RETURN $C$
+
+\end{algorithmic}
+\end{algorithm}
 
 %\subsubsection{Gaxpy Matrix Multiply}
 
 %\subsubsection{Outer Product MAtrix Multiply}
 
-\section{Implementation}
+\subsection{C Implementation}
 
-\subsection{Naive Parallel Algorithm}
+It is rather easy to implement Algorithm~\ref{alg:basicmm} in C. 
+The following example shows the serial implementation of the dot
+product matrix multiplication in package \pkg{paRc}. It can be called
+from R using \code{serial.matrix.mult(X,Y)} where \code{X} and
+\code{y} are the matrices to be multiplied:
 
+\begin{Example}
+\label{ex:serialmm}
+\begin{Scode}
+void Serial_matrix_mult( double *x, int *nrx, int *ncx,
+			 double *y, int *nry, int *ncy,
+			 double *z) {
+  int i, j, k;
+  double sum;
 
+  for(i = 0; i < *nrx; i++)
+    for(j = 0; j < *ncy; j++){
+      sum = 0.0;
+      for(k = 0; k < *ncx; k++)
+	sum += x[i + k**nrx]*y[k + j**nry];
+      z[i + j**nrx] = sum;
+    }
+}
+\end{Scode}
+\end{Example}
 
+\subsection{Using Basic Linear Algebra Subprograms}
+\label{sec:blas}
+In Section~\ref{sec:processorandmemory} we pointed out that
+parallelism can be achieved on the instruction level. Furthermore, we
+discussed  the importance of data locality in memory hierarchies. The
+Basic Linear Algebra Subprograms (BLAS) standard proposed by
+\cite{lawson79bla} consist of several basic operations (e.g., vector
+addition, dot product, etc.) utilizing the underlying architecture
+optimal. Most attention is paid to the principle of data locality as
+it will promise the highest performance gain. This can be achieved by
+moving the block of data once up the memory hierarchie, performing all
+necessary operations on it and moving the data back to the main memory
+and proceeding with the next block. The BLAS routines were used in the
+development of linear algebra libraries for solving a number of
+standard problems.
+
+We used the following BLAS libraries in benchmarks of  the matrix
+multiplication problem:
+
+\begin{description}
+\item[refblas] is the official implementation from netlib
+  (\url{http://www.netlib.org}).
+\item[Intel MKL] is a library designed to offer high performance
+  linear algebra routines on Intel architecture (\cite{intel07MKL}. It
+  is freely available for 
+  non-commercial use from \url{http://www.intel.com}. 
+\item[GotoBLAS] is currently the fastest implementation of the Basic
+  Linear Algebra Subprograms (\cite{goto07gotoblas}). This library is
+  threaded which means that it will use all available number of
+  processors on a target computer. It is freely available for
+  non-commercial purposes from
+  \url{http://www.tacc.utexas.edu/resources/software/}.
+\end{description}
+
+%% subsection:A Comparison of Basic Algorithms with BLAS
+\input{section_mmBLAS.tex}
+
+\section{Parallel Matrix Multiplication}
+\label{sec:parmm}
+
+There are many algorithms for
+parallelizing matrix multiplication available.
 
 \subsubsection{MPI}
 
@@ -210,4 +365,8 @@ void OMP_matrix_mult( double *x, int *nrx, int *ncx,
 \subsubsection{OpenMP}
 
 %% Results
-\input{section_mm_results.tex}
+%%\input{section_mm_results.tex}
+
+
+%% standalone compile
+\end{document}

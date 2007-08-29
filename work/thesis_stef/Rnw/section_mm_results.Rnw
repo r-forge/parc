@@ -17,7 +17,6 @@ load("../examples/Rda/bmres-node-5000.Rda")
 
 \SweaveOpts{echo=FALSE}
 
-
 \section{Results}
 
 In this section the results of the comparison of parallel programming
@@ -101,19 +100,6 @@ plot(bmres_s1000[c(2,9:12,13:16,21:24,25:28),])
 
 
 %
-Finally, Table~\ref{tab:mm_seqsblas1000} shows the results of the matrix
-multiplication benchmark using the Basic Linear Algebra Subroutines
-from different Libraries. With these Libraries trimmed for the corresponding
-platform a good speedup can be achieved. None of the presented parallel
-algorithm can compete with the best BLAS Library (in this case the libGOTO). 
-
-<<results=tex>>=
-## BLAS Table incl speedup
-table_seqsblas <- cbind(bmres_s1000[1:4,c(2,6)],speedup(bmres_s1000[1:4,6]))
-colnames(table_seqsblas) <- c("Type","Time","Speedup")
-
-xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode.", label="tab:mm_seqsblas1000")
-@ 
 
 \subsection{$2500x2500$ Matrix}
 
