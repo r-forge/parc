@@ -62,6 +62,9 @@
 %% new commands for algorithmics environment
 \newcommand{\NROW}{\textbf{nrow}}
 \newcommand{\NCOL}{\textbf{ncol}}
+\newcommand{\OMPFOR}{\textbf{!\$omp parallel for}}
+\newcommand{\OMPPRIV}{\textbf{private}}
+\newcommand{\OMPSHARE}{\textbf{shared}}
 
 \chapter{Matrix Multiplication}
 \label{chap:matrix}
@@ -71,7 +74,7 @@ If we think of applications in parallel computing matrix
 multiplication comes into mind. Because of its nature it is a prime
 example for data parallelism. There has been done a lot of work in
 this area. E.g., \cite{golub96mc} give a comprehensive introduction to the
-field of matrix computation. 
+field of matrix computations. 
 
 
 In this chapter a short introduction to one of the fundamental methods
@@ -170,6 +173,15 @@ block matrices.
 
 \section{Basic Matrix Multiplication Algorithm}
 
+In linear algebra matrix multiplication is one of the key figures. In
+this section the $n$ by $n$ matirx multiplication problem $C = AB$ is
+presented using the dot product matrix multiply version. There are
+others like the saxpy and outer product method which are
+mathematically equivalent but have very different levels of
+performance as of the different ways they access memory. Nevertheless,
+we chose the dot product version for illustrating the implementation
+of the serial version of the matrix multiplication. A good
+introduction to the other algorithms gives \cite{golub96mc}. 
 
 \subsection{Dot Product Matrix Multiply}
 In the usual matrix multiplication procedure the array $C$ is computed
@@ -191,6 +203,7 @@ product matrix multiplication.
 
   \REQUIRE $A \in \mathbb{R}^{m \times r}$ and $B \in \mathbb{R}^{r
     \times n}$.
+  \ENSURE $C \in \mathbb{R}^{m \times n}$
 
   \STATE $m \leftarrow \NROW (A)$
   \STATE $r \leftarrow \NCOL (A)$
@@ -215,10 +228,10 @@ product matrix multiplication.
 \subsection{C Implementation}
 
 It is rather easy to implement Algorithm~\ref{alg:basicmm} in C. 
-The following example shows the serial implementation of the dot
+Example~\ref{ex:serialmm} shows the serial implementation of the dot
 product matrix multiplication in package \pkg{paRc}. It can be called
-from R using \code{serial.matrix.mult(X,Y)} where \code{X} and
-\code{y} are the matrices to be multiplied:
+from R using \code{serial.matrix.mult(A,B)} where \code{A} and
+\code{B} are the matrices to be multiplied.
 
 \begin{Example}
 \label{ex:serialmm}
@@ -280,66 +293,113 @@ multiplication problem:
 \section{Parallel Matrix Multiplication}
 \label{sec:parmm}
 
-There are many algorithms for
-parallelizing matrix multiplication available.
+There are many specialized algorithms for parallel matrix multiplication
+available. E.g., Parallel Universal Matrix Multiplication Algorithms
+(PUMA---\cite{choi93pumma}) or Fox's Algorithm (\cite{fox87mah}) to
+mention a few of them. But they are not within the scope of this thesis
+as we want to compare the different non-specialized implementations in the
+R packages with each other.
 
-\subsubsection{MPI}
+In this section we show how the dot product matrix multiplication can
+easily be parallelized using OpenMP. Furthermore, the more
+sophisticated implementations using the MPI and PVM interfaces is
+presented. Eventually, these implementations are compared to those
+available in the packages \pkg{Rmpi}, \pkg{rpvm} and \pkg{snow}.   
 
-\begin{Scode}
-mm.Rmpi <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
-  dx <- dim(X) ## dimensions of matrix A
-  dy <- dim(Y) ## dimensions of matrix B
-  ## Input validation
-  matrix.mult.validate(X, Y, dx, dy)
-  
-  if( n_cpu == 1 )
-    return(X%*%Y)
-  if( spawnRslaves == TRUE )
-    mpi.spawn.Rslaves(nslaves = n_cpu)
+\subsection{OpenMP}
 
-  ## broadcast data and functions necessary on slaves
-  mpi.bcast.Robj2slave(Y) 
-  mpi.bcast.Robj2slave(X) 
-  mpi.bcast.Robj2slave(n_cpu)
-  
-  nrows_on_slaves <- ceiling(dx[1]/n_cpu)
-  nrows_on_last <- dx[1] - (n_cpu - 1)*nrows_on_slaves
-  mpi.bcast.Robj2slave(nrows_on_slaves)
-  mpi.bcast.Robj2slave(nrows_on_last)
-  mpi.bcast.Robj2slave(mm.Rmpi.slave)
+As we mentioned in earlier chapters auto-parallelization using
+implicit parallel programming is a promising concept. A simple and
+scalable programming model and to begin parallelizing existing code
+without having to completely rewrite it is OpenMP~(see section
+\ref{sec:OpenMP}). OpenMP directives and routines extend the
+programming languages FORTRAN and C or C++ respectively to express
+shared memory parallelism.
 
-  ## start partial matrix multiplication on slaves
-  mpi.bcast.cmd(mm.Rmpi.slave())
+\subsubsection{OpenMP Directives}
 
-  ## gather partial results from slaves
-  local_mm <- NULL
-  mm <- mpi.gather.Robj(local_mm, root=0, comm=1)
-  out <- NULL
+OpenMP directives for C/C++ are specified with the \textbf{\code{pragma}}
+preprocessing directive (\cite{openMP05}). This means that each
+OpenMP directive starts with \textbf{\code{pragma omp}} followed by
+directive name and clauses. 
+ 
+\subsubsection{Parallel Loop Construct}
 
-  ## Rmpi returns a list when the vectors have different length (local_mm = NULL)
-  for(i in 1:n_cpu)
-    out <- rbind(out,mm[[i+1]])
-  
-  if( spawnRslaves == TRUE )
-    mpi.close.Rslaves()
-  out
+The parallel loop construct is a combination of the fundamental
+construct \textbf{\code{parallel}} which starts parallel execution and
+a loop construct specifying that the iterations of the loop are
+distributed across the threads. The syntax of the parallel loop
+construct \code{\textbf{for}} is as follows:
 
-\end{Scode}
+\begin{itemize}
+\item \code{\textbf{#pragma parallel for} \textit{optional clauses}} 
+\end{itemize} 
 
-\begin{Scode}
-mm.Rmpi.slave <- function(){
-  commrank <- mpi.comm.rank() -1
-  if(commrank==(n_cpu - 1))
-    local_mm <- X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),]%*%Y
-  else
-    local_mm <- X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),]%*%Y
-  mpi.gather.Robj(local_mm,root=0,comm=1)    
-}
-\end{Scode}
+The \textit{optional clauses} can be any of the clauses accepted by the
+\code{\textbf{parallel}} or \code{\textbf{for}} directives. For
+example \textit{optional clauses} can be data sharing attribute
+clauses like the following:
 
-\subsubsection{PVM}
-\subsubsection{OpenMP}
+\begin{description}
+\item[\code{shared(\textit{list})}] declares one or more list items to
+  be shared among all the threads,
+\item[\code{private(\textit{list})}] declares one or more list items
+  to be private to a thread.
+\end{description}
 
+The \code{\textbf{for}} directive places restrictions on the structure
+of the corresponding \code{for} loop. For example, the iteration variable is
+a signed integer, has to be either incremented or decremented in each
+loop iteration and is private to each thread. Otherwise threading does
+not work, as the loops would not have a clear state.
+
+For more information on other directives, constructs, clauses or
+restrictions to the for loop we refer to \cite{openMP05}.
+
+\subsubsection{Implementation}
+
+With the above information given we can parallelize the matrix
+multiplication rather easy.
+
+Algorithm~\ref{alg:ompmm} shows how the basic matrix multiplication
+(see Algorithm~\ref{alg:basicmm}) can be extended to achieve shared
+memory parallelism using shared variables. 
+
+\begin{algorithm}
+\caption{OpenMP matrix multiplication algorithm}
+\label{alg:ompmm}
+\begin{algorithmic}[1]
+
+  \REQUIRE $A \in \mathbb{R}^{m \times r}$ and $B \in \mathbb{R}^{r
+    \times n}$.
+  \ENSURE $C \in \mathbb{R}^{m \times n}$
+
+  \STATE $m \leftarrow \NROW (A)$
+  \STATE $r \leftarrow \NCOL (A)$
+  \STATE $n \leftarrow \NROW (B)$
+
+  \STATE \OMPFOR \OMPSHARE($A$, $B$, $C$, $j$, $k$)
+  \FOR{$i = 1:m$}
+    \FOR{$j = 1:n$}
+       \FOR{$k = 1:r$}
+         \STATE $C(i,j) \leftarrow A(i,k)B(k,j)$
+       \ENDFOR
+    \ENDFOR
+  \ENDFOR
+  \RETURN $C$
+
+\end{algorithmic}
+\end{algorithm}
+
+Example~\ref{ex:ompmm} shows the implementation for
+Algorithm~\ref{alg:ompmm} in C to achieve loop level parallelism. This
+routine can be called from R
+using the R function \code{omp.matrix.mult(A, B, n\_cpu)}, where \code{A} and
+\code{B} are the matrices to be multiplied and \code{n\_cpu} is the
+number of CPUs to be used.
+
+\begin{Example}
+\label{ex:ompmm}
 \begin{Scode}
 void OMP_matrix_mult( double *x, int *nrx, int *ncx,
 		      double *y, int *nry, int *ncy,
@@ -357,12 +417,112 @@ void OMP_matrix_mult( double *x, int *nrx, int *ncx,
     }
 }
 \end{Scode}
+\end{Example}
 
-\subsection{Fox or other}
+As OpenMP makes use of shared variables (no message passing) it can
+only be compared to other paradigms on a shared memory
+machine. Results are presented in Section~\ref{sec:res_shared}.
 
-\subsubsection{MPI}
-\subsubsection{PVM}
-\subsubsection{OpenMP}
+\subsection{MPI}
+
+Creating parallel applications using message passing is more
+complex as sending and receiving of data has to be done by hand. The
+developer has to be aware of blocking communication and how to
+synchronize processes. Furthermore, the sequential program has to be
+either decomposed with respect to data or with respect to
+functionality.
+
+For matrix multiplication one wants to apply the same
+program to different data because a matrix can be decomposed
+easily to blocks of matrices. Each block is send to one slave which
+performs the matrix multiplication on the given data block.
+
+
+\subsubsection{Implementation}
+
+We used the master-slave parallel programming paradigm (crowd
+computation) to organize our tasks. This means that a master process
+exists which is responsible for I/O, process spawning, distributing
+and collection of the data. Only the slaves carry out the
+computation.
+
+Package \pkg{Rmpi} is used to interface the MPI communication
+layer. In addition to the multiplication routine which uses MPI provided by the
+packages \pkg{snow} a separate implementation has been developed for
+package \pkg{paRc} to become familiar with message passing in MPI.
+
+
+Examples~\ref{ex:MPImaster} and~\ref{ex:MPIslave}
+
+\begin{Example}
+\label{ex:MPImaster}
+\begin{Scode}
+
+mm.Rmpi <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
+  dx <- dim(X) ## dimensions of matrix A
+  dy <- dim(Y) ## dimensions of matrix B
+  ## Input validation
+  matrix.mult.validate(X, Y, dx, dy)
+  
+  if( n_cpu == 1 )
+    return(X%*%Y)
+  ## spawn R slaves?
+  if( spawnRslaves == TRUE )
+    mpi.spawn.Rslaves(nslaves = n_cpu)
+
+  ## broadcast data and functions necessary on slaves
+  mpi.bcast.Robj2slave(Y) 
+  mpi.bcast.Robj2slave(X) 
+  mpi.bcast.Robj2slave(n_cpu)
+  
+  ## how many rows on slaves
+  nrows_on_slaves <- ceiling(dx[1]/n_cpu)
+  nrows_on_last <- dx[1] - (n_cpu - 1)*nrows_on_slaves
+  ## broadcast number of rows to multiply and slave foo
+  mpi.bcast.Robj2slave(nrows_on_slaves)
+  mpi.bcast.Robj2slave(nrows_on_last)
+  mpi.bcast.Robj2slave(mm.Rmpi.slave)
+
+  ## start partial matrix multiplication on slaves
+  mpi.bcast.cmd(mm.Rmpi.slave())
+
+  ## gather partial results from slaves
+  local_mm <- NULL
+  mm <- mpi.gather.Robj(local_mm, root=0, comm=1)
+  out <- NULL
+
+  ## Rmpi returns a list when the vectors have different length
+  for(i in 1:n_cpu)
+    out <- rbind(out,mm[[i+1]])
+  
+  if( spawnRslaves == TRUE )
+    mpi.close.Rslaves()
+  
+  out
+\end{Scode}
+\end{Example}
+
+\begin{Example}
+\label{ex:MPIslave}
+\begin{Scode}
+mm.Rmpi.slave <- function(){
+  commrank <- mpi.comm.rank() -1
+  if(commrank==(n_cpu - 1))
+    local_mm <- X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),]%*%Y
+  else
+    local_mm <- X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),]%*%Y
+  mpi.gather.Robj(local_mm,root=0,comm=1)    
+}
+\end{Scode}
+\end{Example}
+
+
+\subsection{PVM Implementation}
+
+\subsection{Comparison on a Shared Memory Platform}
+\label{sec:res_shared}
+
+\subsection{Comparison on a Distributed Memory Platform}
 
 %% Results
 %%\input{section_mm_results.tex}
