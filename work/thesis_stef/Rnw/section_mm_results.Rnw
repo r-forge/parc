@@ -17,31 +17,35 @@ load("../examples/Rda/bmres-node-5000.Rda")
 
 \SweaveOpts{echo=FALSE}
 
-\section{Comparison of Parallel Programming Paradigms}
+\section{Comparison of Parallel Routines}
 
 In this section the results of the comparison of parallel programming
 models are shown. They are compared on a shared memory machine using
-up to 4 cores and on a distrubuted memory platform using up to 20
-cluster nodes. On the shared memory machine complexities of $1000 \times 
-1000$ and $2500 \times 2500$ are used and on the cluster nodes $2500
-\times 2500$ and $5000 \times 5000$.
+up to 4 cores and on a distributed memory platform using up to 20
+cluster nodes. On the shared memory machine matrices with dimensions
+of $1000 \times 1000$ (complexity grade $1000$) and $2500 \times 2500$
+(complexity grade $2500$) are used and on the
+cluster nodes matrices with dimensions $2500 \times 2500$ and $5000
+\times 5000$ (complexity grade $5000$).
 
 \subsection{Shared Memory Platform}
-
+\label{sec:res_shared}
 On our shared memory testbed the number of available CPUs is restricted to
 four. Benchmarks are run on the bignodes of cluster@WU.
 
-\subsubsection{$1000 \times 1000$ Matrices}
+\subsubsection{Results of Complexity Grade $1000$}
 \label{sec:mms1000}
 
 Table~\ref{tab:mm_s1000} and Figure~\ref{fig:mm_s1000} show the
-resulting execution times of the matrix multiplication with a
-complexity $1000 \times 1000$. A slight overhead is observed for the OpenMP
+resulting execution times of the matrix multiplication with complexity
+grade $1000$. A slight overhead is observed for the OpenMP
 routine from package \pkg{paRc} using one CPU but when increasing the
 number of CPU this programming
 model scales better than the other two. This is because OpenMP makes
-use of shared variables and therefore no communication overhead is
-produced. Nevertheless, a slight overhead produced from the compiler
+use of shared variables and therefore not as much communication overhead is
+produced as when using message passing---computation itself does not
+matter in relation to communication. Nevertheless, a slight overhead
+produced from the compiler 
 remains. This is what we expected. In this benchmark MPI and PVM show
 nearly the same speedup.
 
@@ -53,7 +57,7 @@ table_s1000 <- cbind(as.integer(bmres_s1000[5:8,3]),bmres_s1000[5:8,6],bmres_s10
 
 colnames(table_s1000) <- c("#CPU","OpenMP","MPI","PVM")
 
-xtable(table_s1000, caption="Comparison of parallel programming models on a shared memory machine", label="tab:mm_s1000")
+xtable(table_s1000, caption="Comparison of parallel programming models on a shared memory machine and complexity grade $1000$", label="tab:mm_s1000")
 @ 
 
 \begin{figure}
@@ -62,15 +66,16 @@ xtable(table_s1000, caption="Comparison of parallel programming models on a shar
 ## plot without BLAS functions (serial, OpenMP, MPI, PVM)
 plot(bmres_s1000[c(1,5:8,17:20,29:32),])
 @
-\caption{Comparison of parallel programming models.}
+\caption{Comparison of parallel programming models on a shared memory
+  machine and complexity grade $1000$.}
 \label{fig:mm_s1000}
 \end{figure}
 
-When using the BLAS routines (as the supplied matrix multiplication
+When using BLAS (as the supplied matrix multiplication
 routines from \pkg{snow} do) the results draw the following picture:
 Table~\ref{tab:mm_sblas1000} and Figure~\ref{tab:mm_sblas1000} show
-that all of the programming models scale not so good. The communication
-overhead is too large for this kind of complexity (the BLAS routines
+that all of the programming models scale not so well. The communication
+overhead is too large for this kind of complexity grade (the BLAS routines
 deliver results fast). Indeed, when using all computation cores the
 PVM routine from package \pkg{snow} is slower than with fewer
 cores. This is because the distribution of the data consumes
@@ -83,7 +88,7 @@ table_sblas1000 <- cbind(as.integer(bmres_s1000[5:8,3]),bmres_s1000[9:12,6],bmre
 
 colnames(table_sblas1000) <- c("#CPU","MPI","snow-MPI","PVM","snow-PVM")
 
-xtable(table_sblas1000, caption="Comparison of parallel programming models on a shared memory machine using BLAS routines", label="tab:mm_sblas1000")
+xtable(table_sblas1000, caption="Comparison of parallel programming models on a shared memory machine using BLAS and complexity grade $1000$", label="tab:mm_sblas1000")
 
 @ 
 
@@ -93,22 +98,24 @@ xtable(table_sblas1000, caption="Comparison of parallel programming models on a 
 ## Plot with BLAS
 plot(bmres_s1000[c(2,9:12,13:16,21:24,25:28),])
 @ 
-\caption{Comparison of parallel programming models using BLAS routines.}
+\caption{Comparison of parallel programming models on a shared memory
+  machine using BLAS and complexity grade $1000$}
 \label{fig:mm_sblas1000}
 \end{figure}
 
 
 %
 
-\subsubsection{$2500 \times 2500$ Matrices}
+\subsubsection{Results of Complexity Grade $2500$}
 
-Let the complexity be increased to $2500 \times 2500$. Then, in contrary to
+Let the complexity be increased to $2500 \times 2500$ matrices. Then,
+in contrary to 
 \ref{sec:mms1000} the OpenMP routine performs worse than the other
 two. This is because the communication doesn't play an important role
 any more when carrying out this benchmark. The compiler driven
 parallelization produces a slight overhead in contrast to the manual
 parallelization. The MPI and PVM routines scale nearly in the same
-way.
+way (see Table~\ref{tab:mm_s2500} and Figure~\ref{fig:mm_s2500}.
 
 <<results=tex>>=
 ## 2500x2500
@@ -117,8 +124,9 @@ way.
 table_s2500 <- cbind(as.integer(bmres_s2500[5:8,3]),bmres_s2500[5:8,6],bmres_s2500[25:28,6],bmres_s2500[21:24,6])
 colnames(table_s2500) <- c("#CPU","OpenMP","MPI","PVM")
 
-xtable(table_s2500, caption="Comparison of parallel programming models on a shared memory machine.", label="tab:mm_s2500")
+xtable(table_s2500, caption="Comparison of parallel programming models on a shared memory machine and complexity grade $2500$.", label="tab:mm_s2500")
 @ 
+
 
 \begin{figure}
 \centering
@@ -126,25 +134,28 @@ xtable(table_s2500, caption="Comparison of parallel programming models on a shar
 ## plot without BLAS functions (serial, OpenMP, MPI, PVM)
 plot(bmres_s2500[c(1,5:8,21:24,25:28),])
 @ 
-\caption{Comparison of parallel programming models.}
+\caption{Comparison of parallel programming models on a shared memory
+  machine and complexity grade $2500$.}
 \label{fig:mm_s2500}
 \end{figure}
 
 The last comparison of parallel programming models on a shared memory
-machine is carried out using the BLAS routines. As we have seen in the
+machine shows parallel matrix multiplication using BLAS. As we have
+seen in the 
 corresponding example from Section~\ref{sec:mms1000} the speedup is
 not expected to be high. Figure~\ref{fig:mm_sblas2500} shows that when
 increasing the number of cores from one to two a significant speedup
 can be obtained. Using more than two processors does not improve
 performance as the lines in the graph become rather flat. Again, the
-PVM routine from \pkg{snow} performs worst.
+PVM routine from \pkg{snow} performs worst. The execution times and
+speedups are shown in Table~\ref{tab:mm_sblas2500}.
 
 <<results=tex>>=
 ## Table with BLAS
 table_sblas2500 <- cbind(as.integer(bmres_s2500[5:8,3]),bmres_s2500[9:12,6],bmres_s2500[29:32,6],bmres_s2500[17:20,6],bmres_s2500[13:16,6])
 
 colnames(table_sblas2500) <- c("#CPU","MPI","snow-MPI","PVM","snow-PVM")
-xtable(table_sblas2500, caption="Comparison of parallel programming models on a shared memory machine with BLAS routines.", label="tab:mm_sblas2500")
+xtable(table_sblas2500, caption="Comparison of parallel programming models on a shared memory machine with BLAS and complexity grade $2500$.", label="tab:mm_sblas2500")
 @ 
 
 \begin{figure}
@@ -154,7 +165,8 @@ xtable(table_sblas2500, caption="Comparison of parallel programming models on a 
 plot(bmres_s2500[c(2,9:12,13:16,17:20,29:32),])
 
 @
-\caption{Comparison of parallel programming models.}
+\caption{Comparison of parallel programming models on a shared memory
+  machine with BLAS and complexity grade $2500$.}
 \label{fig:mm_sblas2500}
 \end{figure}
 
@@ -164,14 +176,14 @@ plot(bmres_s2500[c(2,9:12,13:16,17:20,29:32),])
 On a distributed memory platform things change. First more CPU's and
 more memory are available to the user. Second the processors are
 connected through a slower interconnection network compared to a
-shared memory machine. This has an impact to all communication carried
+shared memory machine. This has an influence to all communication carried
 out in message passing environment. As we have more nodes available we
 decided to use bigger matrices and therefore start with $2500 \times
 2500$ and continue with $5000 \times 5000$ matrices.
 
-\subsubsection{$2500 \times 2500$ Matrices}
+\subsubsection{Results of Complexity Grade $2500$}
 
-Without using the BLAS routines the MPI routine from package
+Without using the BLAS the MPI routine from package
 \pkg{paRc} scales rather well (Figure~\ref{fig:mm_n2500}). The PVM
 routine shows good speedup 
 until processor number 6 but then performance gain breaks down. Again,
@@ -185,7 +197,7 @@ PVM communication seems to be suboptimal implemented.
 plot(bmres_n2500[c(1,5:6,47:66,107:126),])
 @ 
 \caption{Comparison of parallel programming models on a cluster using
-  20 nodes.}
+  20 nodes and complexity grade $2500$.}
 \label{fig:mm_n2500}
 \end{figure}
 
@@ -202,32 +214,34 @@ produced 2 outliers. It does not seem to deliver a stable performance.
 plot(bmres_n2500[c(2,7:26,27:46,67:86,87:106),])
 @ 
 \caption{Comparison of parallel programming models on a cluster using
-  20 nodes using BLAS routines.}
+  20 nodes using BLAS and complexity grade $2500$.}
 \label{fig:mm_nblas2500}
 \end{figure}
 
-Table~\ref{tab:mm_seqnblas2500} shows the results of the matrix
-multiplication benchmark using the Basic Linear Algebra Subroutines
-from different Libraries. These Libraries are trimmed for the corresponding
-architecture on the nodes so that performance is maximized. 
+
+%% explain in more details the  speedup tables
+Table~\ref{tab:mm_n2500} shows the best result of the matrix
+multiplication benchmark for each parallel programming model.
 
 <<results=tex>>=
-## BLAS Table incl speedup
-table_seqnblas2500 <- cbind(bmres_n2500[1:4,c(2,6)],speedup(bmres_n2500[1:4,6]))
-colnames(table_seqnblas2500) <- c("Type","Time","Speedup")
-xtable(table_seqnblas2500, caption="Comparison of BLAS routines on a cluster node.", label="tab:mm_seqnblas2500")
+X<-NULL
+for(i in unique(bmres_n2500$type)){X<-rbind(X,bmres_n2500[bmres_n2500$type==i,][bmres_n2500[bmres_n2500$type==i,]$time_ela==min(bmres_n2500[bmres_n2500$type==i,]$time_ela),])}
+table_n2500 <- cbind(X[,c(2,6)],speedup(X))
+colnames(table_n2500) <- c("Type","Time","Speedup")
+xtable(table_n2500, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $2500$.", label="tab:mm_n2500")
 @ 
 
-\subsubsection{$5000 \times 5000$ Matrices}
+
+\subsubsection{Results of Complexity Grade $5000$}
 
 The final task in this section is to multiply two $5000 \times 5000$
 matrices on the cluster nodes. Communication now really matters as one
-matrix needs around 190~MB of storage when assuming that an entry is a
+matrix needs around 190~MB of memory when assuming that an entry is a
 double precision floating point of 8 Byte.
 
 Figure~\ref{fig:mm_n5000} shows that the PVM routine has once more
 problems with large CPU counts. MPI is rather
-stable. Figure~\ref{fig:mm_n5000} shows the routines using the R BLAS
+stable. Figure~\ref{fig:mm_nblas5000} shows the routines using the R BLAS
 library. Again PVM is unstable, the \pkg{snow} routines do not scale
 well and MPI delivers stable and increasing performance.
 
@@ -239,7 +253,7 @@ well and MPI delivers stable and increasing performance.
 plot(bmres_n5000[c(1,5:6,47:66,107:126),])
 @ 
 \caption{Comparison of parallel programming models on a cluster using
-  20 nodes.}
+  20 nodes and complexity grade $5000$.}
 \label{fig:mm_n5000}
 \end{figure}
 
@@ -249,9 +263,18 @@ plot(bmres_n5000[c(1,5:6,47:66,107:126),])
 ## Plot with BLAS
 plot(bmres_n5000[c(2,7:26,27:46,67:86,87:106),])
 @
-\caption{Comparison of parallel programming paradigms.}
+\caption{Comparison of parallel programming paradigms on a cluster using
+  20 nodes with BLAS and complexity grade $5000$.}
 \label{fig:mm_nblas5000}
 \end{figure}
+
+<<results=tex>>=
+X<-NULL
+for(i in unique(bmres_n5000$type)){X<-rbind(X,bmres_n5000[bmres_n5000$type==i,][bmres_n5000[bmres_n5000$type==i,]$time_ela==min(bmres_n5000[bmres_n5000$type==i,]$time_ela),])}
+table_n5000 <- cbind(X[,c(2,6)],speedup(X))
+colnames(table_n5000) <- c("Type","Time","Speedup")
+xtable(table_n5000, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $5000$.", label="tab:mm_s2500")
+@ 
 
 
 %\end{document}

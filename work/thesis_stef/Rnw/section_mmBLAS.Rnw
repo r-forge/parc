@@ -30,7 +30,7 @@ corresponding platform a good speedup can be achieved. The Intel MKL
 library boosts the matrix multiplication with a speedup of over 26 in
 comparison to the C implementation from Example~\ref{ex:serialmm}. The
 best BLAS library, in 
-this case GotoBLAS, shows a really extraordinary speedup. In fact
+this case GotoBLAS, shows a really extraordinary speedup. In fact,
 nearly doubling the speedup of the MKL. It
 can really compete with if not beat all parallel algorithms for matrix
 multiplication shown in this thesis.
@@ -40,7 +40,7 @@ multiplication shown in this thesis.
 table_seqsblas <- cbind(bmres_s1000[1:4,c(2,6)],speedup(bmres_s1000[1:4,6]))
 colnames(table_seqsblas) <- c("Type","Time","Speedup")
 
-xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode with complexity grade 1000.", label="tab:mm_seqsblas1000")
+xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode with complexity grade~$1000$.", label="tab:mm_seqsblas1000")
 @  
 \subsubsection{Results of Complexity Grade $2500$}
 
@@ -58,5 +58,5 @@ calculation steps increases with the complexity of the matrices.
 table_seqsblas <- cbind(bmres_s2500[1:4,c(2,6)],speedup(bmres_s2500[1:4,6]))
 colnames(table_seqsblas) <- c("Type","Time","Speedup")
 
-xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode with comlexity grade 2500.", label="tab:mm_seqsblas2500")
+xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode with comlexity grade~$2500$.", label="tab:mm_seqsblas2500")
 @ 

@@ -58,7 +58,7 @@
 %% new commands for algorithmics environment
 \newcommand{\NROW}{\textbf{nrow}}
 \newcommand{\NCOL}{\textbf{ncol}}
-\newcommand{\OMPFOR}{\textbf{!\$omp parallel for}}
+\newcommand{\OMPFOR}{\textbf{!\$omp parallel for }}
 \newcommand{\OMPPRIV}{\textbf{private}}
 \newcommand{\OMPSHARE}{\textbf{shared}}
 \newcommand{\SERIALMM}{\textbf{serial.mult}}
@@ -78,9 +78,9 @@ In this chapter a short introduction to one of the fundamental methods
 in linear algebra namely matrix multiplication is
 given. Subsequently an implementation of a serial version of the matrix
 multiplication algorithm is compared with implementations from high
-performance linear algebra libraries. The remaining parts of this
-chapter deals with the parallel implementation of matrix
-multiplication and uses it as a task to benchmark parallel
+performance linear algebra libraries. The remaining part of this
+chapter deals with the parallel implementations of matrix
+multiplication and uses them as a task to benchmark parallel
 multiplication routines provided from packages presented in
 Chapter~\ref{chap:Rhpc}. Algorithms from the R package \pkg{paRc} are
 explained in more detail as they have been developed in the course of
@@ -89,7 +89,7 @@ this thesis. Eventually, results of the comparisons are presented.
 \section{Notation}
 
 $ \mathbb{R} $ denotes the set of real numbers and $ \mathbb{R}^{m
-  \times n} $ the vector space of all m-by-n real matrices.
+  \times n} $ the vector space of all $m$ by $n$ real matrices.
 
 $$ A \in \mathbb{R}^{m \times n} \Longleftrightarrow A = (a_{ij}) = 
 \left( \begin{array}{ccc}
@@ -165,28 +165,29 @@ $n_j$ of $A$. $\sum_{i=1}^p m_i = m$ and $\sum_{j=1}^q n_j = n$.
 We can say that $A = A_{ij}$ is a $p$ by $q$ block
 matrix.   
 
-Now we can see that column and row partitionings are special cases of
+It can be seen that column and row partitionings are special cases of
 block matrices.
 
 \section{Basic Matrix Multiplication Algorithm}
 
-In linear algebra matrix multiplication is one of the key figures. In
+Matrix multiplication is one of the key figures in linear algebra. In
 this section the matrix multiplication problem $C = AB$ is
 presented using the dot product matrix multiply version. There are
 others like the saxpy and outer product method which are
-mathematically equivalent but have very different levels of
+mathematically equivalent but have different levels of
 performance as of the different ways they access memory. Nevertheless,
 we chose the dot product version for illustrating the implementation
 of the serial version of the matrix multiplication. A good
-introduction to the other algorithms gives \cite{golub96mc}. 
+introduction to the other algorithms is given by \cite{golub96mc}. 
 
 \subsection{Dot Product Matrix Multiply}
 In the usual matrix multiplication procedure the array $C$ is computed
 through dot products one at a time from left to right and top to
 bottom order.
+\newline
 
- ($\mathbb{R}^{m \times r} \times
-\mathbb{R}^{r \times n} \to \mathbb{R}^{m \times n}$)
+$\mathbb{R}^{m \times r} \times
+\mathbb{R}^{r \times n} \to \mathbb{R}^{m \times n}$
 
 $$ C = AB \Longrightarrow c_{ij} = \sum_{k=1}^r a_{ik}b_{kj} $$
 
@@ -273,12 +274,11 @@ multiplication problem:
   (\url{http://www.netlib.org}).
 \item[Intel MKL] is a library designed to offer high performance
   linear algebra routines on
- Intel architecture (\cite{intel07MKL}. It
-  is freely available for 
-  non-commercial use from \url{http://www.intel.com}. 
+ Intel architecture (\cite{intel07MKL}--- available
+  freely for non-commercial use from \url{http://www.intel.com}. 
 \item[GotoBLAS] is currently the fastest implementation of the Basic
   Linear Algebra Subprograms (\cite{goto07gotoblas}). This library is
-  threaded which means that it will use all available number of
+  threaded, which means that it will use all available number of
   processors on a target computer. It is freely available for
   non-commercial purposes from
   \url{http://www.tacc.utexas.edu/resources/software/}.
@@ -299,25 +299,26 @@ R packages with each other.
 
 In this section we show how the dot product matrix multiplication can
 easily be parallelized using OpenMP. Furthermore, the more
-sophisticated implementations using the MPI and PVM interfaces is
+sophisticated implementations using the MPI and PVM interfaces
+available in \pkg{paRc} are
 presented. Eventually, these implementations are compared to those
-available in the packages \pkg{Rmpi}, \pkg{rpvm} and \pkg{snow}.   
+available in the package \pkg{snow}.   
 
 \subsection{OpenMP}
 
 As we mentioned in earlier chapters auto-parallelization using
-implicit parallel programming is a promising concept. A simple and
-scalable programming model and to begin parallelizing existing code
-without having to completely rewrite it is OpenMP~(see section
+implicit parallel programming is a promising concept. OpenMP is a simple and
+scalable programming model and with the aim to parallelize existing code
+without having to completely rewrite~(see section
 \ref{sec:OpenMP}). OpenMP directives and routines extend the
 programming languages FORTRAN and C or C++ respectively to express
 shared memory parallelism.
 
 \subsubsection{OpenMP Directives}
 
-OpenMP directives for C/C++ are specified with the \textbf{\code{pragma}}
+OpenMP directives for C/C++ are specified with the \textbf{\code{#pragma}}
 preprocessing directive (\cite{openMP05}). This means that each
-OpenMP directive starts with \textbf{\code{pragma omp}} followed by
+OpenMP directive starts with \textbf{\code{#pragma omp}} followed by
 directive name and clauses. 
  
 \subsubsection{Parallel Loop Construct}
@@ -345,13 +346,14 @@ clauses like the following:
 \end{description}
 
 The \code{\textbf{for}} directive places restrictions on the structure
-of the corresponding \code{for} loop. For example, the iteration variable is
+of the corresponding loop. For example, the iteration variable is
 a signed integer, has to be either incremented or decremented in each
-loop iteration and is private to each thread. Otherwise threading does
-not work, as the loops would not have a clear state.
+loop iteration, and is private to each thread. Otherwise threading does
+not work properly, as loop iterations cannot be decomposed to create
+parallel threads.
 
-For more information on other directives, constructs, clauses or
-restrictions to the for loop we refer to \cite{openMP05}.
+For further information on other directives, constructs, clauses or
+restrictions to the \code{for} loop we refer to \cite{openMP05}.
 
 \subsubsection{Implementation}
 
@@ -446,11 +448,11 @@ $$
 
 $A_{i}$ is the $i$th block or submatrix with dimensions $m_i$ by
 $n$ of $A$ where $\sum_{i=1}^p m_i = m$. 
-We can say that $A = A_{i}$ is a $p$ by $n$ block
+We can say that $A = A_{i}$ is a $m_i$ by $n$ block
 matrix. 
 
 The number of block matrices is given by the number of available
-CPUs. With this information given we can write down the matrix
+CPUs $p$. With this information given we can write down the matrix
 multiplication for a specific node:
 
 $$ C_{i} = A_{i}B $$
@@ -461,10 +463,11 @@ be sent completely to all nodes) but is a good start to become
 familiar with data decomposition.
 
 One issue, how many rows are send to each slave, remains. If the
-number of rows $m$ of the matrix $A$ is evenly divided by the number
+number of rows $m$ of the matrix $A$ can be evenly divided by the number
 of processors $p$ then $m/p$ rows are sent to each slave. Otherwise
+the block matrices have to be defined such that 
 $p - 1$ slaves receive $\lceil m/p \rceil$ and the remaining processor
-will receive $m - (p - 1) \lceil m/p \rceil $.
+will receive $m - (p - 1) \lceil m/p \rceil$ rows.
 
 This decomposition is used for the implementation of matrix
 multiplication using MPI and PVM in \pkg{paRc}.
@@ -483,11 +486,6 @@ layer. In addition to the high level MPI multiplication routine
 been developed for package \pkg{paRc} to become familiar with message
 passing in MPI. 
 
-
-
-
-
-Algorithm~\ref{} and for the slave in \ref{}.
 
 
 \begin{algorithm}
@@ -547,11 +545,11 @@ Examples~\ref{ex:MPImaster} and~\ref{ex:MPIslave} show the R
 implementation of Algorithm~\ref{alg:mpimaster} and
 Algorithm~\ref{alg:mpislave} respectively. After validating the input
 \code{n\_ncpu} number of R slaves are spawned. The master slave
-calculates and broadcast all the necessary data to the slaves. Then
+calculates and broadcasts all the necessary data to the slaves. Then
 the slaves perform the actual computations and return the resulting
 local matrices to the master. The local solutions are combined to a
 single matrix which is the solution of the parallel matrix
-multipliaction.
+multiplication.
 
 \begin{Example}
 \label{ex:MPImaster}
@@ -633,7 +631,7 @@ multiplication are the same as shown in Section~\ref{sec:mmMPI}.
 
 The PVM equivalents to the master and slave code of MPI are shown in
 Examples~\ref{ex:PVMmaster} and~\ref{ex:PVMslave}.
-After validating the input \code{n\_ncpu} number of R slaves are
+After validating the input \code{n\_cpu} number of R slaves are
 spawned. Immediately after invoking this command the R slaves source
 the code from a file \code{"mm\_slave.R"} (shown in Example
 \ref{ex:PVMslave}). The master slave
@@ -745,8 +743,6 @@ if(rank<(n_cpu - 1))
 q (save="no")
 \end{Scode}
 \end{Example}
-
-
 
 
 %% Results
