@@ -214,7 +214,13 @@ analytical exact solution with the numerical approximation.
 \subsection{Monte Carlo Evaluation of the Option Prices}
 
 
+The value of a derivative can be estimated with the following steps
 
+\begin{itemize}
+\item 
+\item
+\item 
+\end{itemize} 
 
 
 <<eval=TRUE, echo=FALSE>>=
