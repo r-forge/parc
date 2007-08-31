@@ -12,30 +12,6 @@
 ## - monte carlo simulation: n =30 depends on T?
 ## - binomial tree plot method and creat method see options, futures, ... p211
 
-define.option <- function(underlying, strikeprice, maturity, type = "Call", class = "European", position = "long"){
-  x <- list()
-  available_types<- c("call","put")
-  available_positions<- c("long","short")
-  available_classes <- c("european","american")
-  if(!(is.numeric(underlying)||(length(underlying==3)))) stop("'underlying' must be a numeric vector of length 3")
-  x$mu <- underlying[1]
-  x$sigma <- underlying[2]
-  x$present <- underlying[3]
-  x$maturity <- maturity
-  if(!is.numeric(strikeprice)) stop("'strikeprice' must be a numeric")
-  x$strikeprice <- strikeprice
-  if(!is.numeric(maturity)) stop("'maturity' must be a numeric")
-  x$maturity <- maturity
-  x$type <- tolower(type)
-  if(!any(x$type==available_types)) stop(paste("'type' must be either",available_types[1],"or",available_types[2]))
-  x$kind <- tolower(class)
-  if(!any(x$kind==available_classes)) stop(paste("'class' must be either",available_classes[1],"or",available_classes[2]))
-  x$position <- tolower(position)
-  if(!any(x$position==available_positions)) stop(paste("'position' must be either",available_positions[1],"or",available_positions[2]))     
-  class(x) <- "option"
-  x
-}
-
 payoff <- function(path,x,r) {
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
   cl <- optionclass(x)
@@ -218,14 +194,14 @@ monteCarloSimulation <- function(x,r,n,length,
 mcs.Rmpi.slave <- function(){
   require("paRc")
   commrank <- mpi.comm.rank() - 1
-  monteCarloSlave <- function(x, r, n, len, n.simulations=50,
+  monteCarloSlave <- function(x, r, n, length, n.simulations=50,
                               antithetic=TRUE){
     price <- vector()
     dt <- maturity(x)/n
     mu <- underlying(x)[1]
     sigma <- underlying(x)[2]
     for( i in 1:n.simulations){
-      eps <- matrix(rnorm(n*len),nrow=n)
+      eps <- matrix(rnorm(n*length),nrow=n)
       
       if(antithetic)
         eps <- cbind(eps, -eps)
@@ -235,31 +211,29 @@ mcs.Rmpi.slave <- function(){
     }
     price
   }
-  if(commrank==0)
-    local_prices <- monteCarloSlave(x, r, n, len, nsim_on_last,
+  if(commrank==(n_cpu - 1))
+    local_prices <- monteCarloSlave(x, r, n, length, nsim_on_last,
                                          antithetic)
   else
-    local_prices <- monteCarloSlave(x, r, n, len, nsim, antithetic)
+    local_prices <- monteCarloSlave(x, r, n, length, nsim, antithetic)
   mpi.gather.Robj(local_prices, root=0, comm=1)    
 }
 
-mcs.Rmpi <- function(x, r, n, len, n.simulations=50, antithetic = TRUE,
-                     n_cpu = 1, spawnRslaves=FALSE, debug=FALSE) {
+mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
+                     n_cpu = 1, spawnRslaves=FALSE) {
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
   
   if( n_cpu == 1 )
-    return(monteCarloSimulation(x, r, n, len, n.simulations=50,
+    return(monteCarloSimulation(x, r, n, length, n.simulations=50,
                                 antithetic))
-  if( spawnRslaves == TRUE ){
+  if( spawnRslaves == TRUE )
     mpi.spawn.Rslaves(nslaves = n_cpu)
-    mpi.setup.sprng()
-    }
 
   ## broadcast data and functions necessary on slaves
   mpi.bcast.Robj2slave(x) 
   mpi.bcast.Robj2slave(r) 
   mpi.bcast.Robj2slave(n)
-  mpi.bcast.Robj2slave(len)
+  mpi.bcast.Robj2slave(length)
   mpi.bcast.Robj2slave(antithetic)
   
   
@@ -268,6 +242,7 @@ mcs.Rmpi <- function(x, r, n, len, n.simulations=50, antithetic = TRUE,
   mpi.bcast.Robj2slave(nsim)
   mpi.bcast.Robj2slave(nsim_on_last)
   mpi.bcast.Robj2slave(mcs.Rmpi.slave)
+
   ## start partial matrix multiplication on slaves
   mpi.bcast.cmd(mcs.Rmpi.slave())
 
@@ -279,11 +254,10 @@ mcs.Rmpi <- function(x, r, n, len, n.simulations=50, antithetic = TRUE,
   ## Rmpi returns a list when the vectors have different length (local_mm = NULL)
   #for(i in 1:n_cpu)
   #  out <- rbind(out,prices[[i+1]])
+  
   if( spawnRslaves == TRUE )
     mpi.close.Rslaves()
-  if(debug==TRUE)
-    return(prices)
-  mean(unlist(prices))
+  prices
 }
 
 
