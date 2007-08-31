@@ -83,14 +83,14 @@ last call the current available CPUs to a parallel program is queried.
 [1] 2
 \end{Soutput}
 \end{Schunk}
-\end{example}
+\end{Example}
 
 \subsection{High Level OpenMP Functions}
 
 \pkg{paRc} provides the following high level OpenMP function: 
 
 \begin{description}
-\item[\texttt{omp.matrix.mult(X, Y, ncpu = 1)}] multiplies the matrix
+\item[\texttt{omp.matrix.mult(X, Y, n\_cpu = 1)}] multiplies the matrix
   \code{X} with matrix \code{Y} using \code{n\_cpu} numbers of
   processors.
 \end{description}
@@ -130,9 +130,9 @@ the necessary information to run a benchmark. The list elements are
   \item snow-PVM---implementation in \pkg{snow} using \pkg{rpvm} for
     communication
   \end{itemize}
-\item[cpu_range] contains a vector of integers representing the number
+\item[cpu\_range] contains a vector of integers representing the number
   of CPUs for th corresponding benchmark run 
-\item[is_parallel] is a logical \code{TRUE} or \code{FALSE} wether the
+\item[is\_parallel] is a logical \code{TRUE} or \code{FALSE} wether the
   contains parallel tasks or not
 \end{description}
 
@@ -141,14 +141,14 @@ the necessary information to run a benchmark. The list elements are
 These are the main routines for benchmarking parallel applications:
 
 \begin{description}
-\item[\code{create.benchmark(task, data, type, cpu_range, ...)}]
+\item[\code{create.benchmark(task, data, type, cpu\_range, ...)}]
   defines a benchmark object using a specific \code{task} and the
   corresponding \code{data}. The \code{type} refers to the serial or
-  parallel paradigm to use. The \code{cpu_range} specifies the range
+  parallel paradigm to use. The \code{cpu\_range} specifies the range
   of CPUs to use for this benchmark. 
 \item[\code{run.benchmark(x)}] takes a benchmark object as argument
   and carries out the defined benchmark. It returns an object of type
-  bm_results (which inherits from a dataframe) containing the
+  bm\_results (which inherits from a dataframe) containing the
   results of the benchmark.
 \end{description}
 
@@ -185,7 +185,7 @@ a generic function for calculating the speedup is provided:
 \begin{description}
 \item[\code{speedup(x)}] is a generic function taking an object as
   arguments. Currently there are two methods implemented namely
-  \code{speedup.numeric} and \code{speedup.bm_results}. The methods
+  \code{speedup.numeric} and \code{speedup.bm\_results}. The methods
   calculate the speedup as it is presented in
   Equation~\ref{eq:speedup}.
 \end{description}
@@ -196,7 +196,7 @@ The following S3 methods are provided for the benchmark environment:
 
 \begin{description}
 \item[\code{print.benchmark}] prints objects of class \class{benchmark}
-\item[\code{plot.bm_results}] supplies a plot method for comparing
+\item[\code{plot.bm\_results}] supplies a plot method for comparing
   benchmark results.
 \item[\code{speedup.default}] returns an error message that there is
   no default method. 
@@ -204,8 +204,8 @@ The following S3 methods are provided for the benchmark environment:
   vector of type \class{numeric}. The reference execution time is  the
   first element in the vector. The return value is a vector of type
   \class{numeric}. 
-\item[\code{speedup.bm_results}] calculates the speedups from an object
-  of class \class{bm_results} and returns them as a vector of type
+\item[\code{speedup.bm\_results}] calculates the speedups from an object
+  of class \class{bm\_results} and returns them as a vector of type
   \class{numeric}. 
 \end{description}
 
@@ -213,217 +213,3 @@ The following S3 methods are provided for the benchmark environment:
 
 \begin{Example} Running a benchmark using OpenMP
 \label{ex:benchrun}
-\begin{Schunk}
-\begin{Sinput}
-> n <- 1000
-> maxcpu <- omp.get.num.procs()
-> dat <- list()
-> dat[[1]] <- matrix(runif(n * n, -5, 5), nrow = n)
-> dat[[2]] <- matrix(runif(n * n, -5, 5), nrow = n)
-> bm <- create.benchmark(task = "matrix multiplication", data = dat, 
-+     type = "OpenMP", parallel = TRUE, cpu_range = 1:maxcpu)
-> bm
-\end{Sinput}
-\begin{Soutput}
-A parallel benchmark running task: matrix multiplication - OpenMP
-\end{Soutput}
-\begin{Sinput}
-> bmres <- run.benchmark(bm)
-> bmres
-\end{Sinput}
-\begin{Soutput}
-                   task   type n_cpu time_usr time_sys time_ela is_parallel
-1 matrix multiplication OpenMP     1    7.420    0.056    7.482        TRUE
-2 matrix multiplication OpenMP     2    7.218    0.051    3.695        TRUE
-3 matrix multiplication OpenMP     3    7.707    0.057    2.705        TRUE
-4 matrix multiplication OpenMP     4    7.943    0.052    2.110        TRUE
-\end{Soutput}
-\begin{Sinput}
-> speedup(bmres)
-\end{Sinput}
-\begin{Soutput}
-  OpenMP   OpenMP   OpenMP   OpenMP 
-1.000000 2.024899 2.765989 3.545972 
-\end{Soutput}
-\end{Schunk}
-\end{Example}
-
-Running a dedicated benchmark is shown in
-Example~\ref{ex:benchrun}. The object \code{bm} contains all the
-information to carry out the benchmark. The task to run is matrix
-multiplication of two $1000 \times 1000$ matrices. The parallel
-paradigm to use is OpenMP using 1 up to the maximum of CPUs available
-on the machine. The resulting data.frame is printed and the speedup is
-calculated.
-
-\subsection{Environment for Option Pricing}
-
-In package \pkg{paRc} a framework for pricing financial derivatives,
-in particular options, is available. The framework is built around the
-main function namely Monte Carlo simulation and its parallel
-derivative. 
-
-\subsubsection{Class \class{option}}
-
-An S3 object named \class{option} contains all
-the necessary information for pricing an option. The list elements are
-
-\begin{description}
-\item[underlying] is a numeric vector containing the three elements to
-  describe a stock:
-  \begin{itemize}
-  \item the return $\mu$,
-  \item the volatility $\sigma$,
-  \item and the present value of the stock.
-  \end{itemize}
-\item[strikeprice] is a numeric defining the strikeprice of the option.
-\item[maturity] is a numeric defining the time until the option expires.
-\item[type] is a character representing the type of the option. There
-  are two possibilities---either a \code("call") option, or a
-  \code("put") option.
-  \end{itemize}
-\item[kind] contains a character representing the class of the
-  option. Only \code{"European"} has been available at the time of
-  this writing. 
-\item[position] is a character string marking the position of the
-  investor. This can either be \code{"long"} or \code{"short"}.
-\end{description}
-
-
-\subsubsection{Main Routines}
-
-These are the main routines for pricing an option:
-
-\begin{description}
-\item[\code{define.option(underlying, strikeprice, maturity, type =
-    "Call", class = "European", position = "long")}] defines an object
-  of class \class{option}. 
-\item[\code{blackscholesprice(x)}] takes an object of class
-  \class{option} as argument and returns the analytical solution of
-  the Black Scholes differential equation (the price of the
-  option). This works only for European options (see
-  Section~\ref{sec:blackscholes} for details).
-\item[\code{monteCarloSimulation(x, r, n, length, n.simulations = 50,
-    antithetic = TRUE)}] carries out a Monte Carlo simulation pricing
-  an option given by \code{x}. Further arguments are the risk free
-  yield \code{r}, the lenght of a wiener path \code{n}, the number of
-  simulated paths \code{length}, the number of simulation runs
-  \code{n.simulations} and if antithetic variance reduction should be
-  used (\code{antithetic}).
-\item[\code{mcs.Rmpi(x, r, n, length, n.simulations = 50,
-    antithetic = TRUE, n_cpu = 1, spawnRslaves = FALSE)}] is the same
-  like \code{monteCarloSimulation()} but uses parallel generation of
-  option prices. Additional arguments \code{n_cpu} and
-  \code{spawnRslaves} have to be provided naming the number of CPUs
-  and if R slaves are to be spawned respectively.
-\end{description}
-
-\subsubsection{Extractor and Replacement Functions}
-
-The following routines are for handling an object of class
-\class{option}. They
-extract or replace the values in the option \code{x}.
-
-\begin{itemize}
-\item \code{maturity(x)}
-\item \code{strikeprice(x)}
-\item \code{underlying(x)}
-\item \code{optiontype(x)}
-\item \code{optionclass(x)}
-\item \code{position(x)}
-\end{description}
-
-\subsubsection{S3 Methods}
-
-The following S3 methods are provided for the option pricing environment:
-
-\begin{description}
-\item[\code{print.option}] defines the print method for class \class{option}.
-\item[\code{plot.option}] plots the payoff of the given \class{option}.
-\end{description}
-
-\subsubsection{Example}
-
-\begin{Example} Handling class \class{option}
-\label{ex:option}
-\begin{Schunk}
-\begin{Sinput}
-> european <- define.option(c(0.1, 0.4, 100), 100, 1/12)
-> european
-\end{Sinput}
-\begin{Soutput}
-A call option with strike price 100
-expiring in 30 days
-\end{Soutput}
-\begin{Sinput}
-> underlying(european)
-\end{Sinput}
-\begin{Soutput}
- mean    sd value 
-  0.1   0.4 100.0 
-\end{Soutput}
-\begin{Sinput}
-> optiontype(european)
-\end{Sinput}
-\begin{Soutput}
-[1] "call"
-\end{Soutput}
-\begin{Sinput}
-> optionclass(european)
-\end{Sinput}
-\begin{Soutput}
-[1] "european"
-\end{Soutput}
-\begin{Sinput}
-> strikeprice(european)
-\end{Sinput}
-\begin{Soutput}
-[1] 100
-\end{Soutput}
-\begin{Sinput}
-> maturity(european)
-\end{Sinput}
-\begin{Soutput}
-[1] 0.08333333
-\end{Soutput}
-\begin{Sinput}
-> underlying(european) <- c(0.2, 0.5, 100)
-> underlying(european)
-\end{Sinput}
-\begin{Soutput}
- mean    sd value 
-  0.2   0.5 100.0 
-\end{Soutput}
-\end{Schunk}
-\end{Example}
-
-In Example~\ref{ex:option} the variable \code{european} is assigned an
-object of class \class{option}. It is defined as an European option
-with strikeprice 100 and maturity 1/12 (30 days). The underlying has a
-present value of 100, a return of 0.1 and volatility of 0.4. Invoking the print
-method returns a short summary of the object. The rest
-of the example shows the use of different extractor functions and an
-replacement function. Figure~\ref{fig:payoff} shows the payoff of the
-defined option.
-
-\begin{figure}
-\centering
-\includegraphics{section_paRc-004}
-\label{fig:payoff} 
-\end{figure}
-
-\subsection{Other Functions}
-
-To complete the set of functions supplied by package \pkg{paRc} the
-following function has to be explained:
-
-\begin{description}
-\item[\code{serial.matrix.mult(X,Y)}] takes the matrices \code{X} and
-  \code{Y} as arguments and performs a serial matrix
-  multiplication. This function calls a C routine providing a
-  non-optimzed version of the serial matrix multiplication (see
-  Chapter~\ref{chap:matrix} for more details).  
-\end{description}
-
-\subsection{Conclusion}
-

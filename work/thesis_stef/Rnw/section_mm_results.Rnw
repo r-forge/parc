@@ -17,27 +17,26 @@ load("../examples/Rda/bmres-node-5000.Rda")
 
 \SweaveOpts{echo=FALSE}
 
-\section{Results}
+\section{Comparison of Parallel Programming Paradigms}
 
 In this section the results of the comparison of parallel programming
 models are shown. They are compared on a shared memory machine using
-up to 4 cores and on up to 20 cluster nodes. Furthermore, to show the
-impact of optimized BLAS routines they separated comparisons are
-shown. On the shared memory paradigm complexities of $1000x1000$ and
-$2500x2500$ are used and on the cluster nodes $2500x2500$ and
-$5000x5000$.
+up to 4 cores and on a distrubuted memory platform using up to 20
+cluster nodes. On the shared memory machine complexities of $1000 \times 
+1000$ and $2500 \times 2500$ are used and on the cluster nodes $2500
+\times 2500$ and $5000 \times 5000$.
 
-\subsection{Shared Memory Machine}
+\subsection{Shared Memory Platform}
 
 On our shared memory testbed the number of available CPUs is restricted to
 four. Benchmarks are run on the bignodes of cluster@WU.
 
-\subsection{$1000x1000$ Matrix}
+\subsubsection{$1000 \times 1000$ Matrices}
 \label{sec:mms1000}
 
 Table~\ref{tab:mm_s1000} and Figure~\ref{fig:mm_s1000} show the
 resulting execution times of the matrix multiplication with a
-complexity $1000x1000$. A slight overhead is observed for the OpenMP
+complexity $1000 \times 1000$. A slight overhead is observed for the OpenMP
 routine from package \pkg{paRc} using one CPU but when increasing the
 number of CPU this programming
 model scales better than the other two. This is because OpenMP makes
@@ -101,9 +100,9 @@ plot(bmres_s1000[c(2,9:12,13:16,21:24,25:28),])
 
 %
 
-\subsection{$2500x2500$ Matrix}
+\subsubsection{$2500 \times 2500$ Matrices}
 
-Let the complexity be increased to $2500x2500$. Then, in contrary to
+Let the complexity be increased to $2500 \times 2500$. Then, in contrary to
 \ref{sec:mms1000} the OpenMP routine performs worse than the other
 two. This is because the communication doesn't play an important role
 any more when carrying out this benchmark. The compiler driven
@@ -167,10 +166,10 @@ more memory are available to the user. Second the processors are
 connected through a slower interconnection network compared to a
 shared memory machine. This has an impact to all communication carried
 out in message passing environment. As we have more nodes available we
-decided to use bigger matrices and therefore start with $2500x2500$
-and continue with $5000x5000$ matrices.
+decided to use bigger matrices and therefore start with $2500 \times
+2500$ and continue with $5000 \times 5000$ matrices.
 
-\subsection{$2500x2500$ Matrix}
+\subsubsection{$2500 \times 2500$ Matrices}
 
 Without using the BLAS routines the MPI routine from package
 \pkg{paRc} scales rather well (Figure~\ref{fig:mm_n2500}). The PVM
@@ -219,9 +218,9 @@ colnames(table_seqnblas2500) <- c("Type","Time","Speedup")
 xtable(table_seqnblas2500, caption="Comparison of BLAS routines on a cluster node.", label="tab:mm_seqnblas2500")
 @ 
 
-\subsection{$5000x5000$ Matrix}
+\subsubsection{$5000 \times 5000$ Matrices}
 
-The final task in this section is to multiply two $5000x5000$
+The final task in this section is to multiply two $5000 \times 5000$
 matrices on the cluster nodes. Communication now really matters as one
 matrix needs around 190~MB of storage when assuming that an entry is a
 double precision floating point of 8 Byte.

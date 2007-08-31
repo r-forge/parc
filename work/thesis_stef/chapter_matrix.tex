@@ -1,5 +1,3 @@
-%% For standalone compile
-
 \documentclass[12pt,a4paper]{report}
 % zur Kontrolle des Umbruchs Klassenoption draft verwenden
 %\usepackage[ngerman]{babel}
@@ -55,8 +53,6 @@
 {formatcom={\color{Scode}},fontsize=\small}
 
 
-\begin{document}
-
 %%% standalone compile
 
 %% new commands for algorithmics environment
@@ -65,7 +61,8 @@
 \newcommand{\OMPFOR}{\textbf{!\$omp parallel for}}
 \newcommand{\OMPPRIV}{\textbf{private}}
 \newcommand{\OMPSHARE}{\textbf{shared}}
-
+\newcommand{\SERIALMM}{\textbf{serial.mult}}
+\begin{document}
 \chapter{Matrix Multiplication}
 \label{chap:matrix}
 \section{Introduction}
@@ -148,7 +145,7 @@ a_{mk}
  $$
 
 \subsection{Block Notation}
-
+\label{sec:blocknot}
 Block matrices are central in many algorithms. They have become very
 important in high performance computing because it enables
 easy distributing of data. 
@@ -174,7 +171,7 @@ block matrices.
 \section{Basic Matrix Multiplication Algorithm}
 
 In linear algebra matrix multiplication is one of the key figures. In
-this section the $n$ by $n$ matirx multiplication problem $C = AB$ is
+this section the matrix multiplication problem $C = AB$ is
 presented using the dot product matrix multiply version. There are
 others like the saxpy and outer product method which are
 mathematically equivalent but have very different levels of
@@ -216,7 +213,6 @@ product matrix multiplication.
        \ENDFOR
     \ENDFOR
   \ENDFOR
-  \RETURN $C$
 
 \end{algorithmic}
 \end{algorithm}
@@ -276,7 +272,8 @@ multiplication problem:
 \item[refblas] is the official implementation from netlib
   (\url{http://www.netlib.org}).
 \item[Intel MKL] is a library designed to offer high performance
-  linear algebra routines on Intel architecture (\cite{intel07MKL}. It
+  linear algebra routines on
+ Intel architecture (\cite{intel07MKL}. It
   is freely available for 
   non-commercial use from \url{http://www.intel.com}. 
 \item[GotoBLAS] is currently the fastest implementation of the Basic
@@ -295,7 +292,7 @@ multiplication problem:
 
 There are many specialized algorithms for parallel matrix multiplication
 available. E.g., Parallel Universal Matrix Multiplication Algorithms
-(PUMA---\cite{choi93pumma}) or Fox's Algorithm (\cite{fox87mah}) to
+(PUMMA---\cite{choi93pumma}) or Fox's Algorithm (\cite{fox87mah}) to
 mention a few of them. But they are not within the scope of this thesis
 as we want to compare the different non-specialized implementations in the
 R packages with each other.
@@ -332,7 +329,7 @@ distributed across the threads. The syntax of the parallel loop
 construct \code{\textbf{for}} is as follows:
 
 \begin{itemize}
-\item \code{\textbf{#pragma parallel for} \textit{optional clauses}} 
+\item \code{\textbf{\#pragma parallel for} \textit{optional clauses}} 
 \end{itemize} 
 
 The \textit{optional clauses} can be any of the clauses accepted by the
@@ -386,7 +383,6 @@ memory parallelism using shared variables.
        \ENDFOR
     \ENDFOR
   \ENDFOR
-  \RETURN $C$
 
 \end{algorithmic}
 \end{algorithm}
@@ -424,6 +420,7 @@ only be compared to other paradigms on a shared memory
 machine. Results are presented in Section~\ref{sec:res_shared}.
 
 \subsection{MPI}
+\label{sec:mmMPI}
 
 Creating parallel applications using message passing is more
 complex as sending and receiving of data has to be done by hand. The
@@ -437,6 +434,40 @@ program to different data because a matrix can be decomposed
 easily to blocks of matrices. Each block is send to one slave which
 performs the matrix multiplication on the given data block.
 
+Recalling the block notation from Section~\ref{sec:blocknot} a $m
+\times n$ matrix can be partitioned to obtain
+
+$$ A = \left( \begin{array}{ccc}
+A_{1} \\
+\vdots\\
+A_{p}
+\end{array} \right)
+$$
+
+$A_{i}$ is the $i$th block or submatrix with dimensions $m_i$ by
+$n$ of $A$ where $\sum_{i=1}^p m_i = m$. 
+We can say that $A = A_{i}$ is a $p$ by $n$ block
+matrix. 
+
+The number of block matrices is given by the number of available
+CPUs. With this information given we can write down the matrix
+multiplication for a specific node:
+
+$$ C_{i} = A_{i}B $$
+
+$C_{i}$ represents the local result of the multiplication. Clearly
+this is not the best way to subdivide matrices in blocks ($B$ has to
+be sent completely to all nodes) but is a good start to become
+familiar with data decomposition.
+
+One issue, how many rows are send to each slave, remains. If the
+number of rows $m$ of the matrix $A$ is evenly divided by the number
+of processors $p$ then $m/p$ rows are sent to each slave. Otherwise
+$p - 1$ slaves receive $\lceil m/p \rceil$ and the remaining processor
+will receive $m - (p - 1) \lceil m/p \rceil $.
+
+This decomposition is used for the implementation of matrix
+multiplication using MPI and PVM in \pkg{paRc}.
 
 \subsubsection{Implementation}
 
@@ -447,12 +478,80 @@ and collection of the data. Only the slaves carry out the
 computation.
 
 Package \pkg{Rmpi} is used to interface the MPI communication
-layer. In addition to the multiplication routine which uses MPI provided by the
-packages \pkg{snow} a separate implementation has been developed for
-package \pkg{paRc} to become familiar with message passing in MPI.
+layer. In addition to the high level MPI multiplication routine 
+ provided by the package \pkg{snow} a separate implementation has
+been developed for package \pkg{paRc} to become familiar with message
+passing in MPI. 
 
 
-Examples~\ref{ex:MPImaster} and~\ref{ex:MPIslave}
+
+
+
+Algorithm~\ref{} and for the slave in \ref{}.
+
+
+\begin{algorithm}
+\caption{MPI matrix multiplication algorithm---master}
+\label{alg:mpimaster}
+\begin{algorithmic}[1]
+
+  \REQUIRE $A \in \mathbb{R}^{m \times r}$, $B \in \mathbb{R}^{r
+    \times n}$ and $p$.
+  \ENSURE $C \in \mathbb{R}^{m \times n}$
+
+  \STATE $m \leftarrow \NROW (A)$
+  
+  \STATE $n_{slave} \leftarrow \lceil m/p \rceil$
+  \STATE $n_{last} \leftarrow m - (p - 1) n_{slave} $
+  
+  \STATE spawn $p$ slave processes
+  \FOR{$i = 1:p$}
+    \STATE send $A$, $B$, $n_{slave}$, $n_{last}$ and function
+    \SERIALMM to process $i$. start multiplication on process $i$
+  \ENDFOR
+  
+  \FOR{$i = 1:p$}
+    \STATE collect local result $C_{i}$ from slaves
+  \ENDFOR
+  
+  \STATE combine $C_{i}$ to $C$
+
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{MPI matrix multiplication algorithm---slave}
+\label{alg:mpislave}
+\begin{algorithmic}[1]
+
+  \REQUIRE $A_{(m)} \in \mathbb{R}^{m \times r}$, $B \in \mathbb{R}^{r
+    \times n}$, $n_{slave}$, $n_{last}$ and $p$
+  \ENSURE $C \in \mathbb{R}^{m \times n}$
+
+  \STATE $rank \leftarrow rank - 1$
+
+  \STATE $C_{(rank)} \leftarrow A_{(rank)}B$
+
+
+  \FOR{$i = 1:p$}
+    \STATE collect local result $C_{i}$ from slaves
+  \ENDFOR
+  
+  \STATE combine $C_{i}$ to $C$
+  
+\end{algorithmic}
+\end{algorithm}
+
+
+Examples~\ref{ex:MPImaster} and~\ref{ex:MPIslave} show the R
+implementation of Algorithm~\ref{alg:mpimaster} and
+Algorithm~\ref{alg:mpislave} respectively. After validating the input
+\code{n\_ncpu} number of R slaves are spawned. The master slave
+calculates and broadcast all the necessary data to the slaves. Then
+the slaves perform the actual computations and return the resulting
+local matrices to the master. The local solutions are combined to a
+single matrix which is the solution of the parallel matrix
+multipliaction.
 
 \begin{Example}
 \label{ex:MPImaster}
@@ -516,16 +615,142 @@ mm.Rmpi.slave <- function(){
 \end{Scode}
 \end{Example}
 
+\subsection{PVM}
 
-\subsection{PVM Implementation}
+PVM in R can be used with the package \pkg{rpvm}. In addition to the
+high level PVM multiplication routine provided by the package
+\pkg{snow} a separate implementation has been developed for package
+\pkg{paRc} to become familiar with message passing in PVM, which is
+slightly different from MPI. 
 
-\subsection{Comparison on a Shared Memory Platform}
-\label{sec:res_shared}
+Like the MPI implementation above the matrix multiplication is
+organized according 
+to the master-slave programming model. The difference to MPI is the
+lack of its ability to remotely execute commands. Therefore when
+spawning R processes the complete source has to be available to the
+slave on creation (i.e., from a file). The algorithms for matrix
+multiplication are the same as shown in Section~\ref{sec:mmMPI}.
 
-\subsection{Comparison on a Distributed Memory Platform}
+The PVM equivalents to the master and slave code of MPI are shown in
+Examples~\ref{ex:PVMmaster} and~\ref{ex:PVMslave}.
+After validating the input \code{n\_ncpu} number of R slaves are
+spawned. Immediately after invoking this command the R slaves source
+the code from a file \code{"mm\_slave.R"} (shown in Example
+\ref{ex:PVMslave}). The master slave
+calculates the necessary data and stores them in a buffer. This buffer
+is send to all of the slaves. Then
+the slaves perform the actual computations (after receiving and
+unpacking the data of the buffer) and return the resulting
+local matrices to the master. The local solutions are combined to a
+single matrix which is the solution of the parallel matrix
+multipliaction.
+
+
+\begin{Example}
+\label{ex:PVMmaster}
+\begin{Scode}
+mm.rpvm <- function(X, Y, n_cpu = 1) {
+
+  dx <- dim(X) ## dimensions of matrix A
+  dy <- dim(Y) ## dimensions of matrix B
+
+  ## Input validation
+  matrix.mult.validate(X,Y,dx,dy)
+
+  ## Tags for message sending
+  WORKTAG <- 17
+  RESULTAG <- 82
+  
+  if(n_cpu == 1)
+    return(X%*%Y)
+
+  mytid <- .PVM.mytid()
+  children <- .PVM.spawnR(ntask = n_cpu, slave = "mm_slave.R")
+  if (all(children < 0)) {
+    cat("Failed to spawn any task: ", children, "\n")
+    .PVM.exit()
+  }
+  else if (any(children < 0)) {
+    cat("Failed to spawn some tasks.  Successfully spawned ",
+        sum(children > 0), "tasks\n")
+    children <- children[children > 0]
+  }
+
+  nrows_on_slaves <- ceiling(dx[1]/n_cpu)
+  nrows_on_last <- dx[1] - (n_cpu - 1)*nrows_on_slaves
+
+  ## distribute data
+  for (id in 1:length(children)) {
+    .PVM.initsend()
+    .PVM.pkint(id)
+    .PVM.pkint(n_cpu)
+    .PVM.pkint(nrows_on_slaves)
+    .PVM.pkint(nrows_on_last)
+    .PVM.pkdblmat(X)
+    .PVM.pkdblmat(Y)
+    .PVM.send(children[id], WORKTAG)
+   }
+
+  ## receive partial results
+  partial.results <- list()
+  for (child in children) {
+    .PVM.recv(-1, RESULTAG)
+    rank <- .PVM.upkint()
+    partial.results[[rank]] <- .PVM.upkdblmat()
+  }
+  .PVM.exit()
+  ## return in matrix form
+  out <- NULL
+  for(i in 1:n_cpu)
+    out <- rbind(out,partial.results[[i]])
+  out
+}
+\end{Scode}
+\end{Example}
+
+
+\begin{Example}
+\label{ex:PVMslave}
+\begin{Scode}
+library("rpvm")
+
+WORKTAG <- 17
+RESULTAG <- 82
+
+myparent  <- .PVM.parent ()
+
+## Receive work from parent (a matrix)
+buf <- .PVM.recv (myparent, WORKTAG)
+rank <- .PVM.upkint() - 1
+n_cpu <- .PVM.upkint()
+nrows_on_slaves <- .PVM.upkint()
+nrows_on_last <- .PVM.upkint()
+X <- .PVM.upkdblmat()
+Y <- .PVM.upkdblmat()
+
+if(rank==(n_cpu - 1))
+  local_mm <- X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_last),]%*%Y
+if(rank<(n_cpu - 1))
+  local_mm <- X[(nrows_on_slaves*rank + 1):(nrows_on_slaves*rank + nrows_on_slaves),]%*%Y
+
+## Send result back
+.PVM.initsend()
+.PVM.pkint(rank + 1)
+.PVM.pkdblmat(local_mm)
+.PVM.send (myparent, RESULTAG)
+
+## Exit PVM
+.PVM.exit ()
+## Exit R
+q (save="no")
+\end{Scode}
+\end{Example}
+
+
+
 
 %% Results
-%%\input{section_mm_results.tex}
+\input{section_mm_results.tex}
 
 
 %% standalone compile
