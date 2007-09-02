@@ -316,9 +316,9 @@ shared memory parallelism.
 
 \subsubsection{OpenMP Directives}
 
-OpenMP directives for C/C++ are specified with the \textbf{\code{#pragma}}
+OpenMP directives for C/C++ are specified with the \textbf{\code{\#pragma}}
 preprocessing directive (\cite{openMP05}). This means that each
-OpenMP directive starts with \textbf{\code{#pragma omp}} followed by
+OpenMP directive starts with \textbf{\code{\#pragma omp}} followed by
 directive name and clauses. 
  
 \subsubsection{Parallel Loop Construct}
@@ -484,9 +484,17 @@ Package \pkg{Rmpi} is used to interface the MPI communication
 layer. In addition to the high level MPI multiplication routine 
  provided by the package \pkg{snow} a separate implementation has
 been developed for package \pkg{paRc} to become familiar with message
-passing in MPI. 
+passing in MPI. The algorithms are presented in this section.
 
 
+Algorithm~\ref{alg:mpimaster} shows the instructions to accomplish the
+task for the master process and Algorithm~\ref{alg:mpislave} shows the
+instructions for the slaves. Whereas the master is engaged with
+subdividing, sending, and collecting data, the slaves receive their
+partition of matrix $A$---$A_{rank}$, where $rank$ is the identifier of
+the processor on which the slave runs on. After calculating the
+partial result $C_{rank}$, the master gathers them into the resulting
+matrix $C$.  
 
 \begin{algorithm}
 \caption{MPI matrix multiplication algorithm---master}
@@ -502,14 +510,17 @@ passing in MPI.
   \STATE $n_{slave} \leftarrow \lceil m/p \rceil$
   \STATE $n_{last} \leftarrow m - (p - 1) n_{slave} $
   
+  \STATE decompose $A$ to $A_i$ such that $A_1 ... A_{p-1} \in
+  \mathbb{R}^{n_{slave} \times r}$ and $A_p \in \mathbb{R}^{n_{last} \times r} $  
+  
   \STATE spawn $p$ slave processes
   \FOR{$i = 1:p$}
-    \STATE send $A$, $B$, $n_{slave}$, $n_{last}$ and function
-    \SERIALMM to process $i$. start multiplication on process $i$
+    \STATE send $A_i$, $B$ to process $i$. Start
+    multiplication on process $i$ 
   \ENDFOR
   
   \FOR{$i = 1:p$}
-    \STATE collect local result $C_{i}$ from slaves
+    \STATE receive local result $C_{i}$ from slaves
   \ENDFOR
   
   \STATE combine $C_{i}$ to $C$
@@ -522,20 +533,14 @@ passing in MPI.
 \label{alg:mpislave}
 \begin{algorithmic}[1]
 
-  \REQUIRE $A_{(m)} \in \mathbb{R}^{m \times r}$, $B \in \mathbb{R}^{r
-    \times n}$, $n_{slave}$, $n_{last}$ and $p$
-  \ENSURE $C \in \mathbb{R}^{m \times n}$
+  \REQUIRE $ A_{rank} \in \mathbb{R}^{n_{rank} \times r}$, $B
+  \in \mathbb{R}^{r\times n}$, $p$
 
-  \STATE $rank \leftarrow rank - 1$
+  \ENSURE $C_{rank} \in \mathbb{R}^{n_{rank} \times n}$
 
-  \STATE $C_{(rank)} \leftarrow A_{(rank)}B$
+  \STATE $C_{rank} \leftarrow A_{rank}B$
 
-
-  \FOR{$i = 1:p$}
-    \STATE collect local result $C_{i}$ from slaves
-  \ENDFOR
-  
-  \STATE combine $C_{i}$ to $C$
+  \STATE send local result $C_{rank}$ to master
   
 \end{algorithmic}
 \end{algorithm}
@@ -544,7 +549,7 @@ passing in MPI.
 Examples~\ref{ex:MPImaster} and~\ref{ex:MPIslave} show the R
 implementation of Algorithm~\ref{alg:mpimaster} and
 Algorithm~\ref{alg:mpislave} respectively. After validating the input
-\code{n\_ncpu} number of R slaves are spawned. The master slave
+\code{n\_ncpu} number of R slaves are spawned. The master
 calculates and broadcasts all the necessary data to the slaves. Then
 the slaves perform the actual computations and return the resulting
 local matrices to the master. The local solutions are combined to a
