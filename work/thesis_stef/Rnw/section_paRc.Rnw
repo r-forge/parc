@@ -1,4 +1,5 @@
-\section{paRc---PARallel Computations in R}
+
+:q\section{paRc---PARallel Computations in R}
 \label{sec:paRc}
 
 In the course of this thesis a package called \pkg{paRc}
@@ -84,7 +85,7 @@ omp.get.max.threads()
 \pkg{paRc} provides the following high level OpenMP function: 
 
 \begin{description}
-\item[\texttt{omp.matrix.mult(X, Y, ncpu = 1)}] multiplies the matrix
+\item[\texttt{omp.matrix.mult(X, Y, n\_cpu = 1)}] multiplies the matrix
   \code{X} with matrix \code{Y} using \code{n\_cpu} numbers of
   processors.
 \end{description}
