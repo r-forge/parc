@@ -753,6 +753,37 @@ q (save="no")
 %% Results
 \input{section_mm_results.tex}
 
+\section{Conclusion}
+
+In this chapter we have shown how we achieved parallelism in R
+using OpenMP and using message passing models like MPI and
+PVM. Furthermore we compared the programming models on a shared and a
+distributed memory platform.
+
+On the shared memory platform we showed that OpenMP can be easy
+implemented and that perfomance is rather good compared to the other
+parallel programming models (when ignoring the optimized BLAS
+implementations). Therefore we propose to use this paradigm for
+parallelization of existing implementations in C as it is possible to
+incrementally parallelize code. Then, as many commodity computers
+offer more than one processor nowadays, one can experience higher
+performance when using R on a shared memory machine.
+
+In contrast, on distributed memory platforms, one has to rely on
+message passing environments as they are by now the best way of
+achieving high performance on these machines. It has been shown that
+MPI delivers better results in comparison to PVM when used in
+combination with R. Moreover, it is better to implement this type of
+parallel applications per hand as high level functions, provided for
+example by package \pkg{snow}, perform not so good. This is because
+they rely on generalized functions which is suboptimal in the field of
+high performance computing.
+
+MPI provided by package \pkg{Rmpi} seems to be a good choice when
+building large-scale parallel applications in R. Large data sets can
+be transmitted via MPI efficiently and processes can be handled
+interactively.
+
 
 %% standalone compile
 \end{document}

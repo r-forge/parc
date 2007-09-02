@@ -235,8 +235,8 @@ package the following functions have to be explained.
 \subsection{Conclusion}
 
 The package \pkg{Rmpi} implements many of the routines available in
-MPI-2. But there are some that have to be ommitted or are not included
-because they are not needed for use in R (e.g., data management
+MPI-2. But there are routines that have to be ommitted or are not included
+because they are not needed for use with R (e.g., data management
 routines are not necessary as R has its own tools for data handling).
 A really interesting aspect of the \pkg{Rmpi} package is the
 possibilty to spawn interactive R slaves. That enables the user to

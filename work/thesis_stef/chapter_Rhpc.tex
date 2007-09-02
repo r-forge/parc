@@ -120,3 +120,16 @@ packages is given.
 
 \section{Conclusion}
 
+In this chapter we have shown that R offers a lot of possibilities in
+high performance computing. Extensions which interface the main
+message passing environments, MPI and PVM, offer the highest
+flexibility as parallel applications can be based upon low level
+message passing routines. Especially package \pkg{Rmpi} has to be
+noted as it offers interactive testing of developed parallel
+functions. 
+
+For easy parallelization of existing C code on shared memory machine a
+new approach has been shown using package \pkg{paRc}. Implicit
+parallel programming can be achieved using the compiler directives
+offered by OpenMP. A major disadvantage is that parallel functionality
+has to be implemented low level in C or FORTRAN.
