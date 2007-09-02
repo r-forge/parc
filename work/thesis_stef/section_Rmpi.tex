@@ -80,7 +80,7 @@ returned.
 > lamhosts()
 \end{Sinput}
 \begin{Soutput}
-node065 node065 node045 node045 node025 node025 node047 node047 
+node028 node028 node062 node062 node049 node040 node036 node043 
       0       1       2       3       4       5       6       7 
 \end{Soutput}
 \begin{Sinput}
@@ -99,7 +99,7 @@ node065 node065 node045 node045 node025 node025 node047 node047
 > mpi.get.processor.name()
 \end{Sinput}
 \begin{Soutput}
-[1] "node065"
+[1] "node028"
 \end{Soutput}
 \end{Schunk}
 \end{Example}
@@ -151,15 +151,15 @@ master is printed.
 \end{Sinput}
 \begin{Soutput}
 	8 slaves are spawned successfully. 0 failed.
-master (rank 0, comm 1) of size 9 is running on: node065 
-slave1 (rank 1, comm 1) of size 9 is running on: node065 
-slave2 (rank 2, comm 1) of size 9 is running on: node065 
-slave3 (rank 3, comm 1) of size 9 is running on: node045 
-slave4 (rank 4, comm 1) of size 9 is running on: node045 
-slave5 (rank 5, comm 1) of size 9 is running on: node025 
-slave6 (rank 6, comm 1) of size 9 is running on: node025 
-slave7 (rank 7, comm 1) of size 9 is running on: node047 
-slave8 (rank 8, comm 1) of size 9 is running on: node047 
+master (rank 0, comm 1) of size 9 is running on: node028 
+slave1 (rank 1, comm 1) of size 9 is running on: node028 
+slave2 (rank 2, comm 1) of size 9 is running on: node028 
+slave3 (rank 3, comm 1) of size 9 is running on: node062 
+slave4 (rank 4, comm 1) of size 9 is running on: node062 
+slave5 (rank 5, comm 1) of size 9 is running on: node049 
+slave6 (rank 6, comm 1) of size 9 is running on: node040 
+slave7 (rank 7, comm 1) of size 9 is running on: node036 
+slave8 (rank 8, comm 1) of size 9 is running on: node043 
 \end{Soutput}
 \begin{Sinput}
 > mpi.comm.size()
@@ -245,15 +245,15 @@ and \pkg{rlecuyer} in Section~\ref{sec:otherpackages}.
 \end{Sinput}
 \begin{Soutput}
 	8 slaves are spawned successfully. 0 failed.
-master (rank 0, comm 1) of size 9 is running on: node065 
-slave1 (rank 1, comm 1) of size 9 is running on: node065 
-slave2 (rank 2, comm 1) of size 9 is running on: node065 
-slave3 (rank 3, comm 1) of size 9 is running on: node045 
-slave4 (rank 4, comm 1) of size 9 is running on: node045 
-slave5 (rank 5, comm 1) of size 9 is running on: node025 
-slave6 (rank 6, comm 1) of size 9 is running on: node025 
-slave7 (rank 7, comm 1) of size 9 is running on: node047 
-slave8 (rank 8, comm 1) of size 9 is running on: node047 
+master (rank 0, comm 1) of size 9 is running on: node028 
+slave1 (rank 1, comm 1) of size 9 is running on: node028 
+slave2 (rank 2, comm 1) of size 9 is running on: node028 
+slave3 (rank 3, comm 1) of size 9 is running on: node062 
+slave4 (rank 4, comm 1) of size 9 is running on: node062 
+slave5 (rank 5, comm 1) of size 9 is running on: node049 
+slave6 (rank 6, comm 1) of size 9 is running on: node040 
+slave7 (rank 7, comm 1) of size 9 is running on: node036 
+slave8 (rank 8, comm 1) of size 9 is running on: node043 
 \end{Soutput}
 \begin{Sinput}
 > x <- rep(n, n)
@@ -262,15 +262,15 @@ slave8 (rank 8, comm 1) of size 9 is running on: node047
 > round(X, 3)
 \end{Sinput}
 \begin{Soutput}
-     [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]
-[1,]  0.5 0.976 0.347 0.266 0.471 0.444 0.069 0.955
-[2,]  0.5 0.976 0.347 0.266 0.471 0.444 0.069 0.955
-[3,]  0.5 0.976 0.347 0.266 0.471 0.444 0.069 0.955
-[4,]  0.5 0.976 0.347 0.266 0.471 0.444 0.069 0.955
-[5,]  0.5 0.976 0.347 0.266 0.471 0.444 0.069 0.955
-[6,]  0.5 0.976 0.347 0.266 0.471 0.444 0.069 0.955
-[7,]  0.5 0.976 0.347 0.266 0.471 0.444 0.069 0.955
-[8,]  0.5 0.976 0.347 0.266 0.471 0.444 0.069 0.955
+      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]
+[1,] 0.308 0.496 0.371 0.512 0.694 0.358 0.275 0.334
+[2,] 0.308 0.496 0.371 0.512 0.694 0.358 0.275 0.334
+[3,] 0.308 0.496 0.371 0.512 0.694 0.358 0.275 0.334
+[4,] 0.308 0.496 0.371 0.512 0.694 0.358 0.275 0.334
+[5,] 0.308 0.496 0.371 0.512 0.694 0.358 0.275 0.334
+[6,] 0.308 0.496 0.371 0.512 0.694 0.358 0.275 0.334
+[7,] 0.308 0.496 0.371 0.512 0.694 0.358 0.275 0.334
+[8,] 0.308 0.496 0.371 0.512 0.694 0.358 0.275 0.334
 \end{Soutput}
 \begin{Sinput}
 > mpi.close.Rslaves()
@@ -308,8 +308,8 @@ package the following functions have to be explained.
 \subsection{Conclusion}
 
 The package \pkg{Rmpi} implements many of the routines available in
-MPI-2. But there are some that have to be ommitted or are not included
-because they are not needed for use in R (e.g., data management
+MPI-2. But there are routines that have to be ommitted or are not included
+because they are not needed for use with R (e.g., data management
 routines are not necessary as R has its own tools for data handling).
 A really interesting aspect of the \pkg{Rmpi} package is the
 possibilty to spawn interactive R slaves. That enables the user to

@@ -93,6 +93,27 @@ In this chapter the pricing of European options is shown as we can
 obtain the prices analytically (using the Black-Scholes-Merton model)
 and compare it to the prices estimated with Monte Carlo simulation.
 
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE>>=
+
+european <- define.option(c(0.1,0.4,100),100,1/12)
+priceof(european) <- 4
+par(mfrow=c(2,2))
+plot(european)
+position(european) <- "short"
+plot(european)
+optiontype(european) <- "put"
+position(european) <- "long"
+plot(european)
+position(european) <- "short"
+plot(european)
+
+@
+\label{fig:payoffs} 
+\end{figure}
+
+
 \subsection{Black-Scholes Model}
 \label{sec:blackscholes}
 In the 1970s \cite{blackscholes73options} and \cite{merton73options}
@@ -105,10 +126,10 @@ prize for economics in 1997 for their work (Fischer Black died in
 In the model developed by Black, Scholes and Merton, price changes are
 described mathematically by the Markov  
 processes. The Brownian motion (or Wiener process) is one of the forms
-of Markov processes, used as a model for stock price movements (this
+of Markov processes used as a model for stock price movements (this
 goes back to \cite{bachelier00theorie}). 
 
-\subsubsection{Brownian Motion or Wiener process}
+\subsubsection{Brownian Motion or Wiener Process}
 
 A process $(W_t)_{0 \leq < \infty}$ is a Brownian motion or a Wiener
 process if 
@@ -179,11 +200,11 @@ $$ V(T,S) = max(S(T)-X,0) $$
 and for a put option
 $$ V(T,S) = max(X - S(T),0) .$$
 
-\subsubsection{Black-Scholes pricing formulas}
+\subsubsection{Black-Scholes Pricing Formulas}
 
 This yields to te Black-Scholes formulas for the prices at time zero
 of a European options on a non-dividend paying stock. The price of a
-call option $c$ is
+call option $c$ is (\cite{hull03:options_futures}):
 \begin{equation}
 \label{eq:BS_call}
 c = S_0 N(d_1) - Xe^{-rT}N(d_2)
@@ -208,19 +229,127 @@ considered to be constants (for simplicity).
 The European options can be solved analytically as we saw in this
 section. Other derivatives can only be priced by numerical
 solutions. In the following section the use of Monte Carlo simulation
-is shown. Again we use European option so that we can compare the
+is shown. Again we use European options so that we can compare the
 analytical exact solution with the numerical approximation.
+
+\subsubsection{Implementation in paRc}
+
+The Black-Scholes princing formula is implemented in package
+\pkg{paRc}. If a European option is available one may call the
+function \code{blackscholesprice(x)} to retrieve the exact price where
+\code{x} is an object of class \class{option}.
+
+Example~\ref{ex:blackscholesprice} shows how the price of an European
+call option with strikeprice 100 and maturity 30 days can be
+calculated using the function \code{blackscholesprice()}. The
+underlying is a stock with current value 100 and a $\mu$ of 0.1 and
+volatility $\sigma$ 0.4.
+
+\begin{Example} Calculating Black-Scholes price of a European option
+\label{ex:blackscholesprice}
+<<echo = TRUE, eval = TRUE>>=
+## build example option
+european <- define.option(c(0.1,0.4,100),100,1/12)
+blackscholesprice(european)
+
+@
+\end{Example}
 
 \subsection{Monte Carlo Evaluation of the Option Prices}
 
+Recalling Equation~\ref{eq:pathofstock} shows the process of the
+underlying market value of a derivative. To simulate the path followed
+by $S$ the time to maturity of the option has to be subdivided into
+$N$ short intervals of length $\delta t$ and approximate
+Equation~\ref{eq:pathofstock} to
+$$ S(t + \delta t) - S(t) = \mu S(t)\delta t + \sigma S(t) \epsilon
+\sqrt{\delta t} $$
+where $S(t)$ denotes the value of $S$ at time $t$, and $\epsilon$ a
+random sample from a standard normal distribution. Now, for each
+$\delta t$ all values of $S$ can be calculated starting from the
+initial value $S_0$.
+
+
+
+... this leads to
+$$ S(t + \delta t) = S(t) e^{(\mu - \frac{\sigma ^2}{2})\delta t +
+  \sigma \epsilon \sqrt{\delta t}}.
+
+
 
 The value of a derivative can be estimated with the following steps
+(\cite{hull03:options_futures}).
 
-\begin{itemize}
-\item 
-\item
-\item 
-\end{itemize} 
+\begin{enumerate}
+\item Sample a random path for $S$ in a risk neutral world
+\item Calculate the payoff from the derivative
+\item Repeat steps 1 and 2 to get many sample values of the payoff
+  from the derivative in a resk neutral world.
+\item Calculate the mean of the sample payoffs to get an estimate of
+  the expected payoff in a rsik neutral world
+\item Discount the expected payoff at a risk-free rate to get an
+  estimate of the value of the derivative.
+\end{enumerate} 
+
+
+
+\begin{algorithm}
+\caption{Monte Carlo simulation of European options}
+\label{alg:basicmm}
+\begin{algorithmic}[1]
+
+  \REQUIRE an \class{option}, the risk free yield $r$, the number of
+  paths $len$, the number of simulations $n_{sim}$
+  \ENSURE 
+
+  \STATE 
+
+  \FOR{$i in 1:n_{sim}$}
+    \STATE 
+  \ENDFOR
+
+\end{algorithmic}
+\end{algorithm}
+
+
+
+The number of trials carried out depends on the accuracy required. If
+$n_{sim}$ simulations are run the standard error of the estimate $\mu$
+of the payoff is
+$$ \frac{\omega}{\sqrt{n_{sim}}}$$
+where $\omega$ is the standard deviation of the discounted payoff
+given by the simulation for the derivative.
+
+A 95\% confidence interval for the price $f$ of the derivative is
+given by 
+$$ \mu - \frac{1.96 \omega}{\sqrt{n_{sim}}} \leq f \leq \mu +
+\frac{1.96 \omega}{\sqrt{n_{sim}}} $$
+
+The accuracy of the simulation is therefore inversely proportional to
+the square root of the number of trial $n_{sim}$. This means that to
+double the accuracy the number of trials have to be quadrupled.
+
+\subsubsection{Variance Reduction Procedures}
+
+It is very expensive (in terms of computation time) to calculate the
+option price with Monte Carlo simulations as a very large number of
+simulation runs is necessary to estimate the price with reasonable
+accuracy. But there are a number of variance reduction procedures
+available that can lead to savings in computation time.
+
+Among these variance reduction procedure there is a technique called
+\textbf{antithetic variable}. When using antithetic variable two
+values of the derivative is calculated. One in the usual way (say
+$f_1$) and the other using the same random samples of the standard normal
+distribution but with inverse sign ($f_2$). Then, the sample value of the
+derivative is calculated as the mean of $f_1$ and $f_2$. Now, if one
+of these values is above the true value the other tends to be below
+and the other way round.  
+
+
+Further information about variance reduction techniques and details
+about other procedures can be found in \cite{glasserman04mcmfin}. 
+
 
 
 <<eval=TRUE, echo=FALSE>>=
