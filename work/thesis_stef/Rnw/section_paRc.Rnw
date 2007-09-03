@@ -215,7 +215,7 @@ dat <- list()
 dat[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
 dat[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
 bm <- create.benchmark(task="matrix multiplication", data=dat,
-                       type="OpenMP", parallel=TRUE, cpu\_range=1:maxcpu)
+                       type="OpenMP", parallel=TRUE, cpu_range=1:maxcpu)
 bm
 bmres <- run.benchmark(bm)
 bmres

@@ -110,12 +110,13 @@ plot(bmres_s1000[c(2,9:12,13:16,21:24,25:28),])
 
 Let the complexity be increased to $2500 \times 2500$ matrices. Then,
 in contrary to 
-\ref{sec:mms1000} the OpenMP routine performs worse than the other
-two. This is because the communication doesn't play an important role
+\ref{sec:mms1000} Figure~\ref{fig:mm_s2500} shows that the OpenMP
+routine performs worse than the other 
+two. This is because the communication does not play an important role
 any more when carrying out this benchmark. The compiler driven
 parallelization produces a slight overhead in contrast to the manual
 parallelization. The MPI and PVM routines scale nearly in the same
-way (see Table~\ref{tab:mm_s2500} and Figure~\ref{fig:mm_s2500}.
+way (see also Table~\ref{tab:mm_s2500}.
 
 <<results=tex>>=
 ## 2500x2500
@@ -173,17 +174,17 @@ plot(bmres_s2500[c(2,9:12,13:16,17:20,29:32),])
 
 \subsection{Distributed Memory Platform}
 
-On a distributed memory platform things change. First more CPU's and
+On a distributed memory platform things change. First more CPUs and
 more memory are available to the user. Second the processors are
 connected through a slower interconnection network compared to a
 shared memory machine. This has an influence to all communication carried
-out in message passing environment. As we have more nodes available we
+out in the message passing environment. As we have more nodes available we
 decided to use bigger matrices and therefore start with $2500 \times
 2500$ and continue with $5000 \times 5000$ matrices.
 
 \subsubsection{Results of Complexity Grade $2500$}
 
-Without using the BLAS the MPI routine from package
+Without using BLAS the MPI routine from package
 \pkg{paRc} scales rather well (Figure~\ref{fig:mm_n2500}). The PVM
 routine shows good speedup 
 until processor number 6 but then performance gain breaks down. Again,
@@ -220,16 +221,21 @@ plot(bmres_n2500[c(2,7:26,27:46,67:86,87:106),])
 
 
 %% explain in more details the  speedup tables
-Table~\ref{tab:mm_n2500} shows the best result of the matrix
-multiplication benchmark for each parallel programming model.
+To sum up Table~\ref{tab:mm_n2500} shows the best results of the matrix
+multiplication benchmark for each parallel programming model. It can
+be seen that BLAS are highly optimized for the corresponding platform
+and can hardly be beaten. Looking at the message passing models, the
+MPI routines perform better with respect to the highest speedup which
+can be achieved than the PVM ones.
 
 <<results=tex>>=
 X<-NULL
 for(i in unique(bmres_n2500$type)){X<-rbind(X,bmres_n2500[bmres_n2500$type==i,][bmres_n2500[bmres_n2500$type==i,]$time_ela==min(bmres_n2500[bmres_n2500$type==i,]$time_ela),])}
-table_n2500 <- cbind(X[,c(2,6)],speedup(X))
-colnames(table_n2500) <- c("Type","Time","Speedup")
+table_n2500 <- cbind(X[,c(3,2,6)],speedup(X))
+colnames(table_n2500) <- c("#CPU","Type","Time","Speedup")
 xtable(table_n2500, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $2500$.", label="tab:mm_n2500")
 @ 
+
 
 
 \subsubsection{Results of Complexity Grade $5000$}
@@ -271,10 +277,21 @@ plot(bmres_n5000[c(2,7:26,27:46,67:86,87:106),])
 <<results=tex>>=
 X<-NULL
 for(i in unique(bmres_n5000$type)){X<-rbind(X,bmres_n5000[bmres_n5000$type==i,][bmres_n5000[bmres_n5000$type==i,]$time_ela==min(bmres_n5000[bmres_n5000$type==i,]$time_ela),])}
-table_n5000 <- cbind(X[,c(2,6)],speedup(X))
-colnames(table_n5000) <- c("Type","Time","Speedup")
-xtable(table_n5000, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $5000$.", label="tab:mm_s2500")
+table_n5000 <- cbind(X[,c(3,2,6)],speedup(X))
+colnames(table_n5000) <- c("#CPU","Type","Time","Speedup")
+xtable(table_n5000, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $5000$.", label="tab:mm_n5000")
 @ 
+
+%% explain in more details the  speedup tables
+Finally, Table~\ref{tab:mm_n2500} shows the best results of the matrix
+multiplication benchmark for each parallel programming model with
+complexity grade $5000$. It can
+be seen that BLAS achieve again the best performance for the
+corresponding platform. In fact, comparing the best speedups which can
+be achieved for each programming model draws the same picture as in
+Table~\ref{tab:mm_n2500}: the MPI routines perform better than the PVM
+routines. The best message passing routine is the implementation in
+package \pkg{paRc}.
 
 
 %\end{document}

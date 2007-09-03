@@ -1,5 +1,5 @@
 #$ -N MPI-distr-MCS
-#$ -pe lam 20
+#$ -pe lam 10
 #$ -q node.q
 
 /home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/distributed-mcs.R

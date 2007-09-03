@@ -96,7 +96,7 @@ and compare it to the prices estimated with Monte Carlo simulation.
 \begin{figure}
 \centering
 <<fig=TRUE,echo=FALSE>>=
-
+library("paRc")
 european <- define.option(c(0.1,0.4,100),100,1/12)
 priceof(european) <- 4
 par(mfrow=c(2,2))
@@ -248,10 +248,12 @@ volatility $\sigma$ 0.4.
 
 \begin{Example} Calculating Black-Scholes price of a European option
 \label{ex:blackscholesprice}
+
 <<echo = TRUE, eval = TRUE>>=
+  
 ## build example option
 european <- define.option(c(0.1,0.4,100),100,1/12)
-blackscholesprice(european)
+blackscholesprice(european, r=0.045)
 
 @
 \end{Example}
