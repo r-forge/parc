@@ -228,9 +228,10 @@ considered to be constants (for simplicity).
 
 The European options can be solved analytically as we saw in this
 section. Other derivatives can only be priced by numerical
-solutions. In the following section the use of Monte Carlo simulation
-is shown. Again we use European options so that we can compare the
-analytical exact solution with the numerical approximation.
+solutions. In the remainder of this chapter the use of Monte Carlo
+simulation is shown. Again we use European options so that we can
+compare the analytical exact solution with the numerical
+approximation.
 
 \subsubsection{Implementation in paRc}
 
@@ -242,7 +243,7 @@ function \code{blackscholesprice(x)} to retrieve the exact price where
 Example~\ref{ex:blackscholesprice} shows how the price of an European
 call option with strikeprice 100 and maturity 30 days can be
 calculated using the function \code{blackscholesprice()}. The
-underlying is a stock with current value 100 and a $\mu$ of 0.1 and
+underlying is a stock with current value 100, a $\mu$ of 0.1 and
 volatility $\sigma$ 0.4.
 
 \begin{Example} Calculating Black-Scholes price of a European option
@@ -257,6 +258,35 @@ blackscholesprice(european)
 
 \subsection{Monte Carlo Evaluation of the Option Prices}
 
+Monte Carlo simulation is based upon Monte Carlo integration which in
+turn is based upon the law of large numbers: Let $X_1, X_2,\ldots$
+independent and identically distributed with finite expectation $\mu$,
+then the sequence of arithmetic means ($\overline{X}_n$) converge
+almost surely to $\mu$.
+
+
+Let $f(x)$ be the density of $X$ with the expectation
+$$ \mathbb{E}[g(X)] = \int g(x)f(x)dx $$.
+
+With the possibility to generate independent random numbers $X_i$ with
+the same density of $X$, the expectation can be estimated as follows:
+$$ \mathbb{E}[g(X)] = \frac{g(X_1)+\ldots+g(X_n)}{n} $$
+
+The integral
+$$ \mu = \int g(x)dx $$
+can be approximated through
+$$ \int g(x)dx = \int
+\frac{g(x)}{f(x)}f(x)dx=\mathbb{E}[\frac{g(X)}{f(X)}] $$
+where $f$ is a density with $\lbrace x|g(x) \neq 0 \rbrace \subseteq
+\lbrace x | f(x) > 0 \rbrace $.
+
+Then $\int g(x)dx$ can be estimated as follows:
+$$ \widehat{\mu}_n =
+\frac{1}{n}(\frac{g(X_1)}{f(X_1)}+\ldots+\frac{g(X_n)}{f(X_n)}) $$
+
+%% TODO zentraler Grenzwertsatz
+
+
 Recalling Equation~\ref{eq:pathofstock} shows the process of the
 underlying market value of a derivative. To simulate the path followed
 by $S$ the time to maturity of the option has to be subdivided into
@@ -264,18 +294,19 @@ $N$ short intervals of length $\delta t$ and approximate
 Equation~\ref{eq:pathofstock} to
 $$ S(t + \delta t) - S(t) = \mu S(t)\delta t + \sigma S(t) \epsilon
 \sqrt{\delta t} $$
-where $S(t)$ denotes the value of $S$ at time $t$, and $\epsilon$ a
+where $S(t)$ denotes the value of $S$ at time $t$, and $\epsilon$ is a
 random sample from a standard normal distribution. Now, for each
 $\delta t$ all values of $S$ can be calculated starting from the
 initial value $S_0$.
 
 
 
+
 ... this leads to
 $$ S(t + \delta t) = S(t) e^{(\mu - \frac{\sigma ^2}{2})\delta t +
-  \sigma \epsilon \sqrt{\delta t}}.
-
-
+  \sigma \epsilon \sqrt{\delta t}} $$
+the logarithm of the stock price is thus normally distributed, and the
+stock price itself has a lognormal distribution.
 
 The value of a derivative can be estimated with the following steps
 (\cite{hull03:options_futures}).
@@ -305,8 +336,12 @@ The value of a derivative can be estimated with the following steps
   \STATE 
 
   \FOR{$i in 1:n_{sim}$}
-    \STATE 
+    \STATE generate $Z_i$
+    \STATE $S_i(T) = S(0)
+    e^{(r-\frac{1}{2}\sigma^2)T+\sigma\sqrt{T}Z_i} $
+    \STATE $C_i = e^{-rT} \MAX(S(T) - X,0)$
   \ENDFOR
+  \STATE $\widehat{C}_n = frac{C_1 + \ldots + C_n}{n}$
 
 \end{algorithmic}
 \end{algorithm}
@@ -350,163 +385,3 @@ and the other way round.
 Further information about variance reduction techniques and details
 about other procedures can be found in \cite{glasserman04mcmfin}. 
 
-
-
-<<eval=TRUE, echo=FALSE>>=
-## initialization of rng
-set.seed(1707)
-## load libraries
-library("paRc")
-## define functions
-forwardPrice <- function(S0,r,T,I=0,q=0){
-(S0 - I)*exp((r - q)*T)
-}
-forwardValue <- function(S0,r,T,K,I=0,q=0){
-S0*exp(-q*T) - I - K*exp(-r*T)
-}
-createBinomialTree <- function(x0,u,d,n){
-x <- NULL
-for(i in 0:n)
-  x <- c(x,rep(NA,i),cumsum(c(x0+i*d,rep(u,n-i))))
-matrix(x,nrow=n+1,byrow=TRUE)
-}
-randomWalkBinomial <- function(x0, u, d, n, p = 0.5){
-step <- c(u,d)
-ts(x0 + cumsum(sample(step, n, prob = c(p, 1-p), replace = TRUE)))
-}
-randomWalkNorm <- function(x0,n,mu=0,sigma=1)
-  ts(c(x0,x0+cumsum(rnorm(n,mu,sigma))))
-
-## build example option
-myopt <- list()
-myopt$mu <- 0.1           ## expectation of underlying
-myopt$sigma <- 0.4        ## standard deviation of underlying
-myopt$type <- "Call"      ## type of the option
-myopt$strikeprice <- 100  ## strikeprice of the option
-myopt$present <- 100      ## present value of the underlying
-myopt$maturity <- 1/12    ## time to maturity (in years)
-
-myopt <- as.option(myopt)   ## coercing 'list' to 'option'
-
-@ 
-
-\subsubsection{An example in R}
-\label{sec:introexample}
-In the \pkg{paRc} package one can find infrastructure for pricing
-options. First we define an option (ie. with a list) and then we can
-coerce this to an object of class ``option''. There exist several
-extractor respectively replacement functions and methods for this
-class. What follows is an 
-overview of creating and working with such an object.
-
-<<echo=TRUE, eval=TRUE>>=
-
-priceof(myopt) <- 4
-priceof(myopt)
-
-
-@ 
-
-
-\subsection{Binomial process}
-
-
-A random walk, which can only have 1 of 2 values $u$ and $d$ as increments, is
-called a binomial process.
-
-There is a $0 \leq p \leq 1$ where the probability $P(Z_n = u)$ equals
-$p$ and the probability $P(Z_n = d)$ equals $1 - p$.
-
-Figure~\ref{fig:binomial} shows a binomial tree (relevant for the
-pricing of the option) and a path of a binomial process. 
-
-\begin{figure}
-\centering
-<<echo=TRUE,fig=TRUE>>=
-
-library("fOptions")
-
-X0 <- 0
-p <- 0.5
-u <- 1
-d <- -1
-n <- 50
-
-par(mfrow=c(1,2))
-X <- createBinomialTree(X0,u,d,5)
-BinomialTreePlot(X)
-rw <- randomWalkBinomial(X0,u,d,n,p)
-plot(rw)
-
-@ 
-\label{fig:binomial} 
-\end{figure}
-
-%\subsection{Cox, Ross and Rubinstein Model}
-
-
-\subsection{Monte Carlo Methods}
-
-Given the option from chapter \ref{sec:introexample} we can now do an
-Monte Carlo simulation to price the option. The paramters for the
-following simulation are:
-\begin{itemize}
-\item[$r$] the yield of the alternative investment is $0.1$
-\item[$n$] the number of days to simulate is $30$
-\item[$length$] the number of simulated streams is $5000$
-\end{itemize}
-
-Furthermore, the default 
-
-<<>>=
-priced <- monteCarloSimulation(myopt,0.1,30,5000)
-
-priceof(priced)
-
-system.time(monteCarloSimulation(myopt,0.1,30,5000))
-
-@ 
-
-As one can see, the time of simulation is beyond 100 seconds. Thus we
-would like to reduce the duration without loss of accuracy. Therefore
-one can make use of parallel computation.
-
-TODO: implement parallel Monte Carlo Simulation
-
-\subsection{ToDo}
-
-\begin{itemize}
-\item parallel generation of random variables
-\item Cox, Ross, Rubinstein model
-\item more classes of options (American, Asian)
-\item fit methods for returns to calculate relevant option parameters
-\end{itemize}
-
-\subsection{further examples}
-
-<<echo=TRUE>>=
-
-## random walk normal distributed increments
-X0 <- 10
-n <- 100
-
-rw <- list()
-for(i in 1:4)
-  rw[[i]] <- randomWalkNorm(X0,n)
-ts.plot(rw[[1]],rw[[2]],rw[[3]],rw[[4]],col=c(1:4),main="Random Walk", ylab="price")
-
-
-## Random Walk binomial with drift
-
-X0 <- 0
-p <- c(0.5,0.7,0.3)
-u <- 1
-d <- -1
-n <- 50
-
-rw1 <- randomWalkBinomial(X0,u,d,n,p[1])
-rw2 <- randomWalkBinomial(X0,u,d,n,p[2])
-rw3 <- randomWalkBinomial(X0,u,d,n,p[3])
-ts.plot(rw1,rw2,rw3)
-
-@ 
