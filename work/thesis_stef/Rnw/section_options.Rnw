@@ -5,35 +5,23 @@ Derivatives are important in todays financial markets. Futures and
 options have been increasingly traded since the last 20 years. Now,
 there are many different types of derivatives.
 \begin{description}
-\item[A derivative] is an financial instrument whose value depends on
+\item[A derivative] is a financial instrument whose value depends on
   the value of an other variable (or the values of other
   variables). This variable is called \textit{Underlying}.
 \end{description}
 Derivatives are traded on exchange-traded markets (people trade
 standardized contracts defined by the exchange) or over-the-counter
 markets (trades are done in a computer linked network or over the
-phone - no physical contact).
+phone---no physical contact).
 
 There are two main types of derivatives, namely forwards (or futures)
 and options.
 
 \begin{description}
-\item[A Forward] is a contract in which one party buys (long position)
-  or sells (short postion) an
-  asset at a certain time in the future for a certain price. Unlike
-  forward contracts, \textit{futures} are standardized and therefore
-  are normally traded on an exchange.
-\item[A call Option] is a contract, which gives the holder the right
-  to buy an asset at a certain time for a certain price. 
-\item[A put Option] is a contract, which gives the holder the right
-  to sell an asset at a certain time for a certain price. 
-\end{description}
-
-\begin{description}
 \item[A forward] is a contract in which one party buys (long position)
   or sells (short postion) an
-  asset at a certain time in the future for a certain price. Unlike
-  forward contracts, \textit{futures} are standardized and therefore
+  asset at a certain time in the future for a certain
+  price. \textbf{Futures} in contrast are standardized and therefore
   are normally traded on an exchange.
 \item[A call option] is a contract, which gives the holder the right
   to buy an asset at a certain time for a certain price (strike
@@ -42,7 +30,7 @@ and options.
   to sell an asset at a certain time for a certain price. 
 \end{description}
 
-Forward Prices (or Future Prices) can be determined in a simple way
+Forward prices (or future prices) can be determined in a simple way
 and therefore it is not of computational interest for this chapter.
 
 Options on the other hand are more sophisticated. There exist many
@@ -50,7 +38,7 @@ variants of options on financial markets. European and American
 options are the most common of them.
 
 \begin{description}
-\item[European option] is an option with the right to buy the
+\item[European options] are an option with the right to buy the
   underlying $S$ at a certain time $T$ (expiration date or maturity)
   paying a previously defined price $X$ (call option). If one sells
   this right it is called a put option. $C_t$ ($P_t$) denotes the value of the
@@ -60,7 +48,7 @@ options are the most common of them.
   \begin{equation}\label{eq:call}
     C_T = \left\{ \begin{array}{lcl} 0 & \textrm{if}& S_T \leq X \\
         S_T - X & \textrm{if} & S_T > X, \end{array}\right
-    \textrm{or} max{S_T - X, 0},
+    \textrm{ or } max(S_T - X, 0),
   \end{equation}
   and for the put option:
   \begin{equation}\label{eq:put}
@@ -71,7 +59,7 @@ options are the most common of them.
   Figure \ref{fig:payoffs} shows the payoff functions of a call and
   a put option and the position of the investor (left:~long position,
   right:~short position).
-\item[American Option] are most often traded on an exchange. The
+\item[American Option] are heavily traded on exchanges. The
   difference to its European counterpart is the fact, that it can be
   exercised at any time $t$ within the maturity $0...T$. The option
   expires if it is not exercised.
@@ -79,7 +67,7 @@ options are the most common of them.
   \begin{equation}\label{eq:call}
     C_t = \left\{ \begin{array}{lcl} 0 & \textrm{if}& S_t \leq X \\
         S_t - X & \textrm{if} & S_t > X, \end{array}\right
-    \textrm{or} max{S_t - X, 0},
+    \textrm{ or } max(S_t - X, 0),
   \end{equation}
   and for the put option:
   \begin{equation}\label{eq:put}
@@ -96,7 +84,7 @@ and compare it to the prices estimated with Monte Carlo simulation.
 \begin{figure}
 \centering
 <<fig=TRUE,echo=FALSE>>=
-library("paRc")
+
 european <- define.option(c(0.1,0.4,100),100,1/12)
 priceof(european) <- 4
 par(mfrow=c(2,2))
@@ -131,11 +119,11 @@ goes back to \cite{bachelier00theorie}).
 
 \subsubsection{Brownian Motion or Wiener Process}
 
-A process $(W_t)_{0 \leq < \infty}$ is a Brownian motion or a Wiener
+A process $(W_t)_{0 \leq t < \infty}$ is a Brownian motion or a Wiener
 process if 
 \begin{enumerate}
 \item $W_0 = 0$,
-\item the paths are continous,
+\item the paths are continuous,
 \item all increments $W_{t_1}, W_{t_2} - W_{t_1}, \ldots W_{t_n} - W_{t_{n-1}}$
   are independent and normal distributed for all $0 < t_1 < t_2 < \ldots < t_n$ 
 \end{enumerate}
@@ -191,7 +179,8 @@ some function of $S$ and $t$. After applying It\^o's Lemma
 \frac{\delta^2V}{\delta S^2} + rS\frac{\delta V}{\delta S} - rV = 0.
 \end{equation}
 
-Equation~\ref{eq:BSM_diff} is the Black-Scholes-Merton differential equation.
+Equation~\ref{eq:BSM_diff} is known as the Black-Scholes-Merton
+differential equation. 
 Solving this equation depends on the boundary conditions that are used
 for a particular derivative. In the case of a European option the
 boundary condition equals at $t=T$ to the payoff $V(T,S)$.
@@ -203,7 +192,7 @@ $$ V(T,S) = max(X - S(T),0) .$$
 \subsubsection{Black-Scholes Pricing Formulas}
 
 This yields to te Black-Scholes formulas for the prices at time zero
-of a European options on a non-dividend paying stock. The price of a
+of European options on a non-dividend paying stock. The price of a
 call option $c$ is (\cite{hull03:options_futures}):
 \begin{equation}
 \label{eq:BS_call}
@@ -212,7 +201,7 @@ c = S_0 N(d_1) - Xe^{-rT}N(d_2)
 and the price of the corresponding put option $p$ is
 \begin{equation}
 \label{eq:BS_put}
-p = Xe^{-rT}N(-d_2) - S_0 N-d_1)
+p = Xe^{-rT}N(-d_2) - S_0 N(-d_1)
 \end{equation}
 where
 $$ d_1 = \frac{ln(\frac{S_0}{X}) + (r + \frac{\sigma^2}{2})T}
@@ -223,8 +212,31 @@ $$ d_2 = \frac{ln(\frac{S_0}{X}) + (r - \frac{\sigma^2}{2})T}
 The function $N(x)$ denotes the cumulative probability distribution
 function for a standard normal distribution. It returns the
 probability that $\phi (0,1)$ is less than $x$.
-They are
-considered to be constants (for simplicity).
+
+\subsubsection{Implementation in Package paRc}
+
+The Black-Scholes princing formula is implemented in package
+\pkg{paRc}. If a European option is available one may call the
+function \code{blackscholesprice(x)} to retrieve the exact price where
+\code{x} is an object of class \class{option}.
+
+Example~\ref{ex:blackscholesprice} shows how the price of an European
+call option with strikeprice 100 and maturity 30 days ($1/12$ years)
+can be calculated using the function \code{blackscholesprice()}. The
+underlying is a stock with current value 100, a $\mu$ of 0.1, and
+volatility $\sigma$ of 0.4. The risk free yield is assumed to be
+$4.5%$.
+
+\begin{Example} Calculating the Black-Scholes price of a European option
+\label{ex:blackscholesprice}
+<<echo = TRUE, eval = TRUE>>=
+## build example option
+european <- define.option(c(0.1,0.4,100),100,1/12)
+blackscholesprice(european)
+
+@
+\end{Example}
+
 
 The European options can be solved analytically as we saw in this
 section. Other derivatives can only be priced by numerical
@@ -233,38 +245,13 @@ simulation is shown. Again we use European options so that we can
 compare the analytical exact solution with the numerical
 approximation.
 
-\subsubsection{Implementation in paRc}
-
-The Black-Scholes princing formula is implemented in package
-\pkg{paRc}. If a European option is available one may call the
-function \code{blackscholesprice(x)} to retrieve the exact price where
-\code{x} is an object of class \class{option}.
-
-Example~\ref{ex:blackscholesprice} shows how the price of an European
-call option with strikeprice 100 and maturity 30 days can be
-calculated using the function \code{blackscholesprice()}. The
-underlying is a stock with current value 100, a $\mu$ of 0.1 and
-volatility $\sigma$ 0.4.
-
-\begin{Example} Calculating Black-Scholes price of a European option
-\label{ex:blackscholesprice}
-
-<<echo = TRUE, eval = TRUE>>=
-  
-## build example option
-european <- define.option(c(0.1,0.4,100),100,1/12)
-blackscholesprice(european, r=0.045)
-
-@
-\end{Example}
-
 \subsection{Monte Carlo Evaluation of the Option Prices}
 
 Monte Carlo simulation is based upon Monte Carlo integration which in
-turn is based upon the law of large numbers: Let $X_1, X_2,\ldots$
-independent and identically distributed with finite expectation $\mu$,
-then the sequence of arithmetic means ($\overline{X}_n$) converge
-almost surely to $\mu$.
+turn is based upon the law of large numbers: Let $X_1, X_2,\ldots,
+X_n$ be independent and identically distributed with a finite
+expectation $\mu$, then the sequence of arithmetic means
+($\overline{X}_n$) converge almost surely to $\mu$.
 
 
 Let $f(x)$ be the density of $X$ with the expectation
@@ -286,11 +273,19 @@ Then $\int g(x)dx$ can be estimated as follows:
 $$ \widehat{\mu}_n =
 \frac{1}{n}(\frac{g(X_1)}{f(X_1)}+\ldots+\frac{g(X_n)}{f(X_n)}) $$
 
-%% TODO zentraler Grenzwertsatz
+The accuracy of the estimate can be obtained using the central limit
+theorem. Let $X_1, X_2, \ldots, X_n$ be independent and identically
+distributed with expectation $\mu$ and variance $\sigma^2$, then
+$$ \frac{\overline{X}_n - \mu}{\sqrt{\frac{\sigma^2}{n}}}\sim N(0,1).$$
 
+$\frac{\sigma}{\sqrt{n}}$ is called standard error. This implies
+that when increasing $n$ the quality (or accuracy) of the estimate
+increases.
 
-Recalling Equation~\ref{eq:pathofstock} shows the process of the
-underlying market value of a derivative. To simulate the path followed
+\subsubsection{Simulating Paths of Stocks}
+
+The process of the underlying market value of a derivative is shown in
+Equation~\ref{eq:pathofstock}. To simulate the path followed 
 by $S$ the time to maturity of the option has to be subdivided into
 $N$ short intervals of length $\delta t$ and approximate
 Equation~\ref{eq:pathofstock} to
@@ -299,36 +294,96 @@ $$ S(t + \delta t) - S(t) = \mu S(t)\delta t + \sigma S(t) \epsilon
 where $S(t)$ denotes the value of $S$ at time $t$, and $\epsilon$ is a
 random sample from a standard normal distribution. Now, for each
 $\delta t$ all values of $S$ can be calculated starting from the
-initial value $S_0$.
+initial value $S_0$. One simulation trial involves constructing a
+complete path for $S$ using $N$ random samples from a normal
+distribution.
 
-
-
-
-... this leads to
-$$ S(t + \delta t) = S(t) e^{(\mu - \frac{\sigma ^2}{2})\delta t +
+Usually it is more accurate to simulate ln $S$ rather than $S$. This
+leads to
+$$ S(t + \delta t) = S(t) e^{(\widehat{\mu} - \frac{\sigma ^2}{2})\delta t +
   \sigma \epsilon \sqrt{\delta t}} $$
-the logarithm of the stock price is thus normally distributed, and the
-stock price itself has a lognormal distribution.
 
-The value of a derivative can be estimated with the following steps
-(\cite{hull03:options_futures}).
+Here the logarithm of the stock price is thus normally distributed, and the
+stock price itself has a lognormal distribution. In contrast to the
+equation before this equation is true for all $\delta t$.
+
+
+The major advantage of Monte Carlo simulation is that the payoffs of
+options can be simulated which depends not only on the final value of
+$S$ but also on the whole path followed by the underlying variable
+$S$. Furthermore, Monte Carlo simulation can be used to value option
+which depend on more than one market variable. The drawbacks are that
+Monte Carlo simulation is computationally very time consuming but 
+makes it in turn to a prime example for parallel computing. A further
+disadvantage is that it cannot easily handle situations where there
+are early exercise opportunities (e.g., American options).
+
+\subsubsection{Variance Reduction Procedures}
+
+It is very expensive (in terms of computation time) to calculate the
+option price with Monte Carlo simulations as a very large number of
+simulation runs is necessary to estimate the price with reasonable
+accuracy. But there are a number of variance reduction procedures
+available that can lead to savings in computation time.
+
+Among these variance reduction procedures there is a technique called
+\textbf{antithetic variable}. When using antithetic variable two
+values of the derivative is calculated. One in the usual way (say
+$f_1$) and the other using the same random samples of the standard normal
+distribution but with inverse sign ($f_2$). Then, the sample value of the
+derivative is calculated as the mean of $f_1$ and $f_2$. Now, if one
+of these values is above the true value the other tends to be below
+and the other way round.  
+
+Further information about variance reduction techniques and details
+about other procedures can be found in \cite{glasserman04mcmfin}. 
+
+\section{Monte Carlo Simulation}
+
+The value of a derivative can be estimated using the following steps
+(\cite{hull03:options_futures}):
 
 \begin{enumerate}
 \item Sample a random path for $S$ in a risk neutral world
 \item Calculate the payoff from the derivative
 \item Repeat steps 1 and 2 to get many sample values of the payoff
-  from the derivative in a resk neutral world.
+  from the derivative in a risk neutral world.
 \item Calculate the mean of the sample payoffs to get an estimate of
-  the expected payoff in a rsik neutral world
+  the expected payoff in a risk neutral world
 \item Discount the expected payoff at a risk-free rate to get an
   estimate of the value of the derivative.
 \end{enumerate} 
 
 
+The number of trials carried out depends on the accuracy required. If
+$n_{sim}$ simulations are run the standard error of the estimate $\mu$
+of the payoff is
+$$ \frac{\sigma}{\sqrt{n_{sim}}}$$
+where $\sigma$ is the standard deviation of the discounted payoff
+given by the simulation for the derivative.
+
+A 95\% confidence interval for the price $f$ of the derivative is
+given by 
+$$ \mu - \frac{1.96 \sigma}{\sqrt{n_{sim}}} \leq f \leq \mu +
+\frac{1.96 \sigma}{\sqrt{n_{sim}}} $$
+
+The accuracy of the simulation is therefore inversely proportional to
+the square root of the number of trial $n_{sim}$. This means that to
+double the accuracy the number of trials have to be quadrupled.
+
+
+\subsection{Implementation in R}
+
+Algorithm~\ref{alg:basicmcs} shows how a Monte Carlo simulation can be
+carried out to price an option. If an option, the risk free rate $r$,
+and the number of random variables $len$ are given then by performing
+$n_{sim}$ number of simulations to calculate the payoffs of the
+simulated paths the estimated value $\widehat{C}_n$ of the option
+given can be retrieved.
 
 \begin{algorithm}
 \caption{Monte Carlo simulation of European options}
-\label{alg:basicmm}
+\label{alg:basicmcs}
 \begin{algorithmic}[1]
 
   \REQUIRE an \class{option}, the risk free yield $r$, the number of
@@ -337,7 +392,7 @@ The value of a derivative can be estimated with the following steps
 
   \STATE 
 
-  \FOR{$i in 1:n_{sim}$}
+  \FOR{$i = 1:n_{sim}$}
     \STATE generate $Z_i$
     \STATE $S_i(T) = S(0)
     e^{(r-\frac{1}{2}\sigma^2)T+\sigma\sqrt{T}Z_i} $
@@ -348,42 +403,181 @@ The value of a derivative can be estimated with the following steps
 \end{algorithmic}
 \end{algorithm}
 
+Example~\ref{ex:mcs} shows the implementation of
+Algorithm~\ref{alg:basicmcs} in R. The function takes 
+\code{x}, which is an object of class \class{option}, the risk free
+rate \code{r}, the length of the path \code{n}, and the number of
+simulations \code{n.simulations} as arguments. The function returns
+the given object with the simulated price included.
+
+\begin{Example}
+\label{ex:mcs}
+\begin{Scode}
+monteCarloSimulation <- function(x,r,n,length,
+                                 n.simulations=50,antithetic=TRUE){
+  if(!inherits(x,"option")) stop("'x' must be of class 'option'")
+  price <- vector()
+  dt <- maturity(x)/n
+  mu <- underlying(x)[1]
+  sigma <- underlying(x)[2]
+  for( i in 1:n.simulations){
+    eps <- matrix(rnorm(n*length),nrow=n)
+
+    if(antithetic)
+      eps <- cbind(eps, -eps)
+    path <- (mu - sigma^2/2)*dt + sigma*sqrt(dt)*eps
+    payoffs <- apply(path,2,payoff,x=x,r=r)
+    price[i] <- mean(payoffs)
+  }
+  priceof(x) <- mean(price)
+  x
+}
+\end{Scode}
+\end{Example}
+
+\subsection{Parallel Monte Carlo Simulation}
+
+Example~\ref{ex:mcs-master} shows implementation of the master process
+in R. The corresponding slave program can be seen in
+Example~\ref{ex:mcs-slave}.
+ 
+\begin{Example}
+\label{ex:mcs-master}
+\begin{Scode}
+mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
+                     n_cpu = 1, spawnRslaves=FALSE) {
+  if(!inherits(x,"option")) stop("'x' must be of class 'option'")
+  
+  if( n_cpu == 1 )
+    return(monteCarloSimulation(x, r, n, length, n.simulations=50,
+                                antithetic))
+  if( spawnRslaves == TRUE )
+    mpi.spawn.Rslaves(nslaves = n_cpu)
+  ## broadcast data and functions necessary on slaves
+  mpi.bcast.Robj2slave(x) 
+  mpi.bcast.Robj2slave(r) 
+  mpi.bcast.Robj2slave(n)
+  mpi.bcast.Robj2slave(length)
+  mpi.bcast.Robj2slave(antithetic)
+  
+  nsim <- ceiling(n.simulations/n_cpu)
+  nsim_on_last <- n.simulations - (n_cpu - 1)*nsim
+  mpi.bcast.Robj2slave(nsim)
+  mpi.bcast.Robj2slave(nsim_on_last)
+  mpi.bcast.Robj2slave(mcs.Rmpi.slave)
+  ## start partial matrix multiplication on slaves
+  mpi.bcast.cmd(mcs.Rmpi.slave())
+  ## gather partial results from slaves
+  local_prices <- NULL
+  prices <- mpi.gather.Robj(local_prices, root=0, comm=1)
+  
+  if( spawnRslaves == TRUE )
+    mpi.close.Rslaves()
+  prices
+}
+\end{Scode}
+\end{Example}
+
+\begin{Example}
+\label{ex:mcs-slave}
+\begin{Scode}
+mcs.Rmpi.slave <- function(){
+  require("paRc")
+  commrank <- mpi.comm.rank() - 1
+  monteCarloSlave <- function(x, r, n, length, n.simulations=50,
+                              antithetic=TRUE){
+    price <- vector()
+    dt <- maturity(x)/n
+    mu <- underlying(x)[1]
+    sigma <- underlying(x)[2]
+    for( i in 1:n.simulations){
+      eps <- matrix(rnorm(n*length),nrow=n)
+      
+      if(antithetic)
+        eps <- cbind(eps, -eps)
+      path <- (mu - sigma^2/2)*dt + sigma*sqrt(dt)*eps
+      payoffs <- apply(path,2,payoff,x=x,r=r)
+      price[i] <- mean(payoffs)
+    }
+    price
+  }
+  if(commrank==(n_cpu - 1))
+    local_prices <- monteCarloSlave(x, r, n, length, nsim_on_last,
+                                         antithetic)
+  else
+    local_prices <- monteCarloSlave(x, r, n, length, nsim, antithetic)
+  mpi.gather.Robj(local_prices, root=0, comm=1)    
+}
+\end{Scode}
+\end{Example}
 
 
-The number of trials carried out depends on the accuracy required. If
-$n_{sim}$ simulations are run the standard error of the estimate $\mu$
-of the payoff is
-$$ \frac{\omega}{\sqrt{n_{sim}}}$$
-where $\omega$ is the standard deviation of the discounted payoff
-given by the simulation for the derivative.
+\subsection{Results}
 
-A 95\% confidence interval for the price $f$ of the derivative is
-given by 
-$$ \mu - \frac{1.96 \omega}{\sqrt{n_{sim}}} \leq f \leq \mu +
-\frac{1.96 \omega}{\sqrt{n_{sim}}} $$
+The results shown in this section were produced on a shared memory
+machine using up to 4 cores (bignodes of cluster@WU) and on a
+distributed memory platform using up to 10 cluster nodes. We used 50
+simulation runs to estimate the option prices.
 
-The accuracy of the simulation is therefore inversely proportional to
-the square root of the number of trial $n_{sim}$. This means that to
-double the accuracy the number of trials have to be quadrupled.
+Figure~\ref{fig:mcs_shared} and Table~\ref{tab:mcs_s50} show that a good
+speedup can be achieved on a shared memory machine. Furthermore, in
+comparison to the results of the parallel matrix multiplication
+presented in Section~\ref{sec:mm_compare} a better scalability is
+observed for both, using the shared memory paradigm and using the
+distributed memory paradigm (Figure~\ref{fig:mcs_dist} and
+Table~\ref{tab:mcs_n50}). This is because only few data is
+send through the interconnection network and therefore (with Amdahl's
+law in mind) a greater fraction of the whole work can be executed in
+parallel.
 
-\subsubsection{Variance Reduction Procedures}
+%% Initialization
+<<echo=FALSE,results=hide>>=
 
-It is very expensive (in terms of computation time) to calculate the
-option price with Monte Carlo simulations as a very large number of
-simulation runs is necessary to estimate the price with reasonable
-accuracy. But there are a number of variance reduction procedures
-available that can lead to savings in computation time.
+library("paRc")
+library("xtable")
+load("../examples/Rda/bmres-shared-50.Rda")
+load("../examples/Rda/bmres-node-50.Rda")
 
-Among these variance reduction procedure there is a technique called
-\textbf{antithetic variable}. When using antithetic variable two
-values of the derivative is calculated. One in the usual way (say
-$f_1$) and the other using the same random samples of the standard normal
-distribution but with inverse sign ($f_2$). Then, the sample value of the
-derivative is calculated as the mean of $f_1$ and $f_2$. Now, if one
-of these values is above the true value the other tends to be below
-and the other way round.  
+@ 
+
+%% plot
+\begin{figure}
+\centering
+<<fig=TRUE>>=
+## Plot shared
+plot(bmres_s50)
+@ 
+\caption{Performance of parallel Monte Carlo simulation using 50
+  simulation runs on a shared memory machine}
+\label{fig:mcs_shared}
+\end{figure}
 
 
-Further information about variance reduction techniques and details
-about other procedures can be found in \cite{glasserman04mcmfin}. 
+\begin{figure}
+\centering
+<<fig=TRUE>>=
+## Plot distributed MCS
+plot(bmres_n50)
+@ 
+\caption{Performance of parallel Monte Carlo simulation using 50
+  simulation runs on cluster@WU using 10 nodes}
+\label{fig:mcs_dist}
+\end{figure}
+
+%% speedup table
+<<results=tex>>=
+X<-bmres_s50
+table_s50 <- cbind(X[,c(3,2,6)],speedup(X))
+colnames(table_s50) <- c("#CPU","Type","Time","Speedup")
+xtable(table_s50, caption="Time and speedup achieved on a shared memory platforum using 50 simulation runs.",
+ label="tab:mcs_s50")
+@ 
+
+<<results=tex>>=
+X<-bmres_n50
+table_n50 <- cbind(X[,c(3,2,6)],speedup(X))
+colnames(table_n50) <- c("#CPU","Type","Time","Speedup")
+xtable(table_n50, caption="Time and speedup achieved on cluster@WU using 10 nodes and 50 simulation runs.",
+ label="tab:mcs_n50")
+@ 
 

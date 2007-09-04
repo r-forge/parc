@@ -111,7 +111,7 @@ Both threads and processes are methods of parallelizing an
 application. The difference between them is the way they are
 created and share resources.
 
-A process is the execution of a list of statements (a sequential
+A \textbf{process} is the execution of a list of statements (a sequential
 program). Processes have their own state information, use their own 
 address space and interact with other processes only via an
 interprocess communication mechanism generally managed by the operating
@@ -119,9 +119,9 @@ system. A master process may spawn subprocesses which are logically
 separated from the functionality of the master process and other
 subprocesses.
 
-In contrast to processes, threads are typically spawned from processes
+In contrast to processes, \textbf{threads} are typically spawned from processes
 for a short time to achieve a certain task and then
-terminate---\textbf{fork-join principle}. Threads within a process
+terminate---\textbf{fork-join principle}. Within a process threads 
 share the same state and same memory space, and can communicate with
 each other directly through shared variables.
 
@@ -205,7 +205,7 @@ parallel and concurrent and use them interchangeably.
 An often used term when dealing with implementations of parallel
 program is overhead.
 
-Overhead is generally considered any combination of excess or indirect
+\textbf{Overhead} is generally considered any combination of excess or indirect
 computation time, memory, bandwidth, or other
 resources that are required to be utilized or expanded to enable a
 particular goal (\cite{wiki:overhead}).
@@ -213,8 +213,8 @@ particular goal (\cite{wiki:overhead}).
 In parallel computing this can be the excess of computation time to
 send data between one process to another.
 
-Overhead may also be a criterium to decide wheter a feature or not
-should be included in a parallel program or wheter a parallel
+Overhead may also be a criterium to decide whether a feature should be
+included or not in a parallel program or whether a parallel
 programming paradigm should be used or not.
 
 \subsection{Scalability}
@@ -435,7 +435,7 @@ the predictions made were correct.
 High performance computing refers to the use of (parallel)
 supercomputers and computer clusters (see
 Sectio~\ref{sec:parallelintro}). This Section gives an overview of
-high performance computing servers and where they are classified
+high performance computing servers and how they are classified
 among all computer types.
 
 
@@ -521,11 +521,11 @@ shared memory subsystem like in Cluster OpenMP
 \section{MIMD Computers}
 \label{sec:mimd_computers}
 
-Recalling Section~\ref{sec:flynn} we know that the architecture of
-computers plays an important role for designing parallel programs and from 
+Recalling Section~\ref{sec:flynn} we know that computer architecture
+plays an important role for designing parallel programs and from  
 Section~\ref{sec:hpcserver} we know how high performance computing
 servers have developed since the last decade. We are now
-interested in an architecture which support parallel process execution
+interested in an architecture which supports parallel process execution
 and how distributed processing entities can be connected to
 form a single unit. According to Flynn's taxonomy this would be MIMD
 or SIMD architectures combined in a shared or distributed memory system.
@@ -542,7 +542,7 @@ this thesis is on MIMD computers though.
 
 
 There are two different categories in which such a system can be
-classified. The classification is based on how the CPU access
+classified. The classification is based on how the CPU accesses
 memory. One possibility is to have distributed memory platforms (DMPs). Each
 processor has its own memory and when it comes to sharing of data, an
 interconnection network is needed. Exchange of data or synchronizing
@@ -551,7 +551,7 @@ is done through message passing.
 The other possibility is to have shared memory platforms (SMPs). All
 processors or computation nodes can access the same memory. The
 advantage is the better performance like in DMPs because messages do not
-have to send via a slow network. Each processor is able to
+have to be send via a slow network. Each processor is able to
 fetch the necessary data directly from memory. But this kind of platform
 has a big limitation. The costs of having as much memory as a cluster
 of workstation would provide are enormous. That is why cluster or
@@ -665,7 +665,7 @@ and thus enable full interoperability between them.
 \label{sec:programming_models}
 
 In Section~\ref{sec:hpcserver} and~\ref{sec:mimd_computers} we
-presented the hardware used when dealing with parallelism which is
+presented the hardware used when dealing with parallel computing which is
 more or less given to the developers. The major task for a programmer
 is to use the given infrastructure and provide efficient solutions for
 computational intensive applications.
@@ -678,7 +678,8 @@ nodes performs roughly the same work. Furthermore, developers have to
 ensure that data required for the computation is available to the
 processor with as little delay as possible. Therefore some sort of
 coordination is required for the locality of data in the memory (for
-more information of the design of a parallel program see Section \ref{}).
+more information of the design of a parallel program see Section
+\ref{sec:designofpar}). 
 One might think that this would be hard work, and indeed it is. But
 there are programming models for high performance parallel computing
 already available which make the developer's life easier.
@@ -715,8 +716,8 @@ but are, as mentioned above, commonly used.
 \subsection{Fundamentals of Message Passing}
 \label{sec:messagepassing}
 
-To understand subsequent sections it is important to know what exactly
-message passing means and what building blocks exist.
+To understand subsequent sections it is important to know the exact
+meaning of message passing and the existing building blocks.
 On a distributed memory platform
 (Section~\ref{sec:distributedmemorysystems}) data has to be transmitted
 from one computation node to the other to carry out computations in
@@ -985,11 +986,11 @@ and disadvantages are:
 \end{itemize}
 
 \section{Design of Parallel Programs}
-
+\label{sec:designofpar}
 In this section design issues when dealing with parallel programming
 are presented.
 
-First, the granularity of parallel programs plays an important when
+First, the granularity of parallel programs plays an important role when
 designing a parallel application although the grain size is in a small
 extent limited by the architecture. It is a classification of the
 numbers of instructions performed in parallel.
@@ -1047,8 +1048,8 @@ program parts are run in parallel.
 
 Parallel programming paradigms can be structured according to the
 process structure. That means how the task are organized in a parallel
-application. According to \cite{geist94pvm} three different
-programming approaches:
+application. According to \cite{geist94pvm} parallel programs can be
+organized in three different programming approaches:
 
 \begin{description}
 \item[Crowd computation] is if a collection of closely related
@@ -1056,11 +1057,11 @@ programming approaches:
   on different portions of the workload. This paradigm can be further
   subdivided into
   \begin{itemize}
-  \item[Master-slave] or host-node model in which one process (the
+  \item \textit{Master-slave} or host-node model in which one process (the
     master) is responsibel for process spawning (this means creation
     of a new process), initialization, collection and display of
     results. Slave programs perform the actual computation involved.
-  \item[Node-only] model have no master process but autonomous
+  \item \textit{Node-only} model have no master process but autonomous
     processes from which one takes over the non-computational parts
     in addition to the computation itself.
   \end{itemize}
@@ -1082,7 +1083,7 @@ paradigm (MPMD).
   same program on its own part of the data. One should not confuse
   SPMD with the SIMD paradigm as in the latter case low level
   instructions (direclty from the CPU) are applied to previously
-  distributed data and therefore is a own form of programming.
+  distributed data and therefore is another form of programming.
 \item[Multiple program multiple data] is a thread like
   paradigm. On each node it is possible to run different programs with
   either the same or different data (\textbf{function
@@ -1110,12 +1111,12 @@ parallel programs.
   developer defines which regions are to be parallelized. With this
   type of parallelism not as much overhead as with implicit
   parallelism is involved. This can be achieved via extensions to
-  standard programming (e.g., OpenMP). 
+  standard programming languages (e.g., OpenMP). 
 \item[Explicit parallelism] is writing explicit parallel tasks and
-  handling communication the communication between processes
+  handling communication between processes
   manually. Overhead is only produced through communication und thus
   offer the possibility of creating very efficient code. This type of
-  parallelism is achieved thrrough parallel programming libraries like
+  parallelism is achieved through parallel programming libraries like
   MPI or PVM.
 \end{description}
 
