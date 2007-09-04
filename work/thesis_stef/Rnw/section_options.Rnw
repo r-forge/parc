@@ -1,3 +1,14 @@
+%% Initialization
+<<echo=FALSE,results=hide>>=
+
+library("paRc")
+library("xtable")
+load("../examples/Rda/bmres-shared-50.Rda")
+load("../examples/Rda/bmres-node-50.Rda")
+
+@ 
+
+
 \section{Option Pricing Theory}
 \subsection{Derivatives}
 \label{sec:derivatives}
@@ -45,15 +56,15 @@ options are the most common of them.
   call option (put option) at a certain time $t$. $S_t$ denotes the
   value of the underlying at a specific time $t$.
   The price of a call option is defined as follows:
-  \begin{equation}\label{eq:call}
+  \begin{equation}\label{eq:eurcall}
     C_T = \left\{ \begin{array}{lcl} 0 & \textrm{if}& S_T \leq X \\
-        S_T - X & \textrm{if} & S_T > X, \end{array}\right
+        S_T - X & \textrm{if} & S_T > X, \end{array}\right\}
     \textrm{ or } max(S_T - X, 0),
   \end{equation}
   and for the put option:
-  \begin{equation}\label{eq:put}
+  \begin{equation}\label{eq:eurput}
     P_T = \left\{ \begin{array}{lcl} 0 & \textrm{if}& X \leq S_T \\
-        X - S_T & \textrm{if} & X > S_T \end{array}\right
+        X - S_T & \textrm{if} & X > S_T \end{array}\right\}
     \textrm{or} max{X - S_T, 0}.
   \end{equation}
   Figure \ref{fig:payoffs} shows the payoff functions of a call and
@@ -64,15 +75,15 @@ options are the most common of them.
   exercised at any time $t$ within the maturity $0...T$. The option
   expires if it is not exercised.
   The price of an American call option is 
-  \begin{equation}\label{eq:call}
+  \begin{equation}\label{eq:amcall}
     C_t = \left\{ \begin{array}{lcl} 0 & \textrm{if}& S_t \leq X \\
-        S_t - X & \textrm{if} & S_t > X, \end{array}\right
+        S_t - X & \textrm{if} & S_t > X, \end{array}\right\}
     \textrm{ or } max(S_t - X, 0),
   \end{equation}
   and for the put option:
-  \begin{equation}\label{eq:put}
+  \begin{equation}\label{eq:amput}
     P_t = \left\{ \begin{array}{lcl} 0 & \textrm{if}& X \leq S_t \\
-        X - S_t & \textrm{if} & X > S_t \end{array}\right
+        X - S_t & \textrm{if} & X > S_t \end{array}\right\}
     \textrm{or} max{X - S_t, 0}.
   \end{equation}
 \end{description}
@@ -220,19 +231,19 @@ The Black-Scholes princing formula is implemented in package
 function \code{blackscholesprice(x)} to retrieve the exact price where
 \code{x} is an object of class \class{option}.
 
-Example~\ref{ex:blackscholesprice} shows how the price of an European
+Example~\ref{eq:blackscholesprice} shows how the price of an European
 call option with strikeprice 100 and maturity 30 days ($1/12$ years)
 can be calculated using the function \code{blackscholesprice()}. The
 underlying is a stock with current value 100, a $\mu$ of 0.1, and
 volatility $\sigma$ of 0.4. The risk free yield is assumed to be
-$4.5%$.
+$4.5$\%.
 
 \begin{Example} Calculating the Black-Scholes price of a European option
-\label{ex:blackscholesprice}
+\label{eq:blackscholesprice}
 <<echo = TRUE, eval = TRUE>>=
 ## build example option
 european <- define.option(c(0.1,0.4,100),100,1/12)
-blackscholesprice(european)
+blackscholesprice(european, 0.045)
 
 @
 \end{Example}
@@ -530,20 +541,30 @@ send through the interconnection network and therefore (with Amdahl's
 law in mind) a greater fraction of the whole work can be executed in
 parallel.
 
-%% Initialization
-<<echo=FALSE,results=hide>>=
 
-library("paRc")
-library("xtable")
-load("../examples/Rda/bmres-shared-50.Rda")
-load("../examples/Rda/bmres-node-50.Rda")
-
+%% speedup table
+<<results=tex,echo=false>>=
+X<-bmres_s50
+table_s50 <- cbind(X[,c(3,2,6)],speedup(X))
+colnames(table_s50) <- c("#CPU","Type","Time","Speedup")
+xtable(table_s50, caption="Time and speedup achieved on a shared memory platforum using 50 simulation runs.",
+ label="tab:mcs_s50")
 @ 
+
+<<results=tex,echo=false>>=
+X<-bmres_n50
+table_n50 <- cbind(X[,c(3,2,6)],speedup(X))
+colnames(table_n50) <- c("#CPU","Type","Time","Speedup")
+xtable(table_n50, caption="Time and speedup achieved on cluster@WU using 10 nodes and 50 simulation runs.",
+ label="tab:mcs_n50")
+@ 
+
+
 
 %% plot
 \begin{figure}
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE,echo=false>>=
 ## Plot shared
 plot(bmres_s50)
 @ 
@@ -555,7 +576,7 @@ plot(bmres_s50)
 
 \begin{figure}
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE,echo=false>>=
 ## Plot distributed MCS
 plot(bmres_n50)
 @ 
@@ -564,20 +585,4 @@ plot(bmres_n50)
 \label{fig:mcs_dist}
 \end{figure}
 
-%% speedup table
-<<results=tex>>=
-X<-bmres_s50
-table_s50 <- cbind(X[,c(3,2,6)],speedup(X))
-colnames(table_s50) <- c("#CPU","Type","Time","Speedup")
-xtable(table_s50, caption="Time and speedup achieved on a shared memory platforum using 50 simulation runs.",
- label="tab:mcs_s50")
-@ 
-
-<<results=tex>>=
-X<-bmres_n50
-table_n50 <- cbind(X[,c(3,2,6)],speedup(X))
-colnames(table_n50) <- c("#CPU","Type","Time","Speedup")
-xtable(table_n50, caption="Time and speedup achieved on cluster@WU using 10 nodes and 50 simulation runs.",
- label="tab:mcs_n50")
-@ 
 
