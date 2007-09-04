@@ -18,6 +18,7 @@ load("../examples/Rda/bmres-node-5000.Rda")
 \SweaveOpts{echo=FALSE}
 
 \section{Comparison of Parallel Routines}
+\label{sec:mm_compare}
 
 In this section the results of the comparison of parallel programming
 models are shown. They are compared on a shared memory machine using
