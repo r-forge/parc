@@ -21,23 +21,22 @@ be rewritten, or completely new applications have to be designed to
 make use of this enormous parallel computing power. Another approach
 has become popular again recently---compiler driven
 parallelization. Though writing parallel programs can be achieved
-easier the performance cannot be compared to code which has been
+more easily the performance cannot be compared to code which has been
 parallelized manually. All in all,
 writing efficient code remains a challenging, time consuming task and
 needs years of experience. 
 
 Therefore, the major aim of this thesis is not only to 
 provide a good overview of the work which has been done in this field
-but more important to become familiar with the state of the art of
+but more importantly to become familiar with the state of the art of
 parallel computing.
 
 Moreover, a lot of  time consuming models exist in a scientific field
 called computational statistics; a field which has many connections to other
 scientific areas (e.g., economics, physics, biology or
-engineering). As a computational environment a software called the
-R-project for statistical computing and graphics is available to
-users and scientists. This project is on its way to provide 
-high performance computing to computational statistics through various
+engineering). As a computational environment a software called
+R (\cite{Rcore07R}) is available. This project is on its way to provide 
+high performance computing to statistical computing  through various
 extensions. To become familiar with the capabilities of R in
 this area is of major interest as it would be a key for solving many
 problems not only in statistics but also in all other areas where
@@ -48,11 +47,13 @@ chosen as a case study.
 \section{Contributions}
 In the course of this thesis an extension to the R
 environment for statistical computing has been developed---the
-\pkg{paRc} package. First, it provides a benchmark environment for
+\pkg{paRc} package (\cite{theussl07paRc}. First, it provides a
+benchmark environment for 
 identifying performance gains of parallel algorithms. Results of
 parallel matrix multiplication were produced using this benchmark
 environment. Second, a first
-attempt to use OpenMP in combination with R has been made and a
+attempt to use OpenMP (\cite{openMP05} in combination with R has been
+made and a 
 C~interface to OpenMP library calls has been implemented. Finally,
 a framework for pricing options with parallel Monte Carlo simulation
 has been developed.

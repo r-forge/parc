@@ -37,7 +37,7 @@ explained in this section.
   currently running R session becomes the master process. 
 \item[\code{.PVM.add.hosts(hosts)}] takes a vector of hostnames to
   be added to the current virtual machine. The syntax of the
-  hostnames is similiar to the lines of a pvmd hostfile (for details
+  hostnames is similar to the lines of a pvmd hostfile (for details
   see the man page of \textit{pvmd3}). 
 \item[\code{.PVM.del.hosts()}] simply deletes the given hosts from
   the virtual machine configuration.
@@ -124,7 +124,7 @@ Section~\ref{sec:messagepassing}).
 \pkg{rpvm} provides only two high level functions. One of them is a
 function to get or set values in the virtual machine settings. This is
 certainly because each new high level functions needs separate source
-files for the slaves and this is not what developers do intuively. 
+files for the slaves and this is not what developers do intuitively. 
 
 \subsubsection{High Level Functions}
 \begin{description}
@@ -167,19 +167,21 @@ functions have to be explained:
   content is labeled by the identifier \texttt{msgtag}.
 \item[\code{.PVM.recv(tid = -1, msgtag = -1)}] blocks the process
   until a message with label \texttt{msgtag} has arrived from
-  \texttt{tid}. -1 means any. The receive buffer is cleared
+  \texttt{tid}. $-1$ means any. The receive buffer is cleared
   and the received message is placed there instead.
 \item[\code{.PVM.upkstr(), .PVM.upkint(), .PVM.upkdblvec()}] and
-  others are the correspondig unpack functions to the
+  others are the corresponding unpack functions to the
   pack functions explained before.
 \item[\texttt{.PVM.gather(x, count = length(x), msgtag, group,
-    rootginst = 0}] gathers data distributed on the nodes (x) to a
+    rootginst = 0)}] gathers data distributed on the nodes (\code{x})
+  to a 
   specific process (mostly the root) into a single array. It performs
   a send of messages from each member of a group of processes. A
   specific process (the root) accumulates this messages into a single
   vector. 
-\item[\texttt{.PVM.scatter(x, count, msgtag, group, rootqinst = 0}]
-  sends to each member of a group a partition of  a vector x from a
+\item[\texttt{.PVM.scatter(x, count, msgtag, group, rootqinst = 0)}]
+  sends to each member of a group a partition of  a vector \code{x}
+  from a 
   specified member of the group (mostly the root) where \texttt{count}
   is an integer specifying the number of elements to be sent to each
   member. 
@@ -218,7 +220,7 @@ PVM.rapply <- function (X, FUN = mean, NTASK = 1)
         .PVM.initsend()
         range <- c(start, ifelse((start + chunk - 1) > end, end,
             start + chunk - 1))
-        work <- X[(range[1]):(range[2]), , drop = F]
+        work <- X[(range[1]):(range[2]), , drop = FALSE]
         start <- start + chunk
         .PVM.pkstr(deparse(substitute(FUN)))
         .PVM.pkint(id)
@@ -294,7 +296,7 @@ q (save="no")
 
 
 Example~\ref{ex:rpvm-rapplymaster} shows the implementation of the
-master routine \code{PVM.rapply()}. This funtion takes a matrix,
+master routine \code{PVM.rapply()}. This function takes a matrix,
 the function which is going to be applied and the number of processors
 to use as arguments. At first 
 the message tags are specified. These tags are necessary to uniquely

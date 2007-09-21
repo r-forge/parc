@@ -30,7 +30,11 @@
 \newcommand{\class}[1]{`\code{#1}'}
 
 
+\usepackage{theorem}
+\theoremheaderfont{\normalfont\bfseries}
+\theorembodyfont{\normalfont}
 \newtheorem{Example}{Example}[chapter]
+
 
 %% example for newenvironment
 %% \newenvironment{Proof}{\noindent{Proof:}}{%
@@ -39,7 +43,8 @@
 \RequirePackage{fancyvrb}
 \RequirePackage{color}
 
-\newenvironment{Schunk}{\par\begin{minipage}{\textwidth}}{\end{minipage}}
+%\newenvironment{Schunk}{\par\begin{minipage}{\textwidth}}{\end{minipage}}
+\newenvironment{Schunk}{}{}
 
 \definecolor{Sinput}{rgb}{0,0,0.56}
 \definecolor{Scode}{rgb}{0,0,0.56}

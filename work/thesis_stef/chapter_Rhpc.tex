@@ -10,7 +10,7 @@ chapter. Subsequently extensions to the base environment
 (so called packages) which provide high performance computation
 functionality to 
 R are going to be explained. Among these extensions there is the
-package called \pkg{paRc}, which has been developed in the course of
+package called \pkg{paRc}, which was developed in the course of
 this thesis.
 
 Examples shown in this chapter have been produced on cluster@WU~(see
@@ -36,9 +36,9 @@ R has (\cite{Rcore07R})
 \item graphical facilities for data analysis and display either
   directly at the computer or on hardcopy, and
 \item a well developed, simple and effective programming language
-  (called `S') which includes conditionals, loops, user defined
+  (called `R') which includes conditionals, loops, user defined
   recursive functions and input and output facilities. (Indeed most of
-  the system supplied functions are themselves written in the S
+  the system supplied functions are themselves written in the R
   language.)
 \end{itemize}
 
@@ -52,9 +52,10 @@ be rather easy to achieve (for more information about R and on how R can
 be extended see \cite{hornik07Rfaq} and \cite{Rcore07Ext}). 
 
 
-Now, as datasets grow bigger and bigger and algorithms become more and more
-complex, R has to join the high performance computing hype. Indeed, R
-is already prepared through a few extensions explained in the
+Now, as datasets grow bigger and bigger and algorithms become more and
+more complex, R has to be made ready for high performance
+computing. Indeed, R is already prepared through a few extensions
+explained in the 
 subsequent chapters. The packages mentioned in this chapter can be
 obtained from CRAN except \pkg{paRc} which can be obtained from
 R-Forge (\url{http://R-Forge.R-project.org}), a platform for
@@ -101,7 +102,7 @@ packages is given.
   least squares problems, eigenvalue problems and singular value
   problems. ScaLAPACK is an acronym for Scalable Linear Algebra
   PACKage or Scalable LAPACK. \cite{samatova06hps} have shown how to
-  use \pkg{RScaLAPACK} in biology and climate modelling and analized
+  use \pkg{RScaLAPACK} in biology and climate modelling and analyzed
   its performance.
 \item[papply] (\cite{currie05papply}) implements a similar interface
   to lapply and apply but distributes the processing evenly among the

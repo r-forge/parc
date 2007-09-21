@@ -50,7 +50,7 @@ workstations this is the method of choice.
 \item[\code{lamhosts()}] finds the hostname associated with its node
   number.
 \item[\code{mpi.universe.size()}] returns the total number of CPUs
-  available to the MPI environment (ie. in a cluster or in a parallel
+  available to the MPI environment (i.e., in a cluster or in a parallel
   environment started by the grid engine).
 \item[\code{mpi.is.master()}] returns TRUE if the process is the
   master process or FALSE otherwise. 
@@ -111,7 +111,7 @@ R slave script.
   arguments represented by \ldots to this function we refer to
   \cite{yu06Rmpi}.
 \item[\code{mpi.close.Rslaves(dellog = TRUE, comm = 1)}] closes
-  previously spawned R slaves and returns 1 if succesful.
+  previously spawned R slaves and returns 1 if successful.
 \item[\code{mpi.comm.size()}] returns the total number of members in
   a communicator.
 \item[\code{mpi.comm.rank()}] returns the rank (identifier) of the
@@ -188,10 +188,10 @@ each of the $n$ slaves and are returned to the master as a
 list (each list element representing one row). Finally a $n  \times n$
 matrix is formed and printed. The output of the matrix shows for each
 row the same random numbers. This is because of the fact, that each
-slave has the same seed. This problem is more specific treated in
-Chapter~\ref{chap:options}. For more information about parallel random
-number generators see the descriptions of the packages \pkg{rsprng}
-and \pkg{rlecuyer} in Section~\ref{sec:otherpackages}.
+slave has the same seed. This problem can be solved by using packages
+like  \pkg{rsprng} or \pkg{rlecuyer} which provide parallel random number
+generation (for more information see the descriptions of the packages
+in Section~\ref{sec:otherpackages}.
 
 \begin{Example} Using mpi.apply
 \label{ex:Rmpi3}
@@ -235,17 +235,17 @@ package the following functions have to be explained.
 \subsection{Conclusion}
 
 The package \pkg{Rmpi} implements many of the routines available in
-MPI-2. But there are routines that have to be ommitted or are not included
+MPI-2. But there are routines that have to be omitted or are not included
 because they are not needed for use with R (e.g., data management
 routines are not necessary as R has its own tools for data handling).
 A really interesting aspect of the \pkg{Rmpi} package is the
-possibilty to spawn interactive R slaves. That enables the user to
+possibility to spawn interactive R slaves. That enables the user to
 interactively 
 define functions which can be executed remotely on the slaves in
 parallel. An example how one can do this is shown in
 Chapter~\ref{chap:matrix}, where the implementation of matrix
 multiplication is shown. A major disadvantage is that MPI in its
-current implementations lack in fault tolerance. This results in a
+current implementations lacks in fault tolerance. This results in a
 rather instable execution of MPI applications. Moreover, debugging
 is really difficult as there is no support for it in \pkg{Rmpi}.
 

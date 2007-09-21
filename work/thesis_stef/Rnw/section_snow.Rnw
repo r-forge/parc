@@ -7,8 +7,8 @@ collection of computers to appear as a virtual cluster in R
 three different message passing environments can be used:
 
 \begin{itemize}
-\item PVM via R package rpvm (see section \ref{sec:rpvm})
-\item MPI via R package Rmpi (see section \ref{sec:Rmpi})
+\item PVM via R package \pkg{rpvm} (see section \ref{sec:rpvm})
+\item MPI via R package \pkg{Rmpi} (see section \ref{sec:Rmpi})
 \item SOCK via TCP sockets
 \end{itemize}
 
@@ -25,9 +25,9 @@ high level functions. This makes it rather easy to use the underlying
 parallel computational engine.
 Indeed \pkg{snow} uses existing interfaces to R namely \pkg{Rmpi} when
 using MPI (see Section~\ref{sec:Rmpi}), \pkg{rpvm} when using PVM (see
-Section~\ref{sec:rpvm}) and a new possibilty of message passing namely
+Section~\ref{sec:rpvm}) and a new possibility of message passing namely
 TCP sockets, which is a rather simple way of achieving communication
-between nodes (in most application this is not the optimal way).
+between nodes (in most applications this is not the optimal way).
 What follows is a description of high level functions supplied by the
 \pkg{snow} package. They are assigned to one of the topics:
 
@@ -54,10 +54,10 @@ from the corresponding package.
 
 \subsubsection{Management Functions}
 \begin{description}
-\item[\code{makecluster(spec, type = getClusterOption(``type''))}]
+\item[\code{makecluster(spec, type = getClusterOption("type"))}]
   starts a cluster of type \code{type} with \code{spec} numbers of
   slaves. If the cluster is of connection type SOCK then \code{spec}
-  must be a charactor vector containing the hostnames of the
+  must be a character vector containing the hostnames of the
   slavenodes to join the cluster. The return value is a list
   containing the cluster specifications. This object is necessary in
   further function calls.
@@ -91,10 +91,10 @@ be used as building blocks for further high level routines.
   \code{expr} on
   each cluster node provided by \code{cl}. 
 \item[\code{clusterCall(cl, fun, ...)}] calls a function
-  \code{fun} with arguments \ldots on each node found in \code{cl}
+  \code{fun} with arguments \ldots{} on each node found in \code{cl}
   and returns a list of the results.
 \item[\code{clusterApply(cl, x, fun, ...)}] applies a function
-  \code{fun} with additional arguments \ldots to a specific part of
+  \code{fun} with additional arguments \ldots{} to a specific part of
   a vector \code{x}. The return value is of type list with the same
   length as of \code{x}. The length of
   \code{x} must not exceed the 
@@ -103,7 +103,7 @@ be used as building blocks for further high level routines.
   use the corresponding apply functions below.
 \item[\code{clusterApplyLB(cl, x, fun, ...)}] is a load balancing
   version of \code{clusterApply()} which applies a function
-  \code{fun} with additional arguments \ldots to a specific part of
+  \code{fun} with additional arguments \ldots{} to a specific part of
   a vector \code{x} with the difference that the length of
   \code{x} can exceed the number of cluster nodes. If a node
   finished with the computation the next job is placed on the
@@ -121,10 +121,10 @@ Example~\ref{ex:snowapply} shows the use of \code{clusterApply()} on a
 virtual cluster of 8 nodes using MPI as communication layer. Like in
 Example~\ref{ex:Rmpi3} a vector of $n$ random numbers is generated on
 each of the $n$ slaves and are returned to the master as a
-list (each list element representing one row). Finally a $n  \times n$
+list (each list element representing one row). Finally an $n  \times n$
 matrix is formed and printed. The output of the matrix shows again for
 each row the same random numbers. This is because of the fact, that
-each slave has the same seed. This problem is more specific treated in
+each slave has the same seed. This problem is more specifically treated in
 Chapter~\ref{chap:options}. For more information about parallel random
 number generators see the descriptions of the packages \pkg{rsprng}
 and \pkg{rlecuyer} in Section~\ref{sec:otherpackages}. 

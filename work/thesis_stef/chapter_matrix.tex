@@ -63,7 +63,7 @@ $$
 This is called a \textit{row partition} of $A$.
 
 
-If $A \in \mathbb{R}^{m \times n}$ the $k$th row of $A$ can be notated
+If $A \in \mathbb{R}^{m \times n}$ the $k$th row of $A$ is denoted
 as $A(k,)$ (according to the row access in R). I.e.,
 
 $$ A(k,) = \left( \begin{array}{ccc}
@@ -116,7 +116,8 @@ block matrices.
 
 \section{Basic Matrix Multiplication Algorithm}
 
-Matrix multiplication is one of the key figures in linear algebra. In
+Matrix multiplication is one of the fundamental methods in linear
+algebra. In 
 this section the matrix multiplication problem $C = AB$ is
 presented using the dot product matrix multiply version. There are
 others like the saxpy and outer product method which are
@@ -156,7 +157,7 @@ product matrix multiplication.
   \FOR{$i = 1:m$}
     \FOR{$j = 1:n$}
        \FOR{$k = 1:r$}
-         \STATE $C(i,j) \leftarrow A(i,k)B(k,j)$
+         \STATE $C(i,j) \leftarrow C(i,j) + A(i,k)B(k,j)$
        \ENDFOR
     \ENDFOR
   \ENDFOR
@@ -202,11 +203,11 @@ In Section~\ref{sec:processorandmemory} we pointed out that
 parallelism can be achieved on the instruction level. Furthermore, we
 discussed  the importance of data locality in memory hierarchies. The
 Basic Linear Algebra Subprograms (BLAS) standard proposed by
-\cite{lawson79bla} consist of several basic operations (e.g., vector
+\cite{lawson79bla} consists of several basic operations (e.g., vector
 addition, dot product, etc.) utilizing the underlying architecture
-optimal. Most attention is paid to the principle of data locality as
+optimally. Most attention is paid to the principle of data locality as
 it will promise the highest performance gain. This can be achieved by
-moving the block of data once up the memory hierarchie, performing all
+moving the block of data once up the memory hierarchy, performing all
 necessary operations on it and moving the data back to the main memory
 and proceeding with the next block. The BLAS routines were used in the
 development of linear algebra libraries for solving a number of
@@ -221,7 +222,7 @@ multiplication problem:
 \item[Intel MKL] is a library designed to offer high performance
   linear algebra routines on
  Intel architecture (\cite{intel07MKL}--- available
-  freely for non-commercial use from \url{http://www.intel.com}. 
+  freely for non-commercial use from \url{http://www.intel.com}). 
 \item[GotoBLAS] is currently the fastest implementation of the Basic
   Linear Algebra Subprograms (\cite{goto07gotoblas}). This library is
   threaded, which means that it will use all available number of
@@ -239,7 +240,7 @@ multiplication problem:
 There are many specialized algorithms for parallel matrix multiplication
 available. E.g., Parallel Universal Matrix Multiplication Algorithms
 (PUMMA---\cite{choi93pumma}) or Fox's Algorithm (\cite{fox87mah}) to
-mention a few of them. But they are not within the scope of this thesis
+mention a few. But they are not within the scope of this thesis
 as we want to compare the different non-specialized implementations in the
 R packages with each other.
 
@@ -276,7 +277,7 @@ distributed across the threads. The syntax of the parallel loop
 construct \code{\textbf{for}} is as follows:
 
 \begin{itemize}
-\item \code{\textbf{\#pragma parallel for} \textit{optional clauses}} 
+\item \code{\textbf{\#pragma omp parallel for} \textit{optional clauses}} 
 \end{itemize} 
 
 The \textit{optional clauses} can be any of the clauses accepted by the
@@ -304,7 +305,7 @@ restrictions to the \code{for} loop we refer to \cite{openMP05}.
 \subsubsection{Implementation}
 
 With the above information given we can parallelize the matrix
-multiplication rather easy.
+multiplication rather easily.
 
 Algorithm~\ref{alg:ompmm} shows how the basic matrix multiplication
 (see Algorithm~\ref{alg:basicmm}) can be extended to achieve shared
@@ -327,7 +328,7 @@ memory parallelism using shared variables.
   \FOR{$i = 1:m$}
     \FOR{$j = 1:n$}
        \FOR{$k = 1:r$}
-         \STATE $C(i,j) \leftarrow A(i,k)B(k,j)$
+         \STATE $C(i,j) \leftarrow C(i,j) + A(i,k)B(k,j)$
        \ENDFOR
     \ENDFOR
   \ENDFOR
