@@ -14,9 +14,13 @@ load("../examples/Rda/bmres-shared-2500.Rda")
 To show how the BLAS routines perform on a single machine in
 comparison to the basic C implementation we ran a benchmark on a
 bignode of cluster@WU. The complexity of computation is defined as the
-number of rows and colums a matrix has. We chose to use two $1000
+number of rows and columns a matrix has. We chose to use two $1000
 \times 1000$  and $2500 \times
-2500$ matrices respectively as grades of complexity (i.e., complexity grade $1000$ and complexity grade $2500$).
+2500$ matrices respectively as grades of complexity (i.e., complexity
+grade $1000$ and complexity grade $2500$). The two matrices used to
+produce these results are generated using samples uniformly
+distributed between $-5$ and $5$. To eliminate fluctuations of the
+runtime the mean time of 10 runs is calculated.
 
 \subsubsection{Results of Complexity Grade $1000$}
 
@@ -24,16 +28,24 @@ Table~\ref{tab:mm_seqsblas1000} shows the results of the matrix
 multiplication benchmark using the Basic Linear Algebra Subroutines
 from the libraries mentioned in Section~\ref{sec:blas}. The entry
 ``native-BLAS'' in this table refers to the BLAS library delivered
-with the R source code. As this library has to be of high portability
-it delivers the worst performance. With libraries trimmed for the
+with the R source code. Its aim is to deliver good performance though
+it has to be of high portability. Furthermore the routines have to
+produce results with high stability and numerical accuracy of the
+results has to be maximized. These requirements lead to lower
+performance compared to the highly specialized libraries.
+
+ 
+With libraries trimmed for the
 corresponding platform a good speedup can be achieved. The Intel MKL
 library boosts the matrix multiplication with a speedup of over 26 in
 comparison to the C implementation from Example~\ref{ex:serialmm}. The
-best BLAS library, in 
+fastest BLAS library, in 
 this case GotoBLAS, shows a really extraordinary speedup. In fact,
 nearly doubling the speedup of the MKL. It
 can really compete with if not beat all parallel algorithms for matrix
-multiplication shown in this thesis.
+multiplication shown in this thesis. The drawbacks are that stability
+of the results cannot be guaranteed and that this performance gain can
+only be achieved at the expense of numerical exactness.
 
 <<results=tex>>=
 ## BLAS Table incl speedup
@@ -42,15 +54,16 @@ colnames(table_seqsblas) <- c("Type","Time","Speedup")
 
 xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode with complexity grade~$1000$.", label="tab:mm_seqsblas1000")
 @  
+
 \subsubsection{Results of Complexity Grade $2500$}
 
 Increasing the complexity to $2500 \times 2500$ matrices an
-interesting behaviour is shown. Table~\ref{tab:mm_seqsblas2500} shows
+interesting behavior is shown. Table~\ref{tab:mm_seqsblas2500} shows
 that the speedup achieved with the BLAS routines  has increased though
 running the same task on the same machine. The principle of locality
 is better utilized as more data is been held in higher levels of the
 memory hierarchies. In fact, the matrices are decomposed in blocks and
-the probabilty of using the same data (blocks) again in one of the next
+the probability of using the same data (blocks) again in one of the next
 calculation steps increases with the complexity of the matrices.
 
 <<results=tex>>=

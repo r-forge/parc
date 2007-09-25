@@ -2,7 +2,7 @@
 \section{Installation of Message Passing Environments}
 \label{app:mpi_imp}
 
-In this appendix it is shown how to set up an appropriate message
+This appendix shows how one can set up an appropriate message
 passing environment and how this environment can be handled.
 
 \subsection{LAM/MPI}
@@ -10,7 +10,7 @@ passing environment and how this environment can be handled.
 For installing LAM/MPI on a workstation or a cluster
 either the source code or pre-compiled binaries can be downloaded from
 the project website (\url{http://www.lam-mpi.org/}).
-The source code can be compiled as follows (jobscript for SGE):
+The source code can be compiled as follows (job script for SGE):
 
 \begin{verbatim}
 #$ -N compile-lam-gcc
@@ -38,14 +38,27 @@ If Debian Etch is used LAM/MPI can be installed using \code{apt-get
 \item[lam4c2] Shared libraries used by LAM parallel programs.
 \end{description}
 
-lamboot lamwipe etc.
+To boot the LAM/MPI environment one can simply call \code{lamboot}
+from the command line. This sets up a 1 node ``parallel''
+environment. To have more nodes connected a configuration file has to
+be specified.
 
+\begin{verbatim}
+#
+# example LAM host configuration file
+# bhost.conf
+#
+#server.cluster.example.com schedule=no
+localhost cpu=4
+\end{verbatim}
 
-
+With this file given executing \code{lamboot bhost.conf} sets up a
+parallel environment with 4 nodes on localhost.
 
 \subsection{PVM}
 
-
+Building and installing the PVM daemon from source is explained
+extensively in the book of \cite{geist94pvm}.
 
 If Debian Etch is used PVM can be installed using \code{apt-get
   install} followed by the packages
@@ -57,13 +70,14 @@ If Debian Etch is used PVM can be installed using \code{apt-get
 \end{description}
 
 
-\subsection{Intel Compiler}
+\subsection{Notes on the Intel Compiler}
 
-on AMD64 Debian systems install ia32-libs package to use the intel
+on AMD64 Debian systems install ia32-libs package to use the Intel
 compiler.
 
-an R Installation can be build via
+An R installation can then be configured via
 
+\begin{verbatim}
 ./configure --prefix=/home/stefan/lib/R-i --enable-R-shlib CC=icc
 CXX=icpc F77=ifort FC=ifort
-
+\end{verbatim}

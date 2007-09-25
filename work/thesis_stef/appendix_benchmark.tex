@@ -1,0 +1,175 @@
+\section{Benchmark Definitions}
+\label{app:benchmark}
+In this appendix the benchmark source files and job scripts are shown.
+
+\subsection{Matrix Multiplication}
+
+\subsubsection{Uniformly Distributed Matrices}
+
+In general we used the uniform distribution ($[-5,5]$) to run the
+benchmark in this thesis. The code for running a benchmark on a
+distributed memory machine and a detailed description can
+be found in Section~\ref{sec:benchmarkdescription}. The following code
+describes a benchmark for a shared memory machine.
+
+\begin{Scode}
+## load required libraries
+library("Rmpi")
+library("paRc")
+library("snow")
+
+## definition of benchmark
+maxcpu <- 4
+task <- "matrix multiplication"
+taskID <- "mm"
+paradigm <- "shared"
+types <- c("OpenMP", "MPI","snow-MPI", "MPI-wB")
+complexity <- c(1000, 2500)
+runs <- 250
+## data description
+bmdata <- list()
+bmdata[[1]] <- bmdata[[2]] <- 1000
+bmdata[[3]] <- function(x){
+  runif(x,-5,5)
+}
+
+## create benchmark object
+bm <- create.benchmark(task=task, data=bmdata,
+                       type=types[1], parallel=TRUE,
+                       cpu_range=1:maxcpu, runs=runs)
+set.seed(1782)
+## for each complexity and type run a number of benchmarks
+for(n in complexity){
+  bmdata[[1]] <- bmdata[[2]] <- n
+  bm.data(bm) <- bmdata
+  for(type in types){
+    bm.type(bm) <- type
+    writeLines(paste("Starting",type,"benchmark with complexity",n,"..."))
+    results <- run.benchmark(bm)
+    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),
+         ".Rda",sep=""))
+  }
+}
+\end{Scode}
+
+and the corresponding cluster job script looks as follows:
+
+\begin{verbatim}
+#$ -N MPI-distr-MM
+#$ -pe lam 20
+#$ -q node.q
+
+/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < \
+  /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/distributed-mm.R
+\end{verbatim}
+
+\subsubsection{Normally Distributed Matrices}
+
+When using normally distributed entries in the matrices we used the
+following benchmark definition to run on a distributed memory machine:
+
+\begin{Scode}
+## load required libraries
+library("rpvm")
+library("paRc")
+library("snow")
+
+## definition of benchmark run
+maxcpu <- 20
+task <- "matrix multiplication"
+taskID <- "mm-norm"
+paradigm <- "distributed"
+types <- c("PVM","snow-PVM")
+complexity <- c(1000, 2500, 5000)
+runs <- 250
+bmdata <- list()
+bmdata[[1]] <- bmdata[[2]] <- 1000
+bmdata[[3]] <- function(x){
+  rnorm(x)
+}
+
+bm <- create.benchmark(task=task, data=bmdata,
+                       type=types[1], parallel=TRUE, cpu_range=1:maxcpu, runs=runs)
+set.seed(1782)
+for(n in complexity){
+  bmdata[[1]] <- bmdata[[2]] <- n
+  bm.data(bm) <- bmdata
+  for(type in types){
+    bm.type(bm) <- type
+    writeLines(paste("Starting",type,"benchmark with complexity",n,"..."))
+    results <- run.benchmark(bm)
+    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),".Rda",sep=""))
+  }
+}
+\end{Scode}
+
+and the corresponding job script for the grid engine looks as follows:
+
+\begin{verbatim}
+#$ -N PVM-norm-distr-MM
+#$ -pe pvm 20
+#$ -q node.q
+
+/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < \
+  /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/distr-mm-norm.R
+\end{verbatim}
+
+\subsection{Option Pricing}
+
+To benchmark parallel Monte Carlo simulations the following code was
+used:
+
+\begin{Scode}
+## load required libraries
+library("Rmpi")
+library("paRc")
+
+## definition of benchmark run
+maxcpu <- mpi.universe.size()
+task <- "Monte Carlo simulation"
+taskID <- "mcs"
+paradigm <- "distributed"
+types <- c("normal")
+runs <- 10
+#complexity <- c(1000,2500,5000)
+
+bm <- create.benchmark(task=task, data=list(),
+                       type=types[1], parallel=FALSE, cpu_range=1)
+## build option
+opt <- list()
+opt$mu <- 0.1           ## expectation of underlying
+opt$sigma <- 0.4        ## standard deviation of underlying
+opt$type <- "Call"      ## type of the option
+opt$strikeprice <- 100  ## strikeprice of the option
+opt$present <- 100      ## present value of the underlying
+opt$maturity <- 1/12    ## time to maturity (in years)
+opt <- as.option(opt)   ## coercing 'list' to 'option'
+
+bmdata <- list()
+bmdata[[1]] <- opt
+bmdata[[2]] <- 0.1 ## yield
+bmdata[[3]] <- 30  ## n
+bmdata[[4]] <- 5000 ## length
+bmdata[[5]] <- 50  ## number of simulations
+bmdata[[6]] <- TRUE ## use antithetic
+bm.data(bm) <- bmdata
+
+for(type in types){
+  bm.type(bm) <- type
+  writeLines(paste("Starting",type,"benchmark..."))
+  results <- run.benchmark(bm)
+  save(results,file=paste(paste(paradigm,taskID,type,sep="-"),".Rda",sep=""))
+}
+
+\end{Scode}
+
+the corresponding job script looks as follows:
+
+\begin{verbatim}
+#$ -N MPI-distr-MCS
+#$ -pe lam 10
+#$ -q node.q
+
+/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < \
+  /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/distributed-mcs.R
+\end{verbatim}

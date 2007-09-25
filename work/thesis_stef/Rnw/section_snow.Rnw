@@ -124,7 +124,7 @@ each of the $n$ slaves and are returned to the master as a
 list (each list element representing one row). Finally an $n  \times n$
 matrix is formed and printed. The output of the matrix shows again for
 each row the same random numbers. This is because of the fact, that
-each slave has the same seed. This problem is more specifically treated in
+each slave has the same seed. This problem is treated more specifically in
 Chapter~\ref{chap:options}. For more information about parallel random
 number generators see the descriptions of the packages \pkg{rsprng}
 and \pkg{rlecuyer} in Section~\ref{sec:otherpackages}. 

@@ -112,24 +112,28 @@ object are
   \item Monte Carlo simulation
   \end{itemize}
 \item[data] is a list containing the parameters and data to properly
-  run the task
+  run the task.
 \item[type]defines the parallel programming model used to run the
-  benchmark. Currently, the following types are implemented:
+  benchmark. Currently, the following types are implemented (not
+  necessarily all of them are available for each task):
   \begin{itemize}
-  \item OpenMP---C interface calls provided by \pkg{paRc}
+  \item OpenMP---C interface calls provided by \pkg{paRc},
   \item MPI---implementation in \pkg{paRc} using \pkg{Rmpi} for
     communication
   \item PVM---implementation in \pkg{paRc} using \pkg{rpvm} for
-    communication 
+    communication
   \item snow-MPI---implementation in \pkg{snow} using \pkg{Rmpi} for
     communication
   \item snow-PVM---implementation in \pkg{snow} using \pkg{rpvm} for
     communication
   \end{itemize}
 \item[cpu\_range] contains a vector of integers representing the number
-  of CPUs for th corresponding benchmark run 
-\item[is\_parallel] is a logical \code{TRUE} or \code{FALSE} whether the
-  contains parallel tasks or not
+  of CPUs for th corresponding benchmark run.
+\item[is\_parallel] is a logical \code{TRUE} or \code{FALSE} whether
+  the benchmark
+  contains parallel tasks or not.
+\item[runs] is an integer defining the number of repetitions of the
+  benchmark.
 \end{description}
 
 \subsubsection{Main Routines}
@@ -144,10 +148,46 @@ These are the main routines for benchmarking parallel applications:
   of CPUs to use for this benchmark. 
 \item[\code{run.benchmark(x)}] takes a benchmark object as argument
   and carries out the defined benchmark. It returns an object of type
-  bm\_results (which inherits from a dataframe) containing the
+  bm\_results containing the
   results of the benchmark.
 \end{description}
 
+\subsubsection{Results}
+
+Results of the benchmark are stored in a data frame. It is an object
+of class \class{bm\_results} and inherits from class
+\class{data.frame}. Each row represents a run of the dedicated
+benchmark and for each run the following data is saved in addition to
+the data defined in the \class{benchmark} object:
+\begin{description}
+%\item[\code{task}] is a character representing the task to benchmark.
+%\item[\code{type}] is a character representing the type of the parallel
+%  programming model to be used. 
+\item[\code{time_usr}, \code{time_sys}, \code{time_ela}] contain the
+  measured runtimes 
+  (measured with the R function \code{system.time()}). 
+%\item[\code{n\_cpu}] is an integer representing the number of CPUs used for
+%  the corresponding run.
+%\item[\code{is.parallel}] is a logical \code{TRUE} or \code{FALSE} whether the
+%  contains parallel tasks or not.
+\item[\code{run}] is an integer representing the number of the
+  benchmark run when using a specific task with a given number of CPUs
+  and a given programming model.
+\end{description} 
+
+Example~\ref{ex:sampleframe} shows an initialized results data
+frame. The task to run with 1 and 2 processors is ``matrix
+multiplication''. The programming models to use are ``OpenMP'' and
+``MPI''. For every CPU count and programming model the benchmark is to
+be run 3 times. 
+
+\begin{Example} Running a benchmark using OpenMP
+\label{ex:sampleframe}
+<<echo=FALSE>>=
+ expand.grid(task="matrix multiplication",type=c("OpenMP","MPI"),time_usr=NA, time_sys=NA, time_ela=NA, n_cpu=1:2, runs=1:3, is.parallel=TRUE)
+@
+
+\end{Example}
 
 \subsubsection{Extractor and Replacement Functions}
 
@@ -213,8 +253,11 @@ The following S3 methods are provided for the benchmark environment:
 n <- 1000
 maxcpu <- omp.get.num.procs()
 dat <- list()
-dat[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
-dat[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
+dat[[1]] <- dat[[2]] <- n
+bmdata[[3]] <- function(x){
+  runif(x,-5,5)
+}
+
 bm <- create.benchmark(task="matrix multiplication", data=dat,
                        type="OpenMP", parallel=TRUE, cpu_range=1:maxcpu)
 bm

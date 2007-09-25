@@ -46,7 +46,7 @@ a_{m1} & \ldots & a_{mn}
 a_{ij} \in \mathbb{R}
  $$
 The lower case letter of the letter which denotes the matrix with
-subsripts $ij$ refers to the entry in the matrix. 
+subscripts $ij$ refers to the entry in the matrix. 
 
 \subsection{Column and Row Partitioning}
 
@@ -106,7 +106,7 @@ A_{p1} & \ldots & A_{pq}
 \end{array} \right)
 $$
 
-$A_{ij}$ is the $(i,j)$ block or submatrix with dimensions $m_i$ by
+$A_{ij}$ is the $(i,j)$ block or sub matrix with dimensions $m_i$ by
 $n_j$ of $A$. $\sum_{i=1}^p m_i = m$ and $\sum_{j=1}^q n_j = n$. 
 We can say that $A = A_{ij}$ is a $p$ by $q$ block
 matrix.   
@@ -244,12 +244,72 @@ mention a few. But they are not within the scope of this thesis
 as we want to compare the different non-specialized implementations in the
 R packages with each other.
 
-In this section we show how the dot product matrix multiplication can
+In this section we first explain in more details the benchmarking process
+used to produce all the results. The we show how the dot product
+matrix multiplication can 
 easily be parallelized using OpenMP. Furthermore, the more
 sophisticated implementations using the MPI and PVM interfaces
 available in \pkg{paRc} are
 presented. Eventually, these implementations are compared to those
 available in the package \pkg{snow}.   
+
+\subsection{Benchmark}
+\label{sec:benchmarkdescription}
+
+In general the benchmarks to produce the results in this
+section are defined and run like in
+Example~\ref{ex:benchmarkruns}. First, the parameters like the task or
+the programming model to use in the benchmark are specified. When using
+the matrix multiplication as a task, data is described as follows: the
+first two list elements contain the number of rows $n$ and columns $m$
+respectively. The
+third element contains a function for generating the entries of the
+matrix. It must return a vector of length $n \times m$.
+
+Then the defined benchmark is carried out. For each complexity and
+each type a number of benchmark runs is performed. Eventually the
+results are stored on the harddisk.
+
+\begin{Example}
+\label{ex:benchmarkruns}
+\begin{Scode}
+## definition of benchmark
+maxcpu <- mpi.universe.size()
+task <- "matrix multiplication"
+taskID <- "mm"
+paradigm <- "distributed"
+types <- c("MPI","snow-MPI", "MPI-wB")
+complexity <- c(1000, 2500, 5000)
+runs <- 250
+## data description
+bmdata <- list()
+bmdata[[1]] <- bmdata[[2]] <- 1000
+bmdata[[3]] <- function(x){
+  runif(x,-5,5)
+}
+
+## create benchmark object
+bm <- create.benchmark(task=task, data=bmdata,
+                       type=types[1], parallel=TRUE,
+                       cpu_range=1:maxcpu, runs=runs)
+set.seed(1782)
+## for each complexity and type run a number of benchmarks
+for(n in complexity){
+  bmdata[[1]] <- bmdata[[2]] <- n
+  bm.data(bm) <- bmdata
+  for(type in types){
+    bm.type(bm) <- type
+    writeLines(paste("Starting",type,"benchmark with complexity",n,"..."))
+    results <- run.benchmark(bm)
+    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),
+         ".Rda",sep=""))
+  }
+}
+
+\end{Scode}
+\end{Example}
+
+For further examples see Appendix~\ref{app:benchmark}.
 
 \subsection{OpenMP}
 
@@ -393,7 +453,7 @@ A_{p}
 \end{array} \right)
 $$
 
-$A_{i}$ is the $i$th block or submatrix with dimensions $m_i$ by
+$A_{i}$ is the $i$th block or sub matrix with dimensions $m_i$ by
 $n$ of $A$ where $\sum_{i=1}^p m_i = m$. 
 We can say that $A = A_{i}$ is a $m_i$ by $n$ block
 matrix. 
@@ -593,7 +653,7 @@ the slaves perform the actual computations (after receiving and
 unpacking the data of the buffer) and return the resulting
 local matrices to the master. The local solutions are combined to a
 single matrix which is the solution of the parallel matrix
-multipliaction.
+multiplication.
 
 
 \begin{Example}
@@ -708,7 +768,7 @@ PVM. Furthermore we compared the programming models on a shared and a
 distributed memory platform.
 
 On the shared memory platform we showed that OpenMP can be easy
-implemented and that perfomance is rather good compared to the other
+implemented and that performance is rather good compared to the other
 parallel programming models (when ignoring the optimized BLAS
 implementations). Therefore we propose to use this paradigm for
 parallelization of existing implementations in C as it is possible to

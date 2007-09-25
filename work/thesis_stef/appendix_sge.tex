@@ -2,34 +2,59 @@
 \section{Sun Grid Engine}
 \label{app:gridengine}
 
-\subsection{LAM/MPI parallel environment}
+A detailed documentation is available from the Sun Microsystems
+website (\cite{sge07}). In this appendix the fundamental steps for
+running parallel routines with R are explained.
 
-To use the LAM/MPI pe with the grid engine the following has to be
-inserted into the user's .bashrc:
+Important for running applications with the grid engine are job
+scripts. They work in the same way like shell scripts but additionally
+contain control sequences for the grid engine. These control sequences
+always start with \code{#$} %$  
+followed by a command flag and an argument.
+
+Often used flags are:
+\begin{description}
+\item[\code{-N}] defines that the following argument is the name of
+  the job.  
+\item[\code{-q}] defines the queue to use.
+\item[\code{-pe}] defines which parallel environment is to be started
+  and how many nodes have to be reserved.
+\end{description}
+
+\subsection{LAM/MPI Parallel Environment}
+
+To use the LAM/MPI parallel environment (pe) with the grid engine the
+following has to be inserted into the user's .bashrc:
 
 \begin{verbatim}
 
-export LD_LIBRARY_PATH=/home/stheussl/lib/lam-gcc/lib:\$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/home/stheussl/lib/lam-gcc/lib:$LD_LIBRARY_PATH
 export LAMHOME=/home/stheussl/lib/lam-gcc
 
 \end{verbatim}
+
+where the paths point to the corresponding LAM/MPI installation.
+
+\subsubsection{Cluster Job Scripts}
 
 A job script for starting a LAM/MPI application looks like this:
 
 \begin{verbatim}
 
-#\$ -N Rmpi-example
+#$ -N Rmpi-example
 # use parallel environment lam with 12 nodes
-#\$ -pe lam 12
+#$ -pe lam 12
 # run job on queue node.q to have a homogeneous processing environment 
-#\$ -q node.q
+#$ -q node.q
 
 R --vanilla < /path/to/my/Rmpi-example.R
-
 \end{verbatim}
 
+This job of the name ``Rmpi-example'' starts a parallel LAM/MPI environment
+with 12 nodes on \code{node.q} of cluster@WU. Eventually R is
+called sourcing a specific file containing parallel R code.
 
-\subsection{PVM parallel environment}
+\subsection{PVM Parallel Environment}
 
 To use the PVM pe with the grid engine the following has to be
 inserted into the user's .bashrc:
@@ -40,7 +65,7 @@ inserted into the user's .bashrc:
 # you may wish to use this for your own programs (edit the last
 # part to point to a different directory f.e. ~/bin/_\$PVM_ARCH.
 #
-if [ -z \$PVM_ROOT ]; then
+if [ -z $PVM_ROOT ]; then
     if [ -d /home/stheussl/lib/pvm3 ]; then
         export PVM_ROOT=/home/stheussl/lib/pvm3
     else
@@ -49,36 +74,40 @@ if [ -z \$PVM_ROOT ]; then
     fi
 fi
 
-if [ -n \$PVM_ROOT ]; then
-    export PVM_ARCH=`\$PVM_ROOT/lib/pvmgetarch`
+if [ -n $PVM_ROOT ]; then
+    export PVM_ARCH=`$PVM_ROOT/lib/pvmgetarch`
 
 # uncomment one of the following lines if you want the PVM commands
 # directory to be added to your shell path.
 #
-       export PATH=\$PATH:\$PVM_ROOT/lib            # generic
-       export PATH=\$PATH:\$PVM_ROOT/lib/\$PVM_ARCH  # arch-specific
+       export PATH=$PATH:$PVM_ROOT/lib            # generic
+       export PATH=$PATH:$PVM_ROOT/lib/$PVM_ARCH  # arch-specific
 #
 # uncomment the following line if you want the PVM executable directory
 # to be added to your shell path.
 #
-       export PATH=\$PATH:\$PVM_ROOT/bin/\$PVM_ARCH
+       export PATH=$PATH:$PVM_ROOT/bin/$PVM_ARCH
 fi
 
 \end{verbatim}
+
+
+\subsubsection{Cluster Job Scripts}
 
 A job script for starting a PVM application looks like this:
 
 \begin{verbatim}
 
-#\$ -N rpvm-test
+#$ -N rpvm-test
 # use parallel environment pvm with 8 nodes
-#\$ -pe pvm 8 
+#$ -pe pvm 8 
 # run job on queue node.q to have a homogeneous processing environment 
-#\$ -q node.q
-
-## if shared library not available in standard paths add the following
-export LD_LIBRARY_PATH=/home/stheussl/lib/pvm3/lib/LINUX64/:\$LD_LIBRARY_PATH
+#$ -q node.q
 
 R --vanilla < /path/to/my/rpvm-example.R
 
 \end{verbatim}
+
+This job of the name ``rpvm-test'' starts a parallel PVM environment 
+with 12 nodes on \code{node.q} of cluster@WU. Eventually R is
+called sourcing a specific file containing parallel R code.
