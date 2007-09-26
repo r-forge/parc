@@ -1,7 +1,7 @@
-\begin{figure}
+\begin{figure}[t]
   \label{fig:amdahl}
   \centering
-<<echo=FALSE, fig=TRUE>>=
+<<echo=FALSE, fig=TRUE, height=5, width=6>>=
 
 library("vcd")
 

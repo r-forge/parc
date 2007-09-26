@@ -12,7 +12,7 @@ load("../examples/Rda/bmres-node-50.Rda")
 \section{Option Pricing Theory}
 \subsection{Derivatives}
 \label{sec:derivatives}
-Derivatives are important in todays financial markets. Futures and
+Derivatives are important in today's financial markets. Futures and
 options have been increasingly traded since the last 20 years. Now,
 there are many different types of derivatives.
 \begin{description}
@@ -30,14 +30,14 @@ and options.
 
 \begin{description}
 \item[A forward] is a contract in which one party buys (long position)
-  or sells (short postion) an
+  or sells (short position) an
   asset at a certain time in the future for a certain
   price. \textbf{Futures} in contrast are standardized and therefore
   are normally traded on an exchange.
-\item[A call option] is a contract, which gives the holder the right
+\item[A call option] is a contract which gives the holder the right
   to buy an asset at a certain time for a certain price (strike
   price). 
-\item[A put option] is a contract, which gives the holder the right
+\item[A put option] is a contract which gives the holder the right
   to sell an asset at a certain time for a certain price. 
 \end{description}
 
@@ -50,41 +50,41 @@ options are the most common of them.
 
 \begin{description}
 \item[European options] are an option with the right to buy the
-  underlying $S$ at a certain time $T$ (expiration date or maturity)
-  paying a previously defined price $X$ (call option). If one sells
+  underlying~$S$ at a certain time~$T$ (expiration date or maturity)
+  paying a previously defined price~$X$ (call option). If one sells
   this right it is called a put option. $C_t$ ($P_t$) denotes the value of the
-  call option (put option) at a certain time $t$. $S_t$ denotes the
-  value of the underlying at a specific time $t$.
+  call option (put option) at a specific time~$t$. $S_t$ denotes the
+  value of the underlying at a specific time~$t$.
   The price of a call option is defined as follows:
   \begin{equation}\label{eq:eurcall}
     C_T = \left\{ \begin{array}{lcl} 0 & \textrm{if}& S_T \leq X \\
         S_T - X & \textrm{if} & S_T > X, \end{array}\right\}
-    \textrm{ or } max(S_T - X, 0),
+    \textrm{ or } \max(S_T - X, 0),
   \end{equation}
   and for the put option:
   \begin{equation}\label{eq:eurput}
     P_T = \left\{ \begin{array}{lcl} 0 & \textrm{if}& X \leq S_T \\
         X - S_T & \textrm{if} & X > S_T \end{array}\right\}
-    \textrm{or} max{X - S_T, 0}.
+    \textrm{ or } \max{X - S_T, 0}.
   \end{equation}
   Figure \ref{fig:payoffs} shows the payoff functions of a call and
   a put option and the position of the investor (left:~long position,
   right:~short position).
 \item[American Option] are heavily traded on exchanges. The
   difference to its European counterpart is the fact, that it can be
-  exercised at any time $t$ within the maturity $0...T$. The option
+  exercised at any time~$t$ within the maturity $0 \ldots{} T$. The option
   expires if it is not exercised.
   The price of an American call option is 
   \begin{equation}\label{eq:amcall}
     C_t = \left\{ \begin{array}{lcl} 0 & \textrm{if}& S_t \leq X \\
         S_t - X & \textrm{if} & S_t > X, \end{array}\right\}
-    \textrm{ or } max(S_t - X, 0),
+    \textrm{ or } \max(S_t - X, 0),
   \end{equation}
   and for the put option:
   \begin{equation}\label{eq:amput}
     P_t = \left\{ \begin{array}{lcl} 0 & \textrm{if}& X \leq S_t \\
         X - S_t & \textrm{if} & X > S_t \end{array}\right\}
-    \textrm{or} max{X - S_t, 0}.
+    \textrm{ or } \max{X - S_t, 0}.
   \end{equation}
 \end{description}
 
@@ -123,7 +123,7 @@ prize for economics in 1997 for their work (Fischer Black died in
 
 
 In the model developed by Black, Scholes and Merton, price changes are
-described mathematically by the Markov  
+described mathematically by Markov  
 processes. The Brownian motion (or Wiener process) is one of the forms
 of Markov processes used as a model for stock price movements (this
 goes back to \cite{bachelier00theorie}). 
@@ -155,22 +155,21 @@ plot(wp)
 \label{fig:wienerpath} 
 \end{figure}
 
-\subsubsection{Stock Price Behaviour}
+\subsubsection{Stock Price Behavior}
 The value $S$ of an underlying security follows the most widely used
-model for stock price behaviour, the stochastic process
+model for stock price behavior, the stochastic process
 \begin{equation}
 \label{eq:pathofstock}
 dS = \mu Sdt + \sigma SdW
 \end{equation}
 or
 $$ \frac{dS}{S} = \mu dt + \sigma dW $$
-
 where $\mu$ is the drift rate (or expected return) and $\sigma$ is the
 volatility. $W_{(t)}$ is a standard
 Brownian motion and $dt$ is a time increment. At $t = 0$ the value
 $S_{(0)}$ is $S_0$.
 If a volatility of zero is assumed the stock price would grow at a
-continously compounded rate of $\mu$ as
+continuously compounded rate of $\mu$ as
 $$ \frac{dS}{S} = \mu dt $$
 and integrated between $0$ and $T$ is
 $$ S_T = S_0 e^{\mu T}. $$
@@ -196,13 +195,13 @@ Solving this equation depends on the boundary conditions that are used
 for a particular derivative. In the case of a European option the
 boundary condition equals at $t=T$ to the payoff $V(T,S)$.
 For a call option the value is derived as follows
-$$ V(T,S) = max(S(T)-X,0) $$
+$$ V(T,S) = \max(S(T)-X,0) $$
 and for a put option
-$$ V(T,S) = max(X - S(T),0) .$$
+$$ V(T,S) = \max(X - S(T),0) .$$
 
 \subsubsection{Black-Scholes Pricing Formulas}
 
-This yields to te Black-Scholes formulas for the prices at time zero
+This yields to the Black-Scholes formulas for the prices at time zero
 of European options on a non-dividend paying stock. The price of a
 call option $c$ is (\cite{hull03:options_futures}):
 \begin{equation}
@@ -215,9 +214,9 @@ and the price of the corresponding put option $p$ is
 p = Xe^{-rT}N(-d_2) - S_0 N(-d_1)
 \end{equation}
 where
-$$ d_1 = \frac{ln(\frac{S_0}{X}) + (r + \frac{\sigma^2}{2})T}
+$$ d_1 = \frac{\log(\frac{S_0}{X}) + (r + \frac{\sigma^2}{2})T}
 {\sigma \sqrt{T}} $$
-$$ d_2 = \frac{ln(\frac{S_0}{X}) + (r - \frac{\sigma^2}{2})T}
+$$ d_2 = \frac{\log(\frac{S_0}{X}) + (r - \frac{\sigma^2}{2})T}
 {\sigma \sqrt{T}} = d_1 - \sigma \sqrt{T}$$
 
 The function $N(x)$ denotes the cumulative probability distribution
@@ -226,15 +225,15 @@ probability that $\phi (0,1)$ is less than $x$.
 
 \subsubsection{Implementation in Package paRc}
 
-The Black-Scholes princing formula is implemented in package
+The Black-Scholes pricing formula is implemented in package
 \pkg{paRc}. If a European option is available one may call the
 function \code{blackscholesprice(x)} to retrieve the exact price where
 \code{x} is an object of class \class{option}.
 
 Example~\ref{eq:blackscholesprice} shows how the price of an European
-call option with strikeprice 100 and maturity 30 days ($1/12$ years)
+call option with strike price 100 and maturity 30 days ($1/12$ years)
 can be calculated using the function \code{blackscholesprice()}. The
-underlying is a stock with current value 100, a $\mu$ of 0.1, and
+underlying is a stock with a current value of 100, a $\mu$ of 0.1, and
 volatility $\sigma$ of 0.4. The risk free yield is assumed to be
 $4.5$\%.
 
@@ -282,7 +281,7 @@ where $f$ is a density with $\lbrace x|g(x) \neq 0 \rbrace \subseteq
 
 Then $\int g(x)dx$ can be estimated as follows:
 $$ \widehat{\mu}_n =
-\frac{1}{n}(\frac{g(X_1)}{f(X_1)}+\ldots+\frac{g(X_n)}{f(X_n)}) $$
+\frac{1}{n}\left(\frac{g(X_1)}{f(X_1)}+\cdots+\frac{g(X_n)}{f(X_n)}\right) $$
 
 The accuracy of the estimate can be obtained using the central limit
 theorem. Let $X_1, X_2, \ldots, X_n$ be independent and identically
@@ -316,13 +315,14 @@ $$ S(t + \delta t) = S(t) e^{(\widehat{\mu} - \frac{\sigma ^2}{2})\delta t +
 
 Here the logarithm of the stock price is thus normally distributed, and the
 stock price itself has a lognormal distribution. In contrast to the
-equation before this equation is true for all $\delta t$.
+equation above this equation is true for all~$\delta t$.
 
 
 The major advantage of Monte Carlo simulation is that the payoffs of
-options can be simulated which depends not only on the final value of
-$S$ but also on the whole path followed by the underlying variable
-$S$. Furthermore, Monte Carlo simulation can be used to value option
+options can be simulated which depends not only on the final value
+of~$S$ but also on the whole path followed by the underlying
+variable~$S$. Furthermore, Monte Carlo simulation can be used to value
+options 
 which depend on more than one market variable. The drawbacks are that
 Monte Carlo simulation is computationally very time consuming but 
 makes it in turn to a prime example for parallel computing. A further
@@ -409,7 +409,7 @@ given can be retrieved.
     e^{(r-\frac{1}{2}\sigma^2)T+\sigma\sqrt{T}Z_i} $
     \STATE $C_i = e^{-rT} \MAX(S(T) - X,0)$
   \ENDFOR
-  \STATE $\widehat{C}_n = frac{C_1 + \ldots + C_n}{n}$
+  \STATE $\widehat{C}_n = \frac{C_1 + \ldots + C_n}{n}$
 
 \end{algorithmic}
 \end{algorithm}
@@ -421,9 +421,10 @@ rate \code{r}, the length of the path \code{n}, and the number of
 simulations \code{n.simulations} as arguments. The function returns
 the given object with the simulated price included.
 
-\begin{Example}
+\begin{Example} Monte Carlo simulation routine
 \label{ex:mcs}
 \begin{Scode}
+
 monteCarloSimulation <- function(x,r,n,length,
                                  n.simulations=50,antithetic=TRUE){
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
@@ -452,9 +453,10 @@ Example~\ref{ex:mcs-master} shows implementation of the master process
 in R. The corresponding slave program can be seen in
 Example~\ref{ex:mcs-slave}.
  
-\begin{Example}
+\begin{Example} MPI master routine
 \label{ex:mcs-master}
 \begin{Scode}
+
 mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
                      n_cpu = 1, spawnRslaves=FALSE) {
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
@@ -489,9 +491,10 @@ mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
 \end{Scode}
 \end{Example}
 
-\begin{Example}
+\begin{Example} MPI slave routine
 \label{ex:mcs-slave}
 \begin{Scode}
+
 mcs.Rmpi.slave <- function(){
   require("paRc")
   commrank <- mpi.comm.rank() - 1
@@ -537,7 +540,7 @@ presented in Section~\ref{sec:mm_compare} a better scalability is
 observed for both, using the shared memory paradigm and using the
 distributed memory paradigm (Figure~\ref{fig:mcs_dist} and
 Table~\ref{tab:mcs_n50}). This is because only few data is
-send through the interconnection network and therefore (with Amdahl's
+sent through the interconnection network and therefore (with Amdahl's
 law in mind) a greater fraction of the whole work can be executed in
 parallel.
 
@@ -547,7 +550,7 @@ parallel.
 X<-bmres_s50
 table_s50 <- cbind(X[,c(3,2,6)],speedup(X))
 colnames(table_s50) <- c("#CPU","Type","Time","Speedup")
-xtable(table_s50, caption="Time and speedup achieved on a shared memory platforum using 50 simulation runs.",
+xtable(table_s50, caption="Time and speedup achieved on a shared memory platform using 50 simulation runs.",
  label="tab:mcs_s50")
 @ 
 
@@ -585,4 +588,4 @@ plot(bmres_n50)
 \label{fig:mcs_dist}
 \end{figure}
 
-
+ 

@@ -59,7 +59,9 @@ environment can be obtained. \code{.PVM.config()} returns the hosts
 connected to 
 the parallel virtual machine. After that the
 parallel environment is stopped. 
-
+<<echo=FALSE>>=
+options(width=62)
+@
 \begin{Example} Query status of PVM 
 \label{ex:rpvm-init}
 <<echo=TRUE>>=
@@ -173,7 +175,7 @@ functions have to be explained:
   others are the corresponding unpack functions to the
   pack functions explained before.
 \item[\texttt{.PVM.gather(x, count = length(x), msgtag, group,
-    rootginst = 0)}] gathers data distributed on the nodes (\code{x})
+    rootginst = 0)}]\\gathers data distributed on the nodes (\code{x})
   to a 
   specific process (mostly the root) into a single array. It performs
   a send of messages from each member of a group of processes. A
@@ -192,6 +194,7 @@ Let us now examine the function to see how parallel programs using
 
 \begin{Example}
 \begin{Scode}
+
 PVM.rapply <- function (X, FUN = mean, NTASK = 1)
 {
     WORKTAG <- 22
@@ -245,6 +248,7 @@ The corresponding slave R script (slapply.R) looks as follows:
 
 \begin{Example}
 \begin{Scode}
+
 # $Id: slapply.R,v 1.2 2001/08/31 05:03:51 snake Exp $
 
 ### Slave R script for the PVM apply.

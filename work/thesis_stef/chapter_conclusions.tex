@@ -1,6 +1,115 @@
 \chapter{Conclusion and Future Work}
 \label{chap:conclusion}
-\section{Conclusion}
-\section{Economical Interpretation}
-\section{Future Work}
+\section{Summary}
 
+The overview of the field of high performance computing presented in
+the first chapters is a good start to become familiar with the state
+of the art in high performance computing and in particular in parallel
+computing. Furthermore we presented in this thesis all relevant
+packages which extent the base R environment with parallel computing
+facilities. All in all they are a good start to implement parallel
+routines although it is hard work to get routines running with high
+stability. Nevertheless as algorithms become more time comsuming and
+problems in computational statistics become more data intensive we
+propose to have at least a look on the possiblities which are offered
+from parallel programming models.
+
+With the introduction of OpenMP parallel programming has become easier
+than ever. In this thesis we presented how one can only with a few
+statements parallelize existing serial code to achieve a significant
+reduction of the runtime. With R coming the restriction to low level
+languages like C or FORTRAN as a disadvantage. Therefore we propose
+implementing high level interface functions to efficient parallel
+OpenMP low level routines.
+
+Using the benchmark environment provided by the new package \pkg{paRc}
+shows that existing high level  functions for general use in parallel
+computing (like the routines in \pkg{snow})
+help the user to easy achieve parallelism. Nevertheless, creating
+specialized function for a certain task will give better performance.
+
+The second contribution of this thesis is the parallel implementation
+of Monte Carlo simulation with a special focus on derivative
+pricing. Especially in finance, with the increasing importance of
+algorithmic trading, minimizing time is of major interest. The need for
+cutting edge hardware of investment companies and banks to minimize
+round tripping underlines this trend. Using high performance computing
+is becoming increasingly important in this field as parallel computers
+become mainstream and it will be a major contribution in this
+development.
+
+
+\section{Economical Coherences}
+
+%When talking about optimization in business administration one needs
+%operating figures.
+The economic principle has ever been maximizing
+profits. This means either raising of revenue, increasing the return
+or augmenting assets. In today's ever faster society time has become
+an important figure. And indeed, minimizing time to complete a task
+can be seen as some sort of profit. In view of finance saving time for
+calculating a trading strategy means an advance in knowledge and
+therefore can raise ones (monetary) profits.
+
+The objective of parallel
+computing is increasing performance which means reducing computational
+time. In an economic which depends more and more on information
+technology many companies will have to do the step from the serial to
+the parallel world. This means that a major rethinking will take place. 
+
+Already a long time ago one of the most important economist \cite{smith:iin}
+proposed the division of labor to increase welfare and now it is time
+to divide tasks such that time is minimized or in other words profits
+are increased.
+
+\section{Outlook}
+
+%%benchmark environment.
+
+
+Further research could clearly be done in the computational finance
+segment. The recent advances in algorithmic trading and the increasing
+need for computational power clearly indicate a  trend to high
+performance computing.
+
+A first step would be to improve parallel pseudo random number
+generation. Only few research has been done in this area in the last
+years 
+
+%%computational statistics 
+
+%%algorithmic trading~\cite{domowitz:mai}
+%%Improvements and further work 
+%%\cite{kontoghiorghes06handbookpcstat}
+
+
+%%Further research could also be done
+
+
+%%Going one setp further
+
+
+Besides the topics mentioned above, many more could be thought of and
+implemented, thus there are more than enough fields for further
+research.
+
+
+\begin{acknowledgments}
+I was extremely lucky to carry out my diploma thesis at the Department
+of Statistics and Mathematics. My position as a studies assistant gave
+me the opportunity to discuss many topics of this thesis with
+the staff members---my collegues. Especially I would like to thank my
+supervisor Kurt Hornik for his guidance and mentorship and of course for
+the many reading.
+
+I would like to thank David Meyer as well as
+Achim Zeileis who helped me with statistical, graphical and
+information technology issues.
+
+Furthermore I would like to thank my Josef Leydold for his hints
+regarding random number generation.
+
+Lastly, I would like to thank my girlfriend Selma for proofreading and
+of course for her patience and her support.
+
+\end{acknowledgments}

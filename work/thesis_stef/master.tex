@@ -12,6 +12,7 @@
 \usepackage[round]{natbib}
 \usepackage{algorithm}
 \usepackage{algorithmic}
+%%\usepackage{hyperref}
 
 % Seitenlayout
 % DIV# gibt den Divisor für die Layoutberechnung an.
@@ -35,6 +36,11 @@
 \theorembodyfont{\normalfont}
 \newtheorem{Example}{Example}[chapter]
 
+\newcommand{\ackname}{Acknowledgments}
+\newenvironment{acknowledgments}%
+   {\section{\ackname}}
+   {\vfil}
+
 
 %% example for newenvironment
 %% \newenvironment{Proof}{\noindent{Proof:}}{%
@@ -57,18 +63,31 @@
 \DefineVerbatimEnvironment{Scode}{Verbatim}
 {formatcom={\color{Scode}},fontsize=\small}
 
+%% Title commands
+\newcommand{\titel}[1]{\def\@titel{#1}\newcommand{\Titel}{#1}}
+\renewcommand{\title}[1]{\def\@title{#1}\newcommand{\Title}{#1}}
+
+%% Title
+\title{Applied High Performance Computing \\Using R}
+\titel{Angewandtes Hochleistungsrechnen unter Verwendung von R}
+
 
 \begin{document}
   \pagestyle{empty}
 
   % Title Page
   \include{titlepage}
+
+  \pagenumbering{roman}
+  \pagestyle{plain}
+
+  %% Abstract and Kurzfassung
+  \input{abstract.tex}
+
   %% Table of contents
   \tableofcontents
   % show page headings now
-  \pagestyle{headings}
   
-  \setcounter{page}{1}
     %% Chapter Introduction to Parallel Computing 
     \input{chapter_intro.tex}
 

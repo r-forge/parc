@@ -211,6 +211,7 @@ Let us now examine the function to see how parallel programs using
 
 \begin{Example}
 \begin{Scode}
+
 PVM.rapply <- function (X, FUN = mean, NTASK = 1)
 {
     WORKTAG <- 22
@@ -264,6 +265,7 @@ The corresponding slave R script (slapply.R) looks as follows:
 
 \begin{Example}
 \begin{Scode}
+
 # $Id: slapply.R,v 1.2 2001/08/31 05:03:51 snake Exp $
 
 ### Slave R script for the PVM apply.

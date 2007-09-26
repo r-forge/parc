@@ -19,7 +19,7 @@ Chapter~\ref{chap:options}).
 
 \pkg{paRc} can be obtained from \url{R-Forge.R-project.org}---the
 R-project community service. To install this package directly within R
-call \code{install.packages("paRc", repos = "R-Forge.R-project.org")}.
+call \\ \code{install.packages("paRc", repos = "R-Forge.R-project.org")}.
 To properly install this package you need either the Intel compiler
 with version 9.1 or newer (the Linux compiler is free for
 non-commercial use) or the GNU~C compiler with version 4.2 or
@@ -65,7 +65,9 @@ Example~\ref{ex:paRcOMP} shows the use of the OpenMP library calls in
 R. First the number of available processors is queried. Then the
 number of threads a parallel application may use is set to 2. With the
 last call the current available CPUs to a parallel program is queried.
-
+<<echo=FALSE>>=
+options(width=62)
+@ 
 \begin{Example} OpenMP function calls using \pkg{paRc}
 \label{ex:paRcOMP}
 <<echo=TRUE>>=
@@ -181,7 +183,7 @@ multiplication''. The programming models to use are ``OpenMP'' and
 ``MPI''. For every CPU count and programming model the benchmark is to
 be run 3 times. 
 
-\begin{Example} Running a benchmark using OpenMP
+\begin{Example} A sample data frame
 \label{ex:sampleframe}
 <<echo=FALSE>>=
  expand.grid(task="matrix multiplication",type=c("OpenMP","MPI"),time_usr=NA, time_sys=NA, time_ela=NA, n_cpu=1:2, runs=1:3, is.parallel=TRUE)
@@ -301,7 +303,7 @@ the necessary information for pricing an option. The list elements are
   are two possibilities---either a \code{"call"} option, or a
   \code{"put"} option.
 \item[kind] contains a character representing the class of the
-  option. Only \code{"European"} has been available at the time of
+  option. Only \code{European} has been available at the time of
   this writing. 
 \item[position] is a character string marking the position of the
   investor. This can either be \code{"long"} or \code{"short"}.

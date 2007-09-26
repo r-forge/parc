@@ -370,13 +370,15 @@ plot.bm_results <- function(x, task="all", ... ){
   ntypes <- length(unique(x$type))
   ntasks <- length(unique(x$task))
 
+  aggr <- aggregate(subset(x,select=c("time_usr","time_sys","time_ela")), list(type=x$type,n_cpu=x$n_cpu), mean)
+  
   if(ntypes > 11)
     stop("more than 11 functions in a benchmark are not supported yet")
 
-  
+  browser()
   ## define plot region, colorspace and other plot parameters
-  xlim <- c(0,max(as.numeric(x$n_cpu),na.rm=TRUE)+1)
-  ylim <- c(0,max(x$time_ela,na.rm=TRUE)+1)
+  xlim <- c(0,max(as.numeric(aggr$n_cpu),na.rm=TRUE)+1)
+  ylim <- c(0,max(aggr$time_ela,na.rm=TRUE)+1)
   ncolors <- ntypes*ntasks
   colors <- rainbow_hcl(ncolors, c=80, l=65, start = 20, end = 340)
   ltys <- c(1:6,1:6)
@@ -386,14 +388,15 @@ plot.bm_results <- function(x, task="all", ... ){
 
   ## plot reference
   ref <- x$type[1]
-  plot( x = as.numeric(x$n_cpu)[1], y = x$time_ela[1], col=colors[1], xlim = xlim, ylim = ylim, type = "b",
+  reference=subset(x,type=ref)
+  plot( x = as.numeric(reference$n_cpu), y = reference$time_ela, col=colors[1], xlim = xlim, ylim = ylim, type = "b",
        pch = pchs[1], ,xlab = "# of CPUs", ylab = "execution time", main = main)
 
   ##plot the rest
-  results.to.plot <- unique(x$type)
+  results.to.plot <- unique(aggr$type)
   results.to.plot <- results.to.plot[-which(results.to.plot==ref)]
   for(i in 1:length(results.to.plot)){
-    lines(x = as.numeric(x$n_cpu[which(x$type==results.to.plot[i])]), y = x$time_ela[which(x$type==results.to.plot[i])],
+    lines(x = as.numeric(aggr$n_cpu[which(aggr$type==results.to.plot[i])]), y = aggr$time_ela[which(aggr$type==results.to.plot[i])],
           col=colors[i+1], type = "b", lty= ltys[i+1], pch = pchs[i+1])
   }
 

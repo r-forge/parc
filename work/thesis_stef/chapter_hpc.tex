@@ -4,8 +4,8 @@
 \label{sec:parallelintro}
 In 1965 a director in the Fairchild Semiconductor division of
 Fairchild Camera and Instrument Corporation predicted: ``The complexity
-(of integrated circuits, annotation of the author)
-for minimum costs has increased at a rate of roughly two per year
+[of integrated circuits] for minimum costs has increased at a rate of
+roughly two per year 
 [\ldots] over the short term this rate can be expected to continue, if
 not increase.''(~\cite{moore65integratedcircuits}) This soon became known
 as Moore's Law. And 
@@ -94,8 +94,8 @@ analyzed in this field.
 \label{sec:termsdef}
 
 
-Before we go into further the terms, which are commonly used
-when dealing with parallel computing, have to be
+Before we go into further details the terms which are commonly used
+when dealing with parallel computing have to be
 defined. It is important to know the difference between processes
 and threads as they are the key figures in parallel computing.
 
@@ -195,7 +195,7 @@ In general, concurrent programs can be executed
 in parallel whereas parallel programs cannot be reduced to logically
 concurrent processes. 
 
-For description of concurrent programming languages and programming
+For a description of concurrent programming languages and programming
 models see \cite{gehani88:concurrentprog}.
 
 \subsection{Computational Overhead}
@@ -256,13 +256,13 @@ presence of single or multiple either instructions or data streams
 known as Flynn's taxonomy:
 \begin{description}
 \item[Single Instruction Single Data (SISD)]
-  This type of architecture of CPUs (called uniprocessors),
+  This type of architecture of \\CPUs (called uniprocessors),
   developed by the 
   mathematician John von Neumann, was the standard for a long
   time. These computers are also known as serial computers. 
-\item[Multiple Instruction Single Data (MISD)] The theoretical possibility
-  of applying multiple instructions on a single datum is generally
-  impractical.
+\item[Multiple Instruction Single Data (MISD)] The theoretical
+  possibility \\of applying multiple instructions on a single datum is
+  generally impractical.
 \item[Single Instruction Multiple Data (SIMD)] 
   A single instruction is applied by multiple processors to different
   data in parallel (data-level parallelism). 
@@ -303,7 +303,7 @@ concurrent execution:
   whereas the former achieves interprocess communication via 
   interconnection network and the latter via global memory each
   processor can address.
-\item[MIMD-based architectural paradigms] involve MIMD/SIMD hybrids,
+\item[MIMD-based architectural paradigms] involve MIMD/SIMD hybrids,\\
   dataflow architectures, reduction machines, and wavefront arrays. A
   MIMD architecture can be called a MIMD/SIMD hybrid if parts of the
   MIMD architecture are controlled in SIMD fashion (some sort of
@@ -354,7 +354,7 @@ cycles can be as follows (for details see Appendix A of~\cite{C1quant07}).
 \begin{description}
 \item[Instruction fetch cycle (F)] The current instruction is fetched from
   memory.
-\item[Instruction decode/register fetch cycle (D)] Decode instructions and
+\item[Instruction decode/register fetch cycle (D)] Decode instructions and\\
   read registers corresponding to register source from the register
   file.
 \item[Execution/effective address cycle (X)] The arithmetic logic unit
@@ -738,7 +738,7 @@ libraries make use of identifiers. In MPI they are called ``ranks''
 and in PVM ``TaskIDs''.
 
 Often used concepts in message passing are buffering,
-blocking/non-blocking communication, load balancing and collective
+blocking or non-blocking communication, load balancing and collective
 communication. 
 
 \subsubsection{Buffering}
@@ -1218,6 +1218,7 @@ speedup < \frac{1}{1 - f}
 \end{equation}
 
 % Figure: Amdahl's law
+\setkeys{Gin}{width=0.85\textwidth}
 \input{speedup.tex}
 
 %%\subsection{Gustavson}
@@ -1233,7 +1234,7 @@ going to be described in this section.
 
 At the Vienna University of Economics and Business Administration (WU)
 a research institute called Research Institute for Computational
-Methods (Forschungsinstitut f"ur Rechenintensive Methoden or FIRM for
+Methods (Forschungsinstitut f\"ur rechenintensive Methoden or FIRM for
 short---\url{http://www.wu-wien.ac.at/firm}) hosts a high
 performance computing server, a cluster of Intel workstations, known
 as cluster@WU.
@@ -1308,7 +1309,7 @@ Linux~(\url{http://www.debian.org}).
  
 \begin{description}
 \item[Sun Grid Engine] is an open source cluster resource management
-  and scheduling software. On cluster@WU version 6.0 of the Grid
+  and \\scheduling software. On cluster@WU version 6.0 of the Grid
   Engine manages the remote execution of cluster jobs. It can be obtained
   from~\url{http://gridengine.sunsource.net/}, the commercial version
   Sun N1 Grid Engine can be found

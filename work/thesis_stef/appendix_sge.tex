@@ -1,5 +1,5 @@
 
-\section{Sun Grid Engine}
+\chapter{Sun Grid Engine}
 \label{app:gridengine}
 
 A detailed documentation is available from the Sun Microsystems
@@ -9,7 +9,8 @@ running parallel routines with R are explained.
 Important for running applications with the grid engine are job
 scripts. They work in the same way like shell scripts but additionally
 contain control sequences for the grid engine. These control sequences
-always start with \code{#$} %$  
+always start with \code{\#\$} 
+%$  
 followed by a command flag and an argument.
 
 Often used flags are:
@@ -21,7 +22,7 @@ Often used flags are:
   and how many nodes have to be reserved.
 \end{description}
 
-\subsection{LAM/MPI Parallel Environment}
+\section{LAM/MPI Parallel Environment}
 
 To use the LAM/MPI parallel environment (pe) with the grid engine the
 following has to be inserted into the user's .bashrc:
@@ -54,7 +55,7 @@ This job of the name ``Rmpi-example'' starts a parallel LAM/MPI environment
 with 12 nodes on \code{node.q} of cluster@WU. Eventually R is
 called sourcing a specific file containing parallel R code.
 
-\subsection{PVM Parallel Environment}
+\section{PVM Parallel Environment}
 
 To use the PVM pe with the grid engine the following has to be
 inserted into the user's .bashrc:

@@ -1,20 +1,21 @@
-\chapter{Option Pricing using Parallel Monte Carlo Simulation}
+\chapter[Parallel Monte Carlo Simulation]{Option Pricing using
+  Parallel Monte Carlo Simulation}
 \label{chap:options}
 \section{Introduction}
 \label{sec:optionintro}
 
 The search for competitive advantages and especially in economics and in
-financial markets is in human's nature. The biggest advantage a trader
-in financial markets can have is to know something before all of the
+financial markets is in man's nature. The biggest advantage a trader
+in financial markets can have is to know something before all
 other market participants. On the stock exchange quickness and an advantage
-in time are the key factors to be successful. On todays financial
+in time are the key factors to be successful. On today's financial
 markets more and more trades are made by software and their
-algorithms (this is called algorithmic-trading) or even artificial
+algorithms (this is called algorithmic trading) or even artificial
 intelligence (\cite{bloomberg:hal9000}). A human trader could
 process five to ten complex 
 transactions per minute software in contrast could process several
 thousand transactions per second and parallelism preconditioned, look
-after several market places simultanously.
+after several market places simultaneously.
 
 
 The performance of the electronic exchange system is of great
@@ -23,7 +24,7 @@ firms keep their trading software as close to the trading system as
 possible (\cite{wstonline:cuttingedge}). This is because investors
 want to keep the time
 between the input of a trade until its confirmation (this is called
-round-tripping) at a minimum. Recently the Gruppe Deutsche B\"orse
+round tripping) at a minimum. Recently the Gruppe Deutsche B\"orse
 upgraded their trading 
 system Xetra to offer more bandwidth with lower latency (\cite{gdb:latency},
 \cite{gdb:bandwidth}).
@@ -31,14 +32,14 @@ These developments show the importance of high performance computing
 in this sector.
 
 
-In this chapter a first attempt is made to contribute to the high performance
-computing segment in finance. This is done as a case study in which a
+In this chapter we investigate how high performance computing can be
+applied in finance. This is done as a case study in which a
 European call option is priced using parallel Monte Carlo
 simulation and the outcome is compared to the analytical solution.
 
 This chapter is organized as follows: First, a short overview of the
 theory of option pricing is given, starting with a definition of
-derivatives and continuing with the explaination of the Black-Scholes
+derivatives and continuing with the explanation of the Black-Scholes
 model. Then the theory of Monte Carlo simulation of option prices is
 summarized. Before showing the results of the parallel Monte Carlo
 simulation the implementation is described.

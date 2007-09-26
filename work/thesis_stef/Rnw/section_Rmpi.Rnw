@@ -104,9 +104,8 @@ R slave script.
 
 \subsubsection{Process Management  Functions}
 \begin{description}
-\item[\code{mpi.spawn.Rslaves(Rscript =
-    system.file(nslaves =
-    mpi.universe.size(), ...)}] spawns \code{nslaves} number of R
+\item[\code{mpi.spawn.Rslaves(nslaves = mpi.universe.size(), ...)}]
+  spawns \code{nslaves} number of R
   workhorses to those hosts automatically chosen by MPI. For other
   arguments represented by \ldots to this function we refer to
   \cite{yu06Rmpi}.
@@ -216,7 +215,7 @@ package the following functions have to be explained.
 \subsubsection{Collective Communication Routines}
 \begin{description}
 \item[\code{.mpi.gather(x, type, rdata, root = 0, comm = 1)}] gathers
-  data distributed on the nodes (\code{x}) to a 
+  data distr-\\ ibuted on the nodes (\code{x}) to a %% MANUELLER UMBRUCH
   specific process (mostly the master) into a single array or list
   (depending on the length of the data) of type \code{type} which can
   be integer, double or character. It

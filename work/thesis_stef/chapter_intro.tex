@@ -1,4 +1,12 @@
+
+\clearpage
+\pagestyle{headings}
 \chapter{Introduction}
+
+%\thispagestyle{headings}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
 \section{Motivation}
 During the last decades the demand for computing power has steadily
 increased, since problems like climate prediction, data mining, difficult
@@ -34,7 +42,8 @@ parallel computing.
 Moreover, a lot of  time consuming models exist in a scientific field
 called computational statistics; a field which has many connections to other
 scientific areas (e.g., economics, physics, biology or
-engineering). As a computational environment a software called
+engineering). As a computational environment a software and language
+called
 R (\cite{Rcore07R}) is available. This project is on its way to provide 
 high performance computing to statistical computing  through various
 extensions. To become familiar with the capabilities of R in
@@ -60,7 +69,7 @@ has been developed.
  
 \section{Organization of this Thesis}
 
-This thesis is organized as follows. First I briefly summarize the
+This thesis is organized as follows. First we briefly summarize the
 fundamentals of high performance computing and parallel processing in
 Chapter~\ref{chap:parallelcomputing}. In the course of this chapter
 computer architectures and programming models are described as well as the
@@ -72,19 +81,17 @@ this thesis provides an overview of the
 available extensions supplying parallel computing functionality to R.
 
 In the remaining chapters case studies for high performance
-computing are presented. Each of these chapters has the following
-structure: First,
-a description of the topic is given in a comprehensive way. Second
-details of the implementations are explained. Finally, results of the
-comparison between each implementation are presented. The selected
-topics are
-\begin{itemize}
-\item Parallel matrix multiplication in Chapter~\ref{chap:matrix},
-%\item Parallel Greedy Randomized Adaptive Search procedure in
-%  Chapter~\ref{chap:pgrasp},
-\item Option pricing using Parallel Monte Carlo simulation in
-  Chapter~\ref{chap:options}. 
-\end{itemize}
+computing are presented. In Chapter~\ref{chap:matrix}
+benchmarks of the parallel matrix multiplication are compared for each
+parallel 
+programming model as well as for highly optimized libraries. The aim
+is to point out which programming models available in R are most
+promising for further work.
+The case study presented in Chapter~\ref{chap:options} deals with the
+pricing of derivatives (in particular of European call options) using
+parallel Monte Carlo simulation. 
+
 Eventually Chapter~\ref{chap:conclusion} summarizes
 the findings and give economical interpretations as well as an outlook
 to future work.
+
