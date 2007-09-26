@@ -57,12 +57,15 @@
 \definecolor{Soutput}{rgb}{0.56,0,0}
 
 \DefineVerbatimEnvironment{Sinput}{Verbatim}
-{formatcom={\color{Sinput}},fontsize=\small}
+{formatcom={\Zinput},fontsize=\small}
 \DefineVerbatimEnvironment{Soutput}{Verbatim}
-{formatcom={\color{Soutput}},fontsize=\small}
+{formatcom={\Zoutput},fontsize=\small}
 \DefineVerbatimEnvironment{Scode}{Verbatim}
-{formatcom={\color{Scode}},fontsize=\small}
+{formatcom={\Zcode},fontsize=\small}
 
+\newcommand{\Zoutput}{\vspace*{-0.55cm} \color{Soutput}}
+\newcommand{\Zinput}{\vspace*{-0.3cm} \color{Sinput}}
+\newcommand{\Zcode}{\vspace*{-0.2cm} \color{Scode}}
 %% Title commands
 \newcommand{\titel}[1]{\def\@titel{#1}\newcommand{\Titel}{#1}}
 \renewcommand{\title}[1]{\def\@title{#1}\newcommand{\Title}{#1}}

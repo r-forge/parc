@@ -14,14 +14,15 @@ languages like C or
 FORTRAN or can be called as R processes. The latter method is used in
 this thesis and therefore a good selection of \pkg{rpvm}
 functions are explained in this section to show how PVM and R can be
-used together. Provided functions are categorized as follows:
+used together. 
+%Provided functions are categorized as follows:
 
-\begin{itemize}
-\item Initialization and Status Queries
-\item Process Spawning and Communication
-\item Built-in High Level Functions
-\item Other Important Functions
-\end{itemize}  
+%\begin{itemize}
+%\item Initialization and Status Queries
+%\item Process Spawning and Communication
+%\item Built-in High Level Functions
+%\item Other Important Functions
+%\end{itemize}  
 
 \subsection{Initialization and Status Queries}
 
@@ -37,7 +38,7 @@ explained in this section.
   currently running R session becomes the master process. 
 \item[\code{.PVM.add.hosts(hosts)}] takes a vector of hostnames to
   be added to the current virtual machine. The syntax of the
-  hostnames is similiar to the lines of a pvmd hostfile (for details
+  hostnames is similar to the lines of a pvmd hostfile (for details
   see the man page of \textit{pvmd3}). 
 \item[\code{.PVM.del.hosts()}] simply deletes the given hosts from
   the virtual machine configuration.
@@ -49,7 +50,7 @@ explained in this section.
   the current R session.
 \end{description}
   
-When using a job queueing system like he Sun Grid Engine (SGE) to boot
+When using a job queueing system like the Sun Grid Engine (SGE) to boot
 the PVM parallel environment the developer is not engaged with
 setting up and booting the environment anymore (see
 appendix \ref{app:gridengine} on how to do this).
@@ -59,7 +60,6 @@ environment can be obtained. \code{.PVM.config()} returns the hosts
 connected to 
 the parallel virtual machine. After that the
 parallel environment is stopped. 
-
 \begin{Example} Query status of PVM 
 \label{ex:rpvm-init}
 \begin{Schunk}
@@ -70,14 +70,10 @@ parallel environment is stopped.
 \end{Sinput}
 \begin{Soutput}
   host.id    name    arch speed
-1  262144 node063 LINUX64  1000
-2  524288 node002 LINUX64  1000
-3  786432 node061 LINUX64  1000
-4 1048576 node004 LINUX64  1000
-5 1310720 node010 LINUX64  1000
-6 1572864 node018 LINUX64  1000
-7 1835008 node019 LINUX64  1000
-8 2097152 node051 LINUX64  1000
+1  262144 node066 LINUX64  1000
+2  524288 node020 LINUX64  1000
+3  786432 node036 LINUX64  1000
+4 1048576 node016 LINUX64  1000
 \end{Soutput}
 \begin{Sinput}
 > .PVM.exit()
@@ -102,8 +98,9 @@ Section~\ref{sec:messagepassing}).
 \subsubsection{Process Management  Functions}
 \begin{description}
 \item[\code{.PVM.spawnR(slave, ntask = 1, ...)}] spawns \code{ntask}
-  copies 
-  of an executable or \code{slave} R processes. There are more
+  copies of an \code{slave} R process. \code{slave} is a character
+  specifying the source file for the R slaves located in the package's
+  demo directory (the default). There are more
   parameters indicated by the \ldots (we refer to
   \cite{nali07rpvm}). The \code{tids} of the successfully spawned R
   slaves are returned.
@@ -122,7 +119,7 @@ Section~\ref{sec:messagepassing}).
 \pkg{rpvm} provides only two high level functions. One of them is a
 function to get or set values in the virtual machine settings. This is
 certainly because each new high level functions needs separate source
-files for the slaves and this is not what developers do intuively. 
+files for the slaves and this is not what developers do intuitively. 
 
 \subsubsection{High Level Functions}
 \begin{description}
@@ -162,8 +159,8 @@ Try to spawn tasks...
 Work sent to  524289 
 Work sent to  786433 
 Work sent to  1048577 
-[1]  2.5291297 -0.7840539  2.8572559 -3.3002539 -1.1275728  0.7329710  0.2431164
-[8]  2.8806456
+[1]  2.5291297 -0.7840539  2.8572559 -3.3002539 -1.1275728
+[6]  0.7329710  0.2431164  2.8806456
 \end{Soutput}
 \end{Schunk}
 \label{ex:rpvm-rapply}
@@ -176,8 +173,8 @@ functions have to be explained:
 \begin{description}
 \item[\code{.PVM.initsend()}] clears the default send buffer and
   prepares it for packing a new message.
-\item[\code{.PVM.pkstr(data = "")} and \texttt{.PVM.pkint(data =
-    0, stride = 1)}] are low-level correspondents of the PVM packing
+\item[\code{.PVM.pkstr(data = "")}] and \code{.PVM.pkint(data =
+    0, stride = 1)} are low level correspondents of the PVM packing
     routines (see \cite{geist94pvm} for more information on packing
     data). 
 \item[\code{.PVM.pkdblmat(data)}] packs a double matrix including
@@ -188,19 +185,21 @@ functions have to be explained:
   content is labeled by the identifier \texttt{msgtag}.
 \item[\code{.PVM.recv(tid = -1, msgtag = -1)}] blocks the process
   until a message with label \texttt{msgtag} has arrived from
-  \texttt{tid}. -1 means any. The receive buffer is cleared
+  \texttt{tid}. $-1$ means any. The receive buffer is cleared
   and the received message is placed there instead.
 \item[\code{.PVM.upkstr(), .PVM.upkint(), .PVM.upkdblvec()}] and
-  others are the correspondig unpack functions to the
+  others are the corresponding unpack functions to the
   pack functions explained before.
 \item[\texttt{.PVM.gather(x, count = length(x), msgtag, group,
-    rootginst = 0}] gathers data distributed on the nodes (x) to a
+    rootginst = 0)}] gathers data distributed on the nodes (\code{x})
+  to a 
   specific process (mostly the root) into a single array. It performs
   a send of messages from each member of a group of processes. A
   specific process (the root) accumulates this messages into a single
   vector. 
-\item[\texttt{.PVM.scatter(x, count, msgtag, group, rootqinst = 0}]
-  sends to each member of a group a partition of  a vector x from a
+\item[\texttt{.PVM.scatter(x, count, msgtag, group, rootqinst = 0)}]
+  sends to each member of a group a partition of  a vector \code{x}
+  from a 
   specified member of the group (mostly the root) where \texttt{count}
   is an integer specifying the number of elements to be sent to each
   member. 
@@ -240,7 +239,7 @@ PVM.rapply <- function (X, FUN = mean, NTASK = 1)
         .PVM.initsend()
         range <- c(start, ifelse((start + chunk - 1) > end, end,
             start + chunk - 1))
-        work <- X[(range[1]):(range[2]), , drop = F]
+        work <- X[(range[1]):(range[2]), , drop = FALSE]
         start <- start + chunk
         .PVM.pkstr(deparse(substitute(FUN)))
         .PVM.pkint(id)
@@ -266,47 +265,28 @@ The corresponding slave R script (slapply.R) looks as follows:
 \begin{Example}
 \begin{Scode}
 
-# $Id: slapply.R,v 1.2 2001/08/31 05:03:51 snake Exp $
-
-### Slave R script for the PVM apply.
-### Receive an 'order' and a matrix.  Process the matrix with apply()
-### and return the resulted vector and order.
-
-### To do: accept a string as the name of the function to be applied
-### on each row.  This way, this script can be more generic. 
-
 library (rpvm)
 WORKTAG <- 22
 RESULTAG <- 33
-
 mytid  <- .PVM.mytid ()
 myparent  <- .PVM.parent ()
-
 ## Receive work from parent (a matrix)
 buf <- .PVM.recv (myparent, WORKTAG)
-
 ## Function to apply
 func  <- .PVM.upkstr ()
-
 cat ("Function to apply: ", func, "\n")
-
 ## Order
 order <- .PVM.upkint ()
 partial.work <- .PVM.upkdblmat ()
-
 print (partial.work)
-
 ## actually work, take the mean of the rows
 partial.result <- apply (partial.work, 1, func)
-
 print (partial.result)
-
 ## Send result back
 .PVM.initsend ()
 .PVM.pkint (order)
 .PVM.pkdblvec (partial.result)
 .PVM.send (myparent, RESULTAG)
-
 ## Exit PVM
 .PVM.exit ()
 ## Exit R
@@ -316,8 +296,8 @@ q (save="no")
 \end{Example}
 
 
-Example~\ref{ex:rpvm-rapplymaster} shows the implementation of the
-master routine \code{PVM.rapply()}. This funtion takes a matrix,
+Example~\ref{ex:rpvm-rapplymaster} shows the
+master routine of \code{PVM.rapply()}. This function takes a matrix,
 the function which is going to be applied and the number of processors
 to use as arguments. At first 
 the message tags are specified. These tags are necessary to uniquely
