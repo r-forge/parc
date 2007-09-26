@@ -201,7 +201,7 @@ models see \cite{gehani88:concurrentprog}.
 \subsection{Computational Overhead}
 
 An often used term when dealing with implementations of parallel
-program is overhead.
+programs is overhead.
 
 \textbf{Overhead} is generally considered any combination of excess or indirect
 computation time, memory, bandwidth, or other
@@ -272,7 +272,7 @@ known as Flynn's taxonomy:
 \end{description}
 
 But these distinctions are insufficient for classifying modern
-computers according to~\cite{duncan90survey}. There are e.g.
+computers according to~\cite{duncan90survey}. There are e.g.,
 pipelined vector processors capable of concurrent arithmetic execution
 and manipulating hundreds of vector elements in parallel.
 
@@ -573,7 +573,7 @@ architecture has gained more attention again. Consumer PCs with two to four
 processors have become common since the last year. High-end parallel
 computers use 16 up to 64 processors. Recent developments try to
 achieve easy parallelization of existing applications through
-parallelizing compilers (i.e., OpenMP see Section~\ref{sec:OpenMP}).
+parallelizing compilers (e.g., OpenMP see Section~\ref{sec:OpenMP}).
 
 \subsection{Distributed Memory Systems}
 \label{sec:distributedmemorysystems}
@@ -653,7 +653,7 @@ compilers. All in all they may differ in the following areas:
 \item data format
 \end{itemize}
 
-A Grid middleware software like the open-source software ``globus
+A Grid middleware software like the open source software ``globus
 toolkit'' (\cite{foster97gmi}---software available from
 \url{http://www.globus.org/}) interconnects all the (heterogeneous)
 distributed resources in a network.
@@ -686,7 +686,7 @@ already available which make the developer's life easier.
 
 
 When parallel computing came up parallel  programming
-languages like Concurrent C, Ada, or Linda (see i.e.,
+languages like Concurrent C, Ada, or Linda (see e.g.,
 \cite{gehani88:concurrentprog} and \cite{wilson96:parallelprog}) had been
 developed. Only few of them experienced any real use. There
 have also existed many implementations of computer vendors for their own
@@ -872,15 +872,16 @@ known MPI implementations.
   Windows binaries are available
   from~\url{http://www-unix.mcs.anl.gov/mpi/mpich/}.
 \item[Open MPI] has been built upon three MPI Implementations like
-  LAM/MPI among the others. It is a new open-source MPI-2
+  LAM/MPI among the others. It is a new open source MPI-2
   Implementation. The goal of Open MPI is to implement the full
   MPI-1.2 and MPI-2 specifications focusing on production-quality and
   performance (see~\cite{gabriel04:_open_mpi}). Open MPI can be
   downloaded from~\url{http://www.open-mpi.org/}.
 \end{description}
 
-For setting up these implementations in Debian GNU Linux and cluster
-job scripts see Appendix~\ref{app:mpi_imp}. 
+For setting up the LAM/MPI implementation in Debian GNU Linux
+see~Appendix~\ref{app:mpi_imp}. For configuring the environment and
+running jobs on a cluster see~Appendix~\ref{app:gridengine}. 
 
 \subsection{Parallel Virtual Machine (PVM)}
 \label{sec:PVM}
@@ -895,8 +896,9 @@ computing across a wide variety of computer types. A key concept in
 PVM is that it makes a collection of computers appear as one large
 \textit{virtual} machine, hence its name~(\cite{geist94pvm}). The PVM
 system can be found on~\url{http://www.csm.ornl.gov/pvm/}. How to
-setup this system on a Linux machine and how to start a PVM job on a
-cluster is shown in Appendix~\ref{app:mpi_imp}.
+setup this system on a Linux machine is explained in
+Appendix~\ref{app:mpi_imp}. How to start a PVM job on a
+cluster is shown in Appendix~\ref{app:gridengine}.
 
 
 PVM has like other message passing implementations its advantages and
@@ -1094,8 +1096,8 @@ paradigm (MPMD).
 \subsection{Types  of Achieving Parallelism}
 
 Providing parallelism to a program can be achieved with one of the
-following approaches. They are different in the complexity of writing
-parallel programs.
+following approaches~(\cite{sevcikova04simulations}). They are
+different in the complexity of writing parallel programs.
 
 \begin{description}
 \item[Implicit parallelism] is writing a sequential program and using
@@ -1142,7 +1144,7 @@ The best way to analyze the performance of an application is to
 measure the execution time. Consequently an application can be compared
 with an improved version through the execution times.
 The performance gain can then be expressed as shown in
-equation~\ref{eq:speedup}. 
+Equation~\ref{eq:speedup}. 
 
 \begin{equation}
 \label{eq:speedup}
@@ -1161,7 +1163,7 @@ where
 If we have a program running on a classical von Neumann machine with a
 total execution time $t_s$ and the possibility to port this program to
 a multiprocessor system with $p$ processors we would expect that the
-parallel execution time $t_p$ would be as in equation~\ref{eq:naive_t}
+parallel execution time $t_p$ would be as in Equation~\ref{eq:naive_t}
 \begin{equation}
 \label{eq:naive_t}
 t_p = \frac{t_s}{p}
@@ -1182,7 +1184,7 @@ If we assume that a fraction $f$ of an algorithm can be ideally
 parallelized using $p$ processors whereas the remaining fraction $1 -
 f$ cannot be 
 parallelized the total execution time of the enhanced algorithm would
-be as shown in equation~\ref{eq:t_amdahl}.
+be as shown in Equation~\ref{eq:t_amdahl}.
 
 \begin{equation}
 \label{eq:t_amdahl}
