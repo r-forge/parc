@@ -29,13 +29,13 @@ Section~\ref{sec:rpvm}) and a new possibility of message passing namely
 TCP sockets, which is a rather simple way of achieving communication
 between nodes (in most applications this is not the optimal way).
 What follows is a description of high level functions supplied by the
-\pkg{snow} package. They are assigned to one of the topics:
+\pkg{snow} package. %They are assigned to one of the topics:
 
-\begin{itemize}
-\item Initialization
-\item Built-in High Level Functions
-\item Fault Tolerance
-\end{itemize}
+%\begin{itemize}
+%\item Initialization
+%\item Built-in High Level Functions
+%\item Fault Tolerance
+%\end{itemize}
 
 \subsection{Initialization}
 

@@ -7,7 +7,7 @@
 ##########################################################
 
 require("paRc")
-require("rpvm")
+require("rpvm",lib.loc="/home/stheussl/lib/R")
 
 A<-matrix(runif(16*16),ncol=16)
 
@@ -70,3 +70,6 @@ pvm.matrix.mult <- function(X, Y, n_cpu = 1) {
     out <- rbind(out,partial.results[[i]])
   out
  }
+
+pvm.matrix.mult(A,A,4)
+

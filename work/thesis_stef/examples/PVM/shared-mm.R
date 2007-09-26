@@ -1,43 +1,34 @@
-
 ## load required libraries
 library("rpvm")
 library("paRc")
+library("snow")
 
 maxcpu <- 4
 
-## 1000x1000
-set.seed(1782)
-n <- 1000
+task <- "matrix multiplication"
+taskID <- "mm"
+paradigm <- "shared"
+types <- c("PVM","snow-PVM","PVM-wB")
+complexity <- c(2500)
+runs <- 10
 bmdata <- list()
-bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
-bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
-bm <- create.benchmark(task="matrix multiplication", data=bmdata,
-                       type="PVM-wB", parallel=TRUE, cpu_range=1:maxcpu)
+bmdata[[1]] <- bmdata[[2]] <- 1000
+bmdata[[3]] <- function(x){
+  runif(x,-5,5)
+}
 
-bmres_PVM <- run.benchmark(bm)
-save("bmres_PVM",file="bmres_PVM-wB-shared-1000.Rda")
-
-## 2500x2500
+bm <- create.benchmark(task=task, data=list(),
+                       type=types[1], parallel=TRUE, cpu_range=1:maxcpu, runs=runs)
 set.seed(1782)
-n <- 2500
-bmdata <- list()
-bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
-bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
-bm <- create.benchmark(task="matrix multiplication", data=bmdata,
-                                              type="PVM-wB", parallel=TRUE, cpu_range=1:maxcpu)
+for(n in complexity){
+  bmdata[[1]] <- bmdata[[2]] <- n
+  bm.data(bm) <- bmdata
+  for(type in types){
+    bm.type(bm) <- type
+    writeLines(paste("Starting",type,"benchmark with complexity",n,"..."))
+    results <- run.benchmark(bm) 
 
-bmres_PVM <- run.benchmark(bm)
-save("bmres_PVM",file="bmres_PVM-wB-shared-2500.Rda")
-
-## 5000x5000
-set.seed(1782)
-n <- 5000
-bmdata <- list()
-bmdata[[1]] <- matrix(runif(n*n,-5,5),nrow=n)
-bmdata[[2]] <- matrix(runif(n*n,-5,5),nrow=n)
-bm <- create.benchmark(task="matrix multiplication", data=bmdata,
-                                              type="PVM-wB", parallel=TRUE, cpu_range=1:maxcpu)
-
-bmres_PVM <- run.benchmark(bm)
-save("bmres_PVM",file="bmres_PVM-wB-shared-5000.Rda")
+    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),".Rda",sep=""))
+  }
+}
 

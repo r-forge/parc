@@ -1,4 +1,4 @@
-#$ -N PVM-distr-MM
+#$ -N PVM-all-distr-MM
 #$ -pe pvm 20
 #$ -q node.q
 

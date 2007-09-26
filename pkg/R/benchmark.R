@@ -3,7 +3,7 @@
 
 ## creates a benchmark object
 
-create.benchmark <- function(task, data, type="normal", parallel=FALSE, cpu_range=1){
+create.benchmark <- function(task, data, type="normal", parallel=FALSE, cpu_range=1, runs=1){
   out <- list()
   tasks <- c(
              "matrix multiplication",
@@ -41,6 +41,11 @@ create.benchmark <- function(task, data, type="normal", parallel=FALSE, cpu_rang
   if(!(all(cpu_range > 0) && is.numeric(cpu_range)))
     stop("'cpu_range' must be a vector of positive integers")
   out$cpu_range <- as.integer(cpu_range)
+
+  if(!(all(runs > 0) && is.numeric(runs)))
+    stop("'runs' must be a  positive integer")
+  out$runs <- as.integer(runs)
+  
   
   if(!is.list(data))
     stop("'data' must be of type list")
@@ -57,7 +62,7 @@ run.benchmark <- function(x){
     stop("'x' not of class 'benchmark'")
 
   taskNr <- pmatch(bm.task(x), bm.tasks(x))
-
+    
   if(taskNr == 1) {
     results <- bm.matrix.multiplication(x)
   }else if(taskNr == 2) {
@@ -79,6 +84,12 @@ bm.tasks <- function(x){
   if(class(x) != "benchmark")
     stop("'x' not of class 'benchmark'")
   x$tasks
+}
+
+bm.runs <- function(x){
+  if(class(x) != "benchmark")
+    stop("'x' not of class 'benchmark'")
+  x$runs
 }
 
 bm.type <- function(x){
@@ -109,7 +120,13 @@ bm.cpu.range <- function(x) {
 bm.data <- function(x) {
   if(class(x) != "benchmark")
     stop("'x' not of class 'benchmark'")
-  x$data
+  n <- x$data[[1]]
+  m <- x$data[[2]]
+  foo <- x$data[[3]]
+  dat <- list()
+  dat[[1]] <- matrix(foo(n*m),nrow=n)
+  dat[[2]] <- matrix(foo(m*n),ncol=n)
+  dat                    
 }
 
 ## replacement functions
@@ -160,7 +177,7 @@ bm.data <- function(x) {
 
 bm.data.frame <- function(){
   out <- data.frame(task=NA, type=NA, n_cpu=NA, time_usr=NA, time_sys=NA,
-                    time_ela=NA, is_parallel=NA)
+                    time_ela=NA, is_parallel=NA, run=NA)
   class(out) <- c("bm_results",class(out))
   out
 }
@@ -270,29 +287,40 @@ bm.matrix.multiplication <- function(x){
   ## build dataframe for results
   out <- bm.data.frame()
   
-  data <- bm.data(x)
-  if(!length(data)==2)
-    stop("'data' supplied must be a list containing two matrices")
-  foo <- bm.function.to.apply(x)  
+  foo <- bm.function.to.apply(x)
   for( n_cpu in bm.cpu.range(x)){
-    if(n_cpu == 1)
-      out[n_cpu,] <- c(bm.task(x),bm.type(x),n_cpu,
-                   as.vector(system.time(foo(data[[1]],data[[2]])))[1:3],
-                   bm.is.parallel(x))
+    if(n_cpu == 1) {
+      for(i in 1 : bm.runs(x)){
+        data <- bm.data(x)
+        if(!length(data)==2)
+          stop("'data' supplied must be a list containing two matrices")
+        out <- rbind(out,c(bm.task(x),bm.type(x),n_cpu,
+                           as.vector(system.time(foo(data[[1]],data[[2]])))[1:3],
+                           bm.is.parallel(x), i))
+      }
+    }
     else {
       prep <- bm.prepare(x,n_cpu)
-      tmp <- c(bm.task(x), bm.type(x), n_cpu,
-               as.vector(system.time(foo(data[[1]], data[[2]], prep)))[1:3],
-               TRUE)
-      out[n_cpu,] <- tmp
+      for(i in 1 : bm.runs(x)){
+        data <- bm.data(x)
+        if(!length(data)==2)
+          stop("'data' supplied must be a list containing two matrices")
+        tmp <- c(bm.task(x), bm.type(x), n_cpu,
+                 as.vector(system.time(foo(data[[1]], data[[2]], prep)))[1:3],
+                 TRUE, i)
+        out <- rbind(out,tmp)
+      }
       bm.close(x, prep)     
     }
   }
   ## format data.frame accordingly
+  out <- out[-1,]
   out$time_usr <- as.numeric(out$time_usr)
   out$time_sys <- as.numeric(out$time_sys)
   out$time_ela <- as.numeric(out$time_ela)
   out$is_parallel <- as.logical(out$is_parallel)
+  out$n_cpu <- as.integer(out$n_cpu)
+  out$run <- as.integer(out$run)
   out
 }
 

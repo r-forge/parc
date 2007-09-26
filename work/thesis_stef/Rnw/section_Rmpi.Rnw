@@ -17,15 +17,15 @@ MPI implementations) for example.
 \pkg{Rmpi} contains a lot of low level interface functions to the MPI
 C-library. 
 Furthermore, a handful of high level functions are supplied. A
-selection of routines is going to be presented in this section arranged
-into the following topics:
+selection of routines is going to be presented in this section.
+% arranged into the following topics:
 
-\begin{itemize}
-\item Initialization and Status Queries
-\item Process Spawning and Communication
-\item Built-in High Level Functions
-\item Other Important Functions
-\end{itemize}  
+%\begin{itemize}
+%\item Initialization and Status Queries
+%\item Process Spawning and Communication
+%\item Built-in High Level Functions
+%\item Other Important Functions
+%\end{itemize}  
 
 A windows implementation of this package (which uses MPICH2)
 is available from~\url{http://www.stats.uwo.ca/faculty/yu/Rmpi}.
@@ -41,7 +41,7 @@ in the search path).
 When using the Sun Grid Engine (SGE) or other queueing systems to boot
 the LAM/MPI parallel environment the developer is not engaged with
 setting up and booting the environment anymore (see
-appendix \ref{app:gridengine} on how to do this). On a cluster of
+Appendix~\ref{app:gridengine} on how to do this). On a cluster of
 workstations this is the method of choice. 
 
 \subsubsection{Management and Query Functions}
@@ -74,7 +74,7 @@ returned.
 
 \begin{Example} Queries to the MPI communication environment
 \label{ex:Rmpi-init}
-<<echo=TRUE>>=
+<<echo=TRUE, strip.white=all>>=
 library("Rmpi")
 ## Query the configuration of the parallel environment 
 lamhosts()
@@ -94,7 +94,7 @@ mpi.get.processor.name()
 In \pkg{Rmpi} it is easy to spawn R slaves and use them as
 workhorses. The 
 communication between all the involved processes is carried out in a
-so called communicator (comm). All processes within the same
+so called communicator~(\code{comm}). All processes within the same
 communicator are able to send or receive messages from other
 processes. The processes are identified through their commrank (see
 also the fundamentals of message passing in
@@ -105,18 +105,18 @@ R slave script.
 \subsubsection{Process Management  Functions}
 \begin{description}
 \item[\code{mpi.spawn.Rslaves(nslaves = mpi.universe.size(), ...)}]
-  spawns \code{nslaves} number of R
+  spawns a \\number (\code{nslaves}) of R
   workhorses to those hosts automatically chosen by MPI. For other
-  arguments represented by \ldots to this function we refer to
+  arguments represented by \ldots{} to this function we refer to
   \cite{yu06Rmpi}.
-\item[\code{mpi.close.Rslaves(dellog = TRUE, comm = 1)}] closes
-  previously spawned R slaves and returns 1 if successful.
+\item[\code{mpi.close.Rslaves(dellog = TRUE, ...)}] closes
+  previously spawned \\slaves and returns 1 if successful.
 \item[\code{mpi.comm.size()}] returns the total number of members in
   a communicator.
 \item[\code{mpi.comm.rank()}] returns the rank (identifier) of the
   process in a communicator.
-\item[\code{mpi.remote.exec(cmd, ..., comm = 1, ret = TRUE)}]
-  executes a command \code{cmd} on R slaves with \ldots arguments to
+\item[\code{mpi.remote.exec(cmd, ..., ret = TRUE)}]
+  executes a command \code{cmd} on R slaves with \ldots{} arguments to
   \code{cmd} and returns executed results if \code{ret} is
   \code{TRUE}.
 \end{description}
@@ -129,7 +129,7 @@ master is printed.
 
 \begin{Example} Process management and communication 
 
-<<echo=TRUE>>=
+<<echo=TRUE, strip.white=all>>=
 ## spawn as many slaves as CPUs available in the parallel environment
 ## minus one representing the already running root process.
 mpi.spawn.Rslaves(nslaves=mpi.universe.size())
@@ -150,35 +150,35 @@ mpi.close.Rslaves()
 
 \pkg{Rmpi} provides many high level functions. We selected a few
 of them which we think are commonly used. Most of them have been
-utilized to build parallel programs presented in the subsequent
+utilized to build parallel programs presented in subsequent
 chapters.
 
 \subsubsection{High Level Functions}
 \begin{description}
-\item[\code{mpi.apply(x, fun, ..., comm = 1)}] applies a function
-  \code{fun} with additional arguments \ldots to a specific part of
+\item[\code{mpi.apply(x, fun, ...)}] applies a function
+  \code{fun} with additional arguments \ldots{} to a specific part of
   a vector \code{x}. The return value is of type list with the same
   length as of \code{x}. The length of
   \code{x} must not exceed the 
   number of R slaves spawned as each element of the vector is used
-  exactly by one slave. To achieve some sort of load balancing please
+  exactly by one slave. To achieve some sort of load balancing one can 
   use the corresponding apply functions below.
-\item[\code{mpi.applyLB(x, fun, ..., comm = 1)}] applies a function
-  \code{fun} with additional arguments \ldots to a specific part of
+\item[\code{mpi.applyLB(x, fun, ...)}] applies a function
+  \code{fun} with additional arguments \ldots{} to a specific part of
   a vector \code{x}. There are a few more variants explained in
   \cite{yu06Rmpi}.
-\item[\code{mpi.bcast.cmd(cmd = NULL, rank = 0, comm = 1)}]
+\item[\code{mpi.bcast.cmd(cmd = NULL, rank = 0, ...)}]
   broadcasts a command \code{cmd} from the sender \code{rank} to
   all R slaves and evaluates it.
-\item[\code{mpi.bcast.Robj(obj, rank = 0,comm = 1)}]
+\item[\code{mpi.bcast.Robj(obj, rank = 0, ...)}]
   broadcasts an R object \code{obj} from process rank \code{rank}
   to all other processes (master and slaves).
-\item[\code{mpi.bcast.Robj2slave(obj, comm = 1)}] broadcasts an R
+\item[\code{mpi.bcast.Robj2slave(obj, ...)}] broadcasts an R
   object \code{obj} to all R slaves from the master process. 
 \item[\code{mpi.parSim( ... )}] carries out a Monte Carlo simulation
   in parallel. For details on this function see the package manual
   (\cite{yu06Rmpi}) and on Monte Carlo simulation
-  the applications in chapter \ref{chap:options}.
+  the applications in Chapter \ref{chap:options}.
 \end{description}
 
 How to use the high level function \code{mpi.apply()} is shown in
@@ -194,7 +194,7 @@ in Section~\ref{sec:otherpackages}.
 
 \begin{Example} Using mpi.apply
 \label{ex:Rmpi3}
-<<echo=TRUE>>=
+<<echo=TRUE, strip.white=all>>=
 n <- 8
 # spawn n slaves
 mpi.spawn.Rslaves(nslaves = n)
@@ -214,20 +214,20 @@ package the following functions have to be explained.
 
 \subsubsection{Collective Communication Routines}
 \begin{description}
-\item[\code{.mpi.gather(x, type, rdata, root = 0, comm = 1)}] gathers
+\item[\code{.mpi.gather(x, type, rdata, root = 0, ...)}] gathers
   data distr-\\ ibuted on the nodes (\code{x}) to a %% MANUELLER UMBRUCH
   specific process (mostly the master) into a single array or list
   (depending on the length of the data) of type \code{type} which can
   be integer, double or character. It
   performs  
-  a send of messages from each member in a comm. A
+  a send of messages from each member in a communicator. A
   specific process (\code{root}) accumulates this messages into a 
   single array or list prepared with the \code{rdata} command.
-\item[\code{.mpi.scatter(x, type, rdata, root = 0, comm = 1)}]
-  sends to each member of a comm a partition of  a vector \code{x},
+\item[\code{.mpi.scatter(x, type, rdata, root = 0, ...)}]
+  sends to each member of a communicator a partition of  a vector \code{x},
   type \code{type} which can be integer, double or character,
   from a specified member of the group (mostly the master). Each
-  member of the comm receive its part of \code{x} after preparing the
+  member of the communicator receive its part of \code{x} after preparing the
   receive buffer with the argument \code{rdata}.
 \end{description}
 
@@ -254,3 +254,5 @@ as this can easy be achieved entirely in R.
 For further interface functions supplied by the \pkg{Rmpi} package, a
 more detailed description and further examples please consult the
 package description \cite{yu06Rmpi}.
+
+% LocalWords:  Rmpi nslaves MPI dellog

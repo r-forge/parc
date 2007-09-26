@@ -14,9 +14,9 @@
 
 define.option <- function(underlying, strikeprice, maturity, type = "Call", class = "European", position = "long"){
   x <- list()
-  available_types<- c("call","put")
+  available_types<- c("Call","Put")
   available_positions<- c("long","short")
-  available_classes <- c("european","american")
+  available_classes <- c("European","American")
   if(!(is.numeric(underlying)||(length(underlying==3)))) stop("'underlying' must be a numeric vector of length 3")
   x$mu <- underlying[1]
   x$sigma <- underlying[2]
@@ -26,9 +26,9 @@ define.option <- function(underlying, strikeprice, maturity, type = "Call", clas
   x$strikeprice <- strikeprice
   if(!is.numeric(maturity)) stop("'maturity' must be a numeric")
   x$maturity <- maturity
-  x$type <- tolower(type)
+  x$type <- type
   if(!any(x$type==available_types)) stop(paste("'type' must be either",available_types[1],"or",available_types[2]))
-  x$kind <- tolower(class)
+  x$kind <- class
   if(!any(x$kind==available_classes)) stop(paste("'class' must be either",available_classes[1],"or",available_classes[2]))
   x$position <- tolower(position)
   if(!any(x$position==available_positions)) stop(paste("'position' must be either",available_positions[1],"or",available_positions[2]))     
@@ -177,7 +177,7 @@ position <- function(x){
 
 blackscholesprice <- function(x, r){
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
-  if(optionclass(x)!="european")
+  if(optionclass(x)!="European")
     stop("Only European options can be analytically priced.")
   sigma <- underlying(x)[2]
   S0 <- underlying(x)[3]
@@ -186,9 +186,9 @@ blackscholesprice <- function(x, r){
   d1 <- (log(S0/X) + (r + sigma^2/2)*T)/(sigma * sqrt(T))
   d2 <- d1 - sigma*sqrt(T)
   type <- optiontype(x)
-  if(type=="call")
+  if(type=="Call")
     out <- S0*pnorm(d1) - X*exp(-r*T)*pnorm(d2)
-  if(type=="put")
+  if(type=="Put")
     out <-  X*exp(-r*T)*pnorm(-d2) - S0*pnorm(-d1)
   out
 }
@@ -363,12 +363,12 @@ plot.option <- function(x, ...){
   }
   int <- strike/2
   x <- seq(from=strike-int,to=strike+int,by=strike/100)
-  if(type == "call") y <- (apply(matrix(
+  if(type == "Call") y <- (apply(matrix(
        c(x-strike,rep(0,length(x))),ncol=2),1,max)-price)*pos
-  if(type == "put") y <- (apply(matrix(
+  if(type == "Put") y <- (apply(matrix(
        c(strike-x,rep(0,length(x))),ncol=2),1,max)-price)*pos
 
-  main <- paste(cl, type, "option with price",round(price,2))
+  main <- paste(cl, type, "Option with Price",round(price,2))
   plot(x,y,type="l",xlab="stock price",ylab="profit",main=main)
   invisible(x)
 }

@@ -1,4 +1,4 @@
-#$ -N MPI-distr-MM
+#$ -N MPI-2500-norm-distr-MM
 #$ -pe lam 20
 #$ -q node.q
 
