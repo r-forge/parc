@@ -398,34 +398,43 @@ plot.bm_results <- function(x, task="all", ... ){
   ntypes <- length(unique(x$type))
   ntasks <- length(unique(x$task))
 
-  aggr <- aggregate(subset(x,select=c("time_usr","time_sys","time_ela")), list(type=x$type,n_cpu=x$n_cpu), mean)
+  aggr <- aggregate(subset(x,select=c("time_usr","time_sys","time_ela")), list(type=x$type,n_cpu=x$n_cpu), median)
+  aggr$n_cpu <- as.integer(as.character(aggr$n_cpu))
   
   if(ntypes > 11)
     stop("more than 11 functions in a benchmark are not supported yet")
 
-  browser()
   ## define plot region, colorspace and other plot parameters
-  xlim <- c(0,max(as.numeric(aggr$n_cpu),na.rm=TRUE)+1)
-  ylim <- c(0,max(aggr$time_ela,na.rm=TRUE)+1)
+  xlim <- c(0,max(as.numeric(x$n_cpu),na.rm=TRUE)+1)
+  
   ncolors <- ntypes*ntasks
   colors <- rainbow_hcl(ncolors, c=80, l=65, start = 20, end = 340)
-  ltys <- c(1:6,1:6)
+  ##ltys <- c(1:6,1:6)
   pchs <- c(21:25,21:25,21)
   par(mar=c(5,4,4,5))
   main=paste("Task:",task)
 
   ## plot reference
   ref <- x$type[1]
-  reference=subset(x,type=ref)
+  reference=subset(aggr,type==ref)
+
+  ## don't plot upward trend in execution time beyond a limit
+  limit <- 0.75*reference$time_ela
+  treshold <- max(x$n_cpu)/2
+  aggr <- rbind(subset(aggr, n_cpu <= treshold ), subset(subset(aggr, n_cpu > treshold),time_ela<limit))
+
+ 
+  ylim <- c(0,max(aggr$time_ela,na.rm=TRUE)+1)
+  
   plot( x = as.numeric(reference$n_cpu), y = reference$time_ela, col=colors[1], xlim = xlim, ylim = ylim, type = "b",
-       pch = pchs[1], ,xlab = "# of CPUs", ylab = "execution time", main = main)
+       pch = pchs[1], ,xlab = "# of CPUs", ylab = "execution time [s]", main = main)
 
   ##plot the rest
   results.to.plot <- unique(aggr$type)
   results.to.plot <- results.to.plot[-which(results.to.plot==ref)]
   for(i in 1:length(results.to.plot)){
-    lines(x = as.numeric(aggr$n_cpu[which(aggr$type==results.to.plot[i])]), y = aggr$time_ela[which(aggr$type==results.to.plot[i])],
-          col=colors[i+1], type = "b", lty= ltys[i+1], pch = pchs[i+1])
+    lines(x = as.integer(as.character(aggr$n_cpu[which(aggr$type==results.to.plot[i])])), y = aggr$time_ela[which(aggr$type==results.to.plot[i])],
+          col=colors[i+1], type = "b", lty= 1, pch = pchs[i+1])
   }
 
   ## plot speedup
@@ -439,5 +448,5 @@ plot.bm_results <- function(x, task="all", ... ){
   ##mtext("Speedup", side = 4, line = 3)
 
   ## legend
-  legend("topright", c(ref,results.to.plot), col=colors[1:ntypes], lty = ltys[1:ntypes], bty = "n", pch = pchs[1:ntypes])
+  legend("topright", c(ref,as.character(results.to.plot)), col=colors[1:ntypes], lty = 1, bty = "n", pch = pchs[1:ntypes])
 }
