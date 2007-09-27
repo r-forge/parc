@@ -10,7 +10,7 @@ library("paRc")
 library("xtable")
 load("../examples/Rda/bmres-shared-1000.Rda")
 load("../examples/Rda/bmres-shared-2500.Rda")
-load("../examples/Rda/bmres-node-1000.Rda")
+#load("../examples/Rda/bmres-node-1000.Rda")
 load("../examples/Rda/bmres-node-2500.Rda")
 load("../examples/Rda/bmres-node-5000.Rda")
 @ 
@@ -53,19 +53,36 @@ nearly the same speedup.
 <<results=tex>>=
 ## 1000x1000
 
+## foo for easy aggregate
+  aggr <- function(x){
+     aggr <- aggregate(subset(x,select=c("time_usr","time_sys","time_ela")), list(type=x$type,
+                              n_cpu=x$n_cpu), median)
+     aggr$n_cpu <- as.integer(as.character(aggr$n_cpu))
+     aggr
+   }
+
+     
+  
 ## Table without BLAS functions (serial, OpenMP, MPI, PVM)
-table_s1000 <- cbind(as.integer(bmres_s1000[5:8,3]),bmres_s1000[5:8,6],bmres_s1000[17:20,6],bmres_s1000[29:32,6])
+tmp <- aggr(bmres_s1000)
+tmp <- subset(tmp,select=c(type,n_cpu,time_ela))
+
+table_s1000 <- cbind(1:4, subset(tmp,type=="OpenMP",time_ela),subset(tmp,type=="MPI-wB",time_ela),
+                     subset(tmp,type=="PVM-wB",time_ela))
+##table_s1000 <- cbind(as.integer(bmres_s1000[5:8,3]),bmres_s1000[5:8,6],bmres_s1000[17:20,6],bmres_s1000[29:32,6])
 
 colnames(table_s1000) <- c("#CPU","OpenMP","MPI","PVM")
 
 xtable(table_s1000, caption="Comparison of parallel programming models on a shared memory machine and complexity grade $1000$", label="tab:mm_s1000")
 @ 
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE, height=5, width=6>>=
 ## plot without BLAS functions (serial, OpenMP, MPI, PVM)
-plot(bmres_s1000[c(1,5:8,17:20,29:32),])
+tmp <- rbind(subset(bmres_s1000,type=="normal"), subset(bmres_s1000,type=="OpenMP"), subset(bmres_s1000,type=="MPI-wB"), subset(bmres_s1000,type=="PVM-wB"))
+plot(tmp, task = "Matrix Multiplication")
+##plot(bmres_s1000[c(1,5:8,17:20,29:32),])
 @
 \caption{Comparison of parallel programming models on a shared memory
   machine and complexity grade $1000$.}
@@ -85,19 +102,25 @@ more time with respect to the gain of distributing the computation.
 
 <<results=tex>>=
 ## Table with BLAS
-table_sblas1000 <- cbind(as.integer(bmres_s1000[5:8,3]),bmres_s1000[9:12,6],bmres_s1000[13:16,6],bmres_s1000[21:24,6],bmres_s1000[25:28,6])
+#table_sblas1000 <- cbind(as.integer(bmres_s1000[5:8,3]),bmres_s1000[9:12,6],bmres_s1000[13:16,6],bmres_s1000[21:24,6],bmres_s1000[25:28,6])
+tmp <- aggr(bmres_s1000)
+tmp <- subset(tmp,select=c(type,n_cpu,time_ela))
 
+table_sblas1000 <- cbind(1:4, subset(tmp,type=="MPI",time_ela),subset(tmp,type=="snow-MPI",time_ela),
+                     subset(tmp,type=="PVM",time_ela),subset(tmp,type=="snow-PVM",time_ela))
 colnames(table_sblas1000) <- c("#CPU","MPI","snow-MPI","PVM","snow-PVM")
 
 xtable(table_sblas1000, caption="Comparison of parallel programming models on a shared memory machine using BLAS and complexity grade $1000$", label="tab:mm_sblas1000")
 
 @ 
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE, height=5, width=6>>=
 ## Plot with BLAS
-plot(bmres_s1000[c(2,9:12,13:16,21:24,25:28),])
+#plot(bmres_s1000[c(2,9:12,13:16,21:24,25:28),])
+  tmp <- rbind(subset(bmres_s1000,type=="native-BLAS"), subset(bmres_s1000,type=="MPI"), subset(bmres_s1000,type=="snow-MPI"), subset(bmres_s1000,type=="PVM"), subset(bmres_s1000,type=="snow-PVM"))
+plot(tmp, task = "Matrix Multiplication")
 @ 
 \caption{Comparison of parallel programming models on a shared memory
   machine using BLAS and complexity grade $1000$}
@@ -123,18 +146,24 @@ way (see also Table~\ref{tab:mm_s2500}.
 ## 2500x2500
 
 ## Table without BLAS functions (serial, OpenMP, MPI, PVM)
-table_s2500 <- cbind(as.integer(bmres_s2500[5:8,3]),bmres_s2500[5:8,6],bmres_s2500[25:28,6],bmres_s2500[21:24,6])
-colnames(table_s2500) <- c("#CPU","OpenMP","MPI","PVM")
+#table_s2500 <- cbind(as.integer(bmres_s2500[5:8,3]),bmres_s2500[5:8,6],bmres_s2500[25:28,6],bmres_s2500[21:24,6])
+tmp <- aggr(bmres_s2500)
+tmp <- subset(tmp,select=c(type,n_cpu,time_ela))
+
+table_s2500 <- cbind(1:4, subset(tmp,type=="OpenMP",time_ela), subset(tmp,type=="PVM-wB",time_ela))
+colnames(table_s2500) <- c("#CPU","OpenMP","PVM")
 
 xtable(table_s2500, caption="Comparison of parallel programming models on a shared memory machine and complexity grade $2500$.", label="tab:mm_s2500")
 @ 
 
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE, height=5, width=6>>=
 ## plot without BLAS functions (serial, OpenMP, MPI, PVM)
-plot(bmres_s2500[c(1,5:8,21:24,25:28),])
+##plot(bmres_s2500[c(1,5:8,21:24,25:28),])
+tmp <- rbind(subset(bmres_s2500,type=="normal"), subset(bmres_s2500,type=="OpenMP"), subset(bmres_s2500,type=="PVM-wB"))
+plot(tmp, task= "Matrix Multiplication")
 @ 
 \caption{Comparison of parallel programming models on a shared memory
   machine and complexity grade $2500$.}
@@ -154,18 +183,25 @@ speedups are shown in Table~\ref{tab:mm_sblas2500}.
 
 <<results=tex>>=
 ## Table with BLAS
-table_sblas2500 <- cbind(as.integer(bmres_s2500[5:8,3]),bmres_s2500[9:12,6],bmres_s2500[29:32,6],bmres_s2500[17:20,6],bmres_s2500[13:16,6])
+##table_sblas2500 <- cbind(as.integer(bmres_s2500[5:8,3]),bmres_s2500[9:12,6],bmres_s2500[29:32,6],bmres_s2500[17:20,6],bmres_s2500[13:16,6])
 
-colnames(table_sblas2500) <- c("#CPU","MPI","snow-MPI","PVM","snow-PVM")
+tmp <- aggr(bmres_s2500)
+tmp <- subset(tmp,select=c(type,n_cpu,time_ela))
+
+table_sblas2500 <- cbind(1:4, subset(tmp,type=="MPI",time_ela),
+                     subset(tmp,type=="PVM",time_ela),subset(tmp,type=="snow-PVM",time_ela))
+     
+colnames(table_sblas2500) <- c("#CPU","MPI","PVM","snow-PVM")
 xtable(table_sblas2500, caption="Comparison of parallel programming models on a shared memory machine with BLAS and complexity grade $2500$.", label="tab:mm_sblas2500")
 @ 
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE, height=5, width=6>>=
 ## Plot with BLAS
-plot(bmres_s2500[c(2,9:12,13:16,17:20,29:32),])
-
+#plot(bmres_s2500[c(2,9:12,13:16,17:20,29:32),])
+  tmp <- rbind(subset(bmres_s1000,type=="native-BLAS"), subset(bmres_s1000,type=="MPI"), subset(bmres_s1000,type=="PVM"), subset(bmres_s1000,type=="snow-PVM"))
+plot(tmp, task = "Matrix Multiplication")
 @
 \caption{Comparison of parallel programming models on a shared memory
   machine with BLAS and complexity grade $2500$.}
@@ -191,12 +227,15 @@ routine shows good speedup
 until processor number 6 but then performance gain breaks down. Again,
 PVM communication seems to be suboptimal implemented.
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE, height=5, width=6>>=
 ## 2500x2500
 ## plot without BLAS functions (serial, OpenMP, MPI, PVM)
-plot(bmres_n2500[c(1,5:6,47:66,107:126),])
+#plot(bmres_n2500[c(1,5:6,47:66,107:126),])
+tmp <- rbind(subset(bmres_n2500,type=="normal"), subset(bmres_n2500,type=="OpenMP"), subset(bmres_n2500,type=="MPI-wB"),
+             subset(bmres_n2500,type=="PVM-wB"))
+plot(tmp, task= "Matrix Multiplication")
 @ 
 \caption{Comparison of parallel programming models on a cluster using
   20 nodes and complexity grade $2500$.}
@@ -209,11 +248,14 @@ routines deliver lower performance with increasing CPU counts after
 adding the 4th or 5th CPU. Furthermore the \pkg{snow} PVM routine
 produced 2 outliers. It does not seem to deliver a stable performance.
   
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE, height=5, width=6>>=
 ## Plot with BLAS
-plot(bmres_n2500[c(2,7:26,27:46,67:86,87:106),])
+#plot(bmres_n2500[c(2,7:26,27:46,67:86,87:106),])
+tmp <- rbind(subset(bmres_n2500,type=="native-BLAS"), subset(bmres_n2500,type=="MPI"), subset(bmres_n2500,type=="snow-MPI"),
+             subset(bmres_n2500,type=="PVM"), subset(bmres_n2500,type=="snow-PVM"))
+plot(tmp, task = "Matrix Multiplication")
 @ 
 \caption{Comparison of parallel programming models on a cluster using
   20 nodes using BLAS and complexity grade $2500$.}
@@ -230,9 +272,15 @@ MPI routines perform better with respect to the highest speedup which
 can be achieved than the PVM ones.
 
 <<results=tex>>=
+tmp <- aggr(bmres_n2500)
+tmp <- subset(tmp, select=c("n_cpu","type","time_ela"))
+
+#X<-NULL
+#'for(i in unique(bmres_n2500$type)){X<-rbind(X,bmres_n2500[bmres_n2500$type==i,][bmres_n2500[bmres_n2500$type==i,]$time_ela==min(bmres_n2500[bmres_n2500$type==i,]$time_ela),])}
 X<-NULL
-for(i in unique(bmres_n2500$type)){X<-rbind(X,bmres_n2500[bmres_n2500$type==i,][bmres_n2500[bmres_n2500$type==i,]$time_ela==min(bmres_n2500[bmres_n2500$type==i,]$time_ela),])}
-table_n2500 <- cbind(X[,c(3,2,6)],speedup(X))
+for(i in unique(as.character(tmp$type))){X<-rbind(X,tmp[tmp$type==i,][tmp[tmp$type==i,]$time_ela==min(tmp[tmp$type==i,]$time_ela),])}
+X<-X[order(X$time_ela, decreasing=TRUE),]
+table_n2500 <- cbind(X,speedup(X$time_ela))
 colnames(table_n2500) <- c("#CPU","Type","Time","Speedup")
 xtable(table_n2500, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $2500$.", label="tab:mm_n2500")
 @ 
@@ -252,23 +300,31 @@ stable. Figure~\ref{fig:mm_nblas5000} shows the routines using the R BLAS
 library. Again PVM is unstable, the \pkg{snow} routines do not scale
 well and MPI delivers stable and increasing performance.
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE, height=5, width=6>>=
 ## 5000x5000
 ## plot without BLAS functions (serial, OpenMP, MPI, PVM)
-plot(bmres_n5000[c(1,5:6,47:66,107:126),])
+##plot(bmres_n5000[c(1,5:6,47:66,107:126),])
+tmp <- rbind(subset(bmres_n5000,type=="normal"), subset(bmres_n5000,type=="OpenMP"), subset(bmres_n5000,type=="MPI-wB"),
+             subset(bmres_n5000,type=="PVM-wB"))
+plot(tmp, task= "Matrix Multiplication")
+
 @ 
 \caption{Comparison of parallel programming models on a cluster using
   20 nodes and complexity grade $5000$.}
 \label{fig:mm_n5000}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE>>=
+<<fig=TRUE, height=5, width=6>>=
 ## Plot with BLAS
-plot(bmres_n5000[c(2,7:26,27:46,67:86,87:106),])
+##plot(bmres_n5000[c(2,7:26,27:46,67:86,87:106),])
+tmp <- rbind(subset(bmres_n5000,type=="native-BLAS"), subset(bmres_n5000,type=="MPI"), subset(bmres_n5000,type=="snow-MPI"),
+             subset(bmres_n5000,type=="PVM"), subset(bmres_n5000,type=="snow-PVM"))
+
+plot(tmp, task= "Matrix Multiplication")
 @
 \caption{Comparison of parallel programming paradigms on a cluster using
   20 nodes with BLAS and complexity grade $5000$.}
@@ -276,9 +332,17 @@ plot(bmres_n5000[c(2,7:26,27:46,67:86,87:106),])
 \end{figure}
 
 <<results=tex>>=
+#X<-NULL
+#for(i in unique(bmres_n5000$type)){X<-rbind(X,bmres_n5000[bmres_n5000$type==i,][bmres_n5000[bmres_n5000$type==i,]$time_ela==min(bmres_n5000[bmres_n5000$type==i,]$time_ela),])}
+#table_n5000 <- cbind(X[,c(3,2,6)],speedup(X))
+tmp <- aggr(bmres_n5000)
+tmp <- subset(tmp, select=c("n_cpu","type","time_ela"))
 X<-NULL
-for(i in unique(bmres_n5000$type)){X<-rbind(X,bmres_n5000[bmres_n5000$type==i,][bmres_n5000[bmres_n5000$type==i,]$time_ela==min(bmres_n5000[bmres_n5000$type==i,]$time_ela),])}
-table_n5000 <- cbind(X[,c(3,2,6)],speedup(X))
+
+for(i in unique(as.character(tmp$type))){X<-rbind(X,tmp[tmp$type==i,][tmp[tmp$type==i,]$time_ela==min(tmp[tmp$type==i,]$time_ela),])}
+X<-X[order(X$time_ela, decreasing=TRUE),]
+table_n5000 <- cbind(X,speedup(X$time_ela))
+     
 colnames(table_n5000) <- c("#CPU","Type","Time","Speedup")
 xtable(table_n5000, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $5000$.", label="tab:mm_n5000")
 @ 
@@ -288,11 +352,12 @@ Finally, Table~\ref{tab:mm_n2500} shows the best results of the matrix
 multiplication benchmark for each parallel programming model with
 complexity grade $5000$. It can
 be seen that BLAS achieve again the best performance for the
-corresponding platform. In fact, comparing the best speedups which can
+corresponding platform (the disadvantages taken into
+consideration). In fact, comparing the best speedups which can 
 be achieved for each programming model draws the same picture as in
 Table~\ref{tab:mm_n2500}: the MPI routines perform better than the PVM
-routines. The best message passing routine is the implementation in
-package \pkg{paRc}.
+routines. The message passing routine from package \pkg{paRc} seems to
+give a better speedup than the others.
 
 
 %\end{document}

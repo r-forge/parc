@@ -18,8 +18,9 @@ number of rows and columns a matrix has. We chose to use two $1000
 \times 1000$  and $2500 \times
 2500$ matrices respectively as grades of complexity (i.e., complexity
 grade $1000$ and complexity grade $2500$). The two matrices used to
-produce these results are generated using samples uniformly
-distributed between $-5$ and $5$. To eliminate fluctuations of the
+produce these results are generated using pseudo random numbers
+of the uniform
+distribution in the interval $-5$ to $5$. To eliminate fluctuations of the
 runtime the mean time of 10 runs is calculated.
 
 \subsubsection{Results of Complexity Grade $1000$}

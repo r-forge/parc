@@ -18,7 +18,7 @@ there are many different types of derivatives.
 \begin{description}
 \item[A derivative] is a financial instrument whose value depends on
   the value of an other variable (or the values of other
-  variables). This variable is called \textit{Underlying}.
+  variables). This variable is called \textit{underlying}.
 \end{description}
 Derivatives are traded on exchange-traded markets (people trade
 standardized contracts defined by the exchange) or over-the-counter
@@ -65,7 +65,7 @@ options are the most common of them.
   \begin{equation}\label{eq:eurput}
     P_T = \left\{ \begin{array}{lcl} 0 & \textrm{if}& X \leq S_T \\
         X - S_T & \textrm{if} & X > S_T \end{array}\right\}
-    \textrm{ or } \max{X - S_T, 0}.
+    \textrm{ or } \max(X - S_T, 0).
   \end{equation}
   Figure \ref{fig:payoffs} shows the payoff functions of a call and
   a put option and the position of the investor (left:~long position,
@@ -84,7 +84,7 @@ options are the most common of them.
   \begin{equation}\label{eq:amput}
     P_t = \left\{ \begin{array}{lcl} 0 & \textrm{if}& X \leq S_t \\
         X - S_t & \textrm{if} & X > S_t \end{array}\right\}
-    \textrm{ or } \max{X - S_t, 0}.
+    \textrm{ or } \max(X - S_t, 0).
   \end{equation}
 \end{description}
 
@@ -92,9 +92,9 @@ In this chapter the pricing of European options is shown as we can
 obtain the prices analytically (using the Black-Scholes-Merton model)
 and compare it to the prices estimated with Monte Carlo simulation.
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE,echo=FALSE>>=
+<<fig=TRUE,echo=FALSE, height=5, width=6>>=
 
 european <- define.option(c(0.1,0.4,100),100,1/12)
 priceof(european) <- 4
@@ -102,7 +102,7 @@ par(mfrow=c(2,2))
 plot(european)
 position(european) <- "short"
 plot(european)
-optiontype(european) <- "put"
+optiontype(european) <- "Put"
 position(european) <- "long"
 plot(european)
 position(european) <- "short"
@@ -143,14 +143,15 @@ The Wiener process is a fundamental part of deriving option pricing
 formulas. An example of a Wiener path can be seen in
 Figure~\ref{fig:wienerpath}. 
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<echo=FALSE,fig=TRUE>>=
+<<echo=FALSE,fig=TRUE, height=5, width=6>>=
+set.seed(1782)
 X0 <- 0
 n<-500
 T<-5
 wp <- wienerPath(X0,n,T)
-plot(wp)
+plot(wp, main = "Wiener Path")
 @ 
 \label{fig:wienerpath} 
 \end{figure}
@@ -237,7 +238,7 @@ underlying is a stock with a current value of 100, a $\mu$ of 0.1, and
 volatility $\sigma$ of 0.4. The risk free yield is assumed to be
 $4.5$\%.
 
-\begin{Example} Calculating the Black-Scholes price of a European option
+\begin{Example} Calculating the Black-Scholes price of an European option
 \label{eq:blackscholesprice}
 <<echo = TRUE, eval = TRUE>>=
 ## build example option
@@ -269,7 +270,7 @@ $$ \mathbb{E}[g(X)] = \int g(x)f(x)dx $$.
 
 With the possibility to generate independent random numbers $X_i$ with
 the same density of $X$, the expectation can be estimated as follows:
-$$ \mathbb{E}[g(X)] = \frac{g(X_1)+\ldots+g(X_n)}{n} $$
+$$ \mathbb{E}[g(X)] = \frac{g(X_1)+\cdots+g(X_n)}{n} $$
 
 The integral
 $$ \mu = \int g(x)dx $$
@@ -447,9 +448,25 @@ monteCarloSimulation <- function(x,r,n,length,
 \end{Scode}
 \end{Example}
 
+%Recalling the option from Example~\ref{eq:blackscholesprice} we can
+%now use the function \code{monteCarloSimulation()} to estimate the
+%price of the option. This is shown in
+%Example~\ref{eq:monteCarloserial} using a path length of $50$ steps
+%and 50 simulation runs. In each simulation run the mean of 5000 simulated outcomes
+%is calculated. Eventually the mean of the 50 estimated option prices is
+%returned (see also the routine from Example~\ref{ex:mcs}).
+
+%\begin{Example} Estimating the price of an European option
+%\label{eq:monteCarloserial}
+%<<echo = TRUE, eval = TRUE>>=
+%## build example option
+%european
+%monteCarloSimulation(european, 0.045, n = 30, length = 5000,)
+%
+%@
 \subsection{Parallel Monte Carlo Simulation}
 
-Example~\ref{ex:mcs-master} shows implementation of the master process
+Example~\ref{ex:mcs-master} shows the implementation of the master process
 in R. The corresponding slave program can be seen in
 Example~\ref{ex:mcs-slave}.
  
@@ -565,11 +582,11 @@ xtable(table_n50, caption="Time and speedup achieved on cluster@WU using 10 node
 
 
 %% plot
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE,echo=false>>=
+<<fig=TRUE,echo=false, height=5, width=6>>=
 ## Plot shared
-plot(bmres_s50)
+plot(bmres_s50, task = "Parallel Monte Carlo Simulation")
 @ 
 \caption{Performance of parallel Monte Carlo simulation using 50
   simulation runs on a shared memory machine}
@@ -577,11 +594,11 @@ plot(bmres_s50)
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[t]
 \centering
-<<fig=TRUE,echo=false>>=
+<<fig=TRUE,echo=false, height=5, width=6>>=
 ## Plot distributed MCS
-plot(bmres_n50)
+plot(bmres_n50, task = "Parallel Monte Carlo Simulation")
 @ 
 \caption{Performance of parallel Monte Carlo simulation using 50
   simulation runs on cluster@WU using 10 nodes}
