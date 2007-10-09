@@ -53,7 +53,7 @@ only be achieved at the expense of numerical exactness.
 table_seqsblas <- cbind(bmres_s1000[1:4,c(2,6)],speedup(bmres_s1000[1:4,6]))
 colnames(table_seqsblas) <- c("Type","Time","Speedup")
 
-xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode with complexity grade~$1000$.", label="tab:mm_seqsblas1000")
+xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode with complexity grade~$1000$", label="tab:mm_seqsblas1000")
 @  
 
 \subsubsection{Results of Complexity Grade $2500$}
@@ -72,5 +72,5 @@ calculation steps increases with the complexity of the matrices.
 table_seqsblas <- cbind(bmres_s2500[1:4,c(2,6)],speedup(bmres_s2500[1:4,6]))
 colnames(table_seqsblas) <- c("Type","Time","Speedup")
 
-xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode with comlexity grade~$2500$.", label="tab:mm_seqsblas2500")
+xtable(table_seqsblas, caption="Comparison of BLAS routines on a bignode with complexity grade~$2500$", label="tab:mm_seqsblas2500")
 @ 

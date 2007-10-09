@@ -85,7 +85,7 @@ plot(tmp, task = "Matrix Multiplication")
 ##plot(bmres_s1000[c(1,5:8,17:20,29:32),])
 @
 \caption{Comparison of parallel programming models on a shared memory
-  machine and complexity grade $1000$.}
+  machine and complexity grade $1000$}
 \label{fig:mm_s1000}
 \end{figure}
 
@@ -153,7 +153,7 @@ tmp <- subset(tmp,select=c(type,n_cpu,time_ela))
 table_s2500 <- cbind(1:4, subset(tmp,type=="OpenMP",time_ela), subset(tmp,type=="PVM-wB",time_ela))
 colnames(table_s2500) <- c("#CPU","OpenMP","PVM")
 
-xtable(table_s2500, caption="Comparison of parallel programming models on a shared memory machine and complexity grade $2500$.", label="tab:mm_s2500")
+xtable(table_s2500, caption="Comparison of parallel programming models on a shared memory machine and complexity grade $2500$", label="tab:mm_s2500")
 @ 
 
 
@@ -166,7 +166,7 @@ tmp <- rbind(subset(bmres_s2500,type=="normal"), subset(bmres_s2500,type=="OpenM
 plot(tmp, task= "Matrix Multiplication")
 @ 
 \caption{Comparison of parallel programming models on a shared memory
-  machine and complexity grade $2500$.}
+  machine and complexity grade $2500$}
 \label{fig:mm_s2500}
 \end{figure}
 
@@ -192,7 +192,7 @@ table_sblas2500 <- cbind(1:4, subset(tmp,type=="MPI",time_ela),
                      subset(tmp,type=="PVM",time_ela),subset(tmp,type=="snow-PVM",time_ela))
      
 colnames(table_sblas2500) <- c("#CPU","MPI","PVM","snow-PVM")
-xtable(table_sblas2500, caption="Comparison of parallel programming models on a shared memory machine with BLAS and complexity grade $2500$.", label="tab:mm_sblas2500")
+xtable(table_sblas2500, caption="Comparison of parallel programming models on a shared memory machine with BLAS and complexity grade $2500$", label="tab:mm_sblas2500")
 @ 
 
 \begin{figure}[t]
@@ -204,7 +204,7 @@ xtable(table_sblas2500, caption="Comparison of parallel programming models on a 
 plot(tmp, task = "Matrix Multiplication")
 @
 \caption{Comparison of parallel programming models on a shared memory
-  machine with BLAS and complexity grade $2500$.}
+  machine with BLAS and complexity grade $2500$}
 \label{fig:mm_sblas2500}
 \end{figure}
 
@@ -238,7 +238,7 @@ tmp <- rbind(subset(bmres_n2500,type=="normal"), subset(bmres_n2500,type=="OpenM
 plot(tmp, task= "Matrix Multiplication")
 @ 
 \caption{Comparison of parallel programming models on a cluster using
-  20 nodes and complexity grade $2500$.}
+  20 nodes and complexity grade $2500$}
 \label{fig:mm_n2500}
 \end{figure}
 
@@ -258,7 +258,7 @@ tmp <- rbind(subset(bmres_n2500,type=="native-BLAS"), subset(bmres_n2500,type=="
 plot(tmp, task = "Matrix Multiplication")
 @ 
 \caption{Comparison of parallel programming models on a cluster using
-  20 nodes using BLAS and complexity grade $2500$.}
+  20 nodes using BLAS and complexity grade $2500$}
 \label{fig:mm_nblas2500}
 \end{figure}
 
@@ -282,7 +282,7 @@ for(i in unique(as.character(tmp$type))){X<-rbind(X,tmp[tmp$type==i,][tmp[tmp$ty
 X<-X[order(X$time_ela, decreasing=TRUE),]
 table_n2500 <- cbind(X,speedup(X$time_ela))
 colnames(table_n2500) <- c("#CPU","Type","Time","Speedup")
-xtable(table_n2500, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $2500$.", label="tab:mm_n2500")
+xtable(table_n2500, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $2500$", label="tab:mm_n2500")
 @ 
 
 
@@ -312,7 +312,7 @@ plot(tmp, task= "Matrix Multiplication")
 
 @ 
 \caption{Comparison of parallel programming models on a cluster using
-  20 nodes and complexity grade $5000$.}
+  20 nodes and complexity grade $5000$}
 \label{fig:mm_n5000}
 \end{figure}
 
@@ -327,7 +327,7 @@ tmp <- rbind(subset(bmres_n5000,type=="native-BLAS"), subset(bmres_n5000,type=="
 plot(tmp, task= "Matrix Multiplication")
 @
 \caption{Comparison of parallel programming paradigms on a cluster using
-  20 nodes with BLAS and complexity grade $5000$.}
+  20 nodes with BLAS and complexity grade $5000$}
 \label{fig:mm_nblas5000}
 \end{figure}
 
@@ -344,7 +344,7 @@ X<-X[order(X$time_ela, decreasing=TRUE),]
 table_n5000 <- cbind(X,speedup(X$time_ela))
      
 colnames(table_n5000) <- c("#CPU","Type","Time","Speedup")
-xtable(table_n5000, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $5000$.", label="tab:mm_n5000")
+xtable(table_n5000, caption="Comparison of parallel programming models on a cluster using 20 nodes and complexity grade $5000$", label="tab:mm_n5000")
 @ 
 
 %% explain in more details the  speedup tables

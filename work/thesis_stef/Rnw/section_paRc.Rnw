@@ -402,7 +402,8 @@ defined option.
 <<fig=TRUE,echo=FALSE,height=5, width=6>>=
 plot(european)
 @
-\label{fig:payoff} 
+\label{fig:payoff}
+\caption{Payoff of a European call option with price 5.93}
 \end{figure}
 
 \subsection{Other Functions}

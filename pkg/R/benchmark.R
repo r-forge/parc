@@ -405,7 +405,7 @@ plot.bm_results <- function(x, task="all", ... ){
     stop("more than 11 functions in a benchmark are not supported yet")
 
   ## define plot region, colorspace and other plot parameters
-  xlim <- c(0,max(as.numeric(x$n_cpu),na.rm=TRUE)+1)
+  xlim <- c(0.5,max(as.numeric(x$n_cpu),na.rm=TRUE)+0.5)
   
   ncolors <- ntypes*ntasks
   colors <- rainbow_hcl(ncolors, c=80, l=65, start = 20, end = 340)
@@ -424,7 +424,7 @@ plot.bm_results <- function(x, task="all", ... ){
   aggr <- rbind(subset(aggr, n_cpu <= treshold ), subset(subset(aggr, n_cpu > treshold),time_ela<limit))
 
  
-  ylim <- c(0,max(aggr$time_ela,na.rm=TRUE)+1)
+  ylim <- c(min(aggr$time_ela,na.rm=TRUE)*0.9,max(aggr$time_ela,na.rm=TRUE)*1.1)
   
   plot( x = as.numeric(reference$n_cpu), y = reference$time_ela, col=colors[1], xlim = xlim, ylim = ylim, type = "b",
        pch = pchs[1], ,xlab = "# of CPUs", ylab = "execution time [s]", main = main)

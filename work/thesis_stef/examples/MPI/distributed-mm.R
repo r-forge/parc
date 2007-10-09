@@ -9,8 +9,8 @@ task <- "matrix multiplication"
 taskID <- "mm-norm"
 paradigm <- "distributed"
 types <- c("MPI","snow-MPI")
-complexity <- c(1000)
-runs <- 250
+complexity <- c(2500)
+runs <- 1000
 bmdata <- list()
 bmdata[[1]] <- bmdata[[2]] <- 1000
 bmdata[[3]] <- function(x){

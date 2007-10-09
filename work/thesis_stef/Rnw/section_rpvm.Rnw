@@ -194,7 +194,7 @@ functions have to be explained:
 Let us now examine the function to see how parallel programs using
 \pkg{rpvm} can be written.
 
-\begin{Example}
+\begin{Example} PVM.rapply master routine
 \begin{Scode}
 
 PVM.rapply <- function (X, FUN = mean, NTASK = 1)
@@ -245,10 +245,9 @@ PVM.rapply <- function (X, FUN = mean, NTASK = 1)
 \end{Scode} 
 \label{ex:rpvm-rapplymaster}
 \end{Example}
-
 The corresponding slave R script (slapply.R) looks as follows:
 
-\begin{Example}
+\begin{Example} PVM.rapply slave routine
 \begin{Scode}
 
 library (rpvm)

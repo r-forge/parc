@@ -43,11 +43,11 @@ payoff <- function(path,x,r) {
   T <- maturity(x)
   S <- underlying(x)[3]
   strike <- strikeprice(x)
-  if(cl == "european"){
+  if(cl == "European"){
     ST = S*exp(sum(path))
-    if(type == "call") payoff <- exp(-r*T) * max(ST-strike, 0)
-    if(type == "put") payoff <- exp(-r*T) * max(0, strike-ST)
-    return(payoff)
+    if(type == "Call") pay <- exp(-r*T) * max(ST-strike, 0)
+    if(type == "Put") pay <- exp(-r*T) * max(0, strike-ST)
+    return(pay)
   }
   ## TODO: american option
   if(cl == "american"){
@@ -92,6 +92,16 @@ priceof <- function(x){
   x$price
 }
 
+pricepath <- function(x){
+  if(!inherits(x,"option")) stop("'x' must be of class 'option'")
+  if(is.null(x$pricepath)){
+    warning("you have to run a simulation first")
+    return(NULL)
+  }
+  x$pricepath
+}
+
+
 position <- function(x){
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
   x$position
@@ -131,10 +141,10 @@ position <- function(x){
 'optiontype<-' <- function(x, value){
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
   len <- 1
-  available_types<- c("call","put")
+  available_types<- c("Call","Put")
   if(!all(c(is.character(value),length(value)==len)))
     stop(paste("'value' must be a character of length", len))
-  value <- tolower(value)
+  #value <- tolower(value)
   if(!any(value==available_types)) stop(paste("'value' must be either",available_types[1],"or",available_types[2]))
   x$type <- value
   x
@@ -158,6 +168,14 @@ position <- function(x){
   if(!all(c(is.numeric(value),length(value)==len)))
     stop(paste("'value' must be a numeric of length", len))
   x$price <- value
+  x
+}
+
+'pricepath<-' <- function(x, value){
+  if(!inherits(x,"option")) stop("'x' must be of class 'option'")
+  if(!is.numeric(value))
+    stop(paste("'value' must be a vector"))
+  x$pricepath <- value
   x
 }
 
@@ -198,7 +216,7 @@ blackscholesprice <- function(x, r){
 monteCarloSimulation <- function(x,r,n,length,
                                  n.simulations=50,antithetic=TRUE){
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
-  price <- vector()
+  price <- numeric(n.simulations)
   dt <- maturity(x)/n
   mu <- underlying(x)[1]
   sigma <- underlying(x)[2]
@@ -211,7 +229,8 @@ monteCarloSimulation <- function(x,r,n,length,
     payoffs <- apply(path,2,payoff,x=x,r=r)
     price[i] <- mean(payoffs)
   }
-  x$price <- mean(price)
+  pricepath(x) <- price
+  priceof(x) <- mean(price)
   x
 }
 

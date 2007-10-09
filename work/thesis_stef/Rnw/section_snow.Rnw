@@ -63,7 +63,6 @@ from the corresponding package.
   further function calls.
 \item[\code{stopCluster(cl)}] stops a cluster specified in \code{cl}.
 \end{description}
-
 Example~\ref{ex:snowstartstop} shows how a virtual cluster can be
 created using MPI. 
 
@@ -128,7 +127,7 @@ each slave has the same seed. This problem is treated more specifically in
 Chapter~\ref{chap:options}. For more information about parallel random
 number generators see the descriptions of the packages \pkg{rsprng}
 and \pkg{rlecuyer} in Section~\ref{sec:otherpackages}. 
-
+\newpage
 \begin{Example} Using high level functions of snow
 <<echo=TRUE>>=
 n <- 8

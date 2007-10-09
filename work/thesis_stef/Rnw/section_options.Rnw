@@ -110,6 +110,8 @@ plot(european)
 
 @
 \label{fig:payoffs} 
+\caption{Payoffs of a European put and call option depending on the
+  position of the investor}
 \end{figure}
 
 
@@ -151,9 +153,10 @@ X0 <- 0
 n<-500
 T<-5
 wp <- wienerPath(X0,n,T)
-plot(wp, main = "Wiener Path")
+plot(wp, main = "Wiener Path", xlab="time", ylab="increments")
 @ 
 \label{fig:wienerpath} 
+\caption{Path of a Wiener process}
 \end{figure}
 
 \subsubsection{Stock Price Behavior}
@@ -228,8 +231,9 @@ probability that $\phi (0,1)$ is less than $x$.
 
 The Black-Scholes pricing formula is implemented in package
 \pkg{paRc}. If a European option is available one may call the
-function \code{blackscholesprice(x)} to retrieve the exact price where
-\code{x} is an object of class \class{option}.
+function \code{blackscholesprice(x, r)} to retrieve the exact price where
+\code{x} is an object of class \class{option} and \code{r} is the
+risk free yield.
 
 Example~\ref{eq:blackscholesprice} shows how the price of an European
 call option with strike price 100 and maturity 30 days ($1/12$ years)
@@ -243,7 +247,8 @@ $4.5$\%.
 <<echo = TRUE, eval = TRUE>>=
 ## build example option
 european <- define.option(c(0.1,0.4,100),100,1/12)
-blackscholesprice(european, 0.045)
+bsprice <- blackscholesprice(european, 0.1)
+bsprice
 
 @
 \end{Example}
@@ -362,7 +367,7 @@ The value of a derivative can be estimated using the following steps
   from the derivative in a risk neutral world.
 \item Calculate the mean of the sample payoffs to get an estimate of
   the expected payoff in a risk neutral world
-\item Discount the expected payoff at a risk-free rate to get an
+\item Discount the expected payoff at a risk free rate to get an
   estimate of the value of the derivative.
 \end{enumerate} 
 
@@ -400,10 +405,7 @@ given can be retrieved.
 
   \REQUIRE an \class{option}, the risk free yield $r$, the number of
   paths $len$, the number of simulations $n_{sim}$
-  \ENSURE 
-
-  \STATE 
-
+ % \ENSURE 
   \FOR{$i = 1:n_{sim}$}
     \STATE generate $Z_i$
     \STATE $S_i(T) = S(0)
@@ -442,42 +444,97 @@ monteCarloSimulation <- function(x,r,n,length,
     payoffs <- apply(path,2,payoff,x=x,r=r)
     price[i] <- mean(payoffs)
   }
+  pricepath(x) <- price
   priceof(x) <- mean(price)
   x
 }
 \end{Scode}
 \end{Example}
 
-%Recalling the option from Example~\ref{eq:blackscholesprice} we can
-%now use the function \code{monteCarloSimulation()} to estimate the
-%price of the option. This is shown in
-%Example~\ref{eq:monteCarloserial} using a path length of $50$ steps
-%and 50 simulation runs. In each simulation run the mean of 5000 simulated outcomes
-%is calculated. Eventually the mean of the 50 estimated option prices is
-%returned (see also the routine from Example~\ref{ex:mcs}).
+Recalling the option from Example~\ref{eq:blackscholesprice} we can
+now use the function \code{monteCarloSimulation()} to estimate the
+price of the option. This is shown in
+Example~\ref{eq:monteCarloserial} using a path length of 30 steps
+and 50 simulation runs. In each simulation run the mean of 5000
+simulated payoffs is calculated 
+is calculated. Eventually the mean of the 50 estimated option prices
+and is stored in the object (see also the routine from
+Example~\ref{ex:mcs}).
 
-%\begin{Example} Estimating the price of an European option
-%\label{eq:monteCarloserial}
-%<<echo = TRUE, eval = TRUE>>=
-%## build example option
-%european
-%monteCarloSimulation(european, 0.045, n = 30, length = 5000,)
-%
-%@
+\begin{Example} Estimating the price of an European option
+\label{eq:monteCarloserial}
+<<echo = TRUE, eval = TRUE>>=
+## build example option
+priced <-monteCarloSimulation(european, 0.1, n = 30, length = 5000)
+priced
+@
+
+Table~\ref{tab:mcs_estimate} shows estimates of the option price for
+three different number of simulation runs and the corresponding
+runtime.
+Furthermore, the confidence interval of the estimate is calculated. It
+can be seen that even with a low number of trials it takes more than
+10 seconds to finish the simulation. However, the standard error of
+the simulation is rather small for all results. The difference of the
+standard error between 50 and 150 trials is negligible small.
+
+The Convergence of the option price when increasing the number of
+simulations can be seen in Figure~\ref{fig:mmcs_convergence}. The grey
+line represents the Black Scholes price of the option.
+
+<<results=tex, echo=FALSE>>=     
+set.seed(1782)
+nsim <- c(10, 50, 150)
+table_mcs <- expand.grid(nsim=nsim, estimate=NA, confidenceL=NA, confidenceU=NA, runtime=NA)
+for(i in 1:length(nsim)){
+  t <- system.time(tmp <- monteCarloSimulation(european, 0.1, 30, 5000, n.sim = nsim[i]))[3]
+  est <- priceof(tmp)
+  conf <- c(est-1.96*sd(pricepath(tmp))/sqrt(nsim[i]),est+1.96*sd(pricepath(tmp))/sqrt(nsim[i]))
+  table_mcs[i,] <- c(nsim[i], est, conf, t)
+}
+
+colnames(table_mcs) <- c("#Sim","MC estimate","CI-", "CI+", "Runtime[s]")
+
+xtable(table_mcs, caption="Monte Carlo estimates and confidence intervals", label="tab:mcs_estimate")
+@ 
+\end{Example}
+
+\begin{figure}[t]
+\centering
+<<echo= FALSE, fig=TRUE, height=5, width=6>>=
+nsim <- length(pricepath(tmp))
+conv <- cumsum(pricepath(tmp))/(1:nsim)
+plot(1:nsim,conv, main = "Convergence of the Option Price", ylab ="option price", xlab = "#Monte Carlo simulations", type ="l")
+abline(h=blackscholesprice(tmp, 0.1), col="lightgrey")
+lines(1:nsim,conv)
+@
+\caption{Convergence of the option price with respect to the number of Monte Carlo simulations}
+\label{fig:mmcs_convergence}
+\end{figure}
+
+
 \subsection{Parallel Monte Carlo Simulation}
 
+In this thesis we implemented a parallel version of Monte Carlo
+simulation in R using the package \pkg{Rmpi}. 
+
 Example~\ref{ex:mcs-master} shows the implementation of the master process
-in R. The corresponding slave program can be seen in
-Example~\ref{ex:mcs-slave}.
+in R. This routine is responsible for process management, data
+distribution and
+collection of the simulation results. First the necessary parameters
+for the simulation are distributed among the slaves. Then the matrix
+multiplication is initialized (corresponding slave program can be seen in
+Example~\ref{ex:mcs-slave}). Eventually results (all the prices
+calculated) are gathered and returned.
  
 \begin{Example} MPI master routine
 \label{ex:mcs-master}
 \begin{Scode}
 
-mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
-                     n_cpu = 1, spawnRslaves=FALSE) {
+mcs.Rmpi <- function(x, r, n, length, n.simulations=50,
+                     antithetic = TRUE, n_cpu = 1,
+                     spawnRslaves=FALSE) {
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
-  
   if( n_cpu == 1 )
     return(monteCarloSimulation(x, r, n, length, n.simulations=50,
                                 antithetic))
@@ -489,7 +546,6 @@ mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
   mpi.bcast.Robj2slave(n)
   mpi.bcast.Robj2slave(length)
   mpi.bcast.Robj2slave(antithetic)
-  
   nsim <- ceiling(n.simulations/n_cpu)
   nsim_on_last <- n.simulations - (n_cpu - 1)*nsim
   mpi.bcast.Robj2slave(nsim)
@@ -500,13 +556,15 @@ mcs.Rmpi <- function(x, r, n, length, n.simulations=50, antithetic = TRUE,
   ## gather partial results from slaves
   local_prices <- NULL
   prices <- mpi.gather.Robj(local_prices, root=0, comm=1)
-  
   if( spawnRslaves == TRUE )
     mpi.close.Rslaves()
   prices
 }
 \end{Scode}
 \end{Example}
+The slave routine is basically the same like the serial version from
+Example~\ref{alg:basicmcs} except that it returns the local estimated
+prices to the master slave.
 
 \begin{Example} MPI slave routine
 \label{ex:mcs-slave}
@@ -542,32 +600,31 @@ mcs.Rmpi.slave <- function(){
 \end{Scode}
 \end{Example}
 
+\subsection{Notes on Parallel Pseudo Random Number Generation}
 
-\subsection{Results}
+Prior generating random numbers in parallel, a parallel pseudo random
+number generator (PPRNG) has to be initialize (e.g., SPRNG is available
+in R via package \pkg{rsprng}). These generators assure that
+independend streams of pseudo random numbers are available on the
+slaves (i.e., streams generated on one node are independend and
+uncorrelated to streams generated on all of the other nodes). This is a
+crucial part for the quality of Monte Carlo estimates. Furthermore, 
+the period length of generated random number streams has to be long
+enough to cover the most sophisticated simulations and the generator
+itself has to be fast enough to be usable in high performance
+computing.
 
-The results shown in this section were produced on a shared memory
-machine using up to 4 cores (bignodes of cluster@WU) and on a
-distributed memory platform using up to 10 cluster nodes. We used 50
-simulation runs to estimate the option prices.
+As already mentioned in Section~\ref{sec:otherpackages} interfaces to
+widely used PPRNG are available in R (packages \pkg{rsprng} and
+\pkg{rlecuyer}). 
 
-Figure~\ref{fig:mcs_shared} and Table~\ref{tab:mcs_s50} show that a good
-speedup can be achieved on a shared memory machine. Furthermore, in
-comparison to the results of the parallel matrix multiplication
-presented in Section~\ref{sec:mm_compare} a better scalability is
-observed for both, using the shared memory paradigm and using the
-distributed memory paradigm (Figure~\ref{fig:mcs_dist} and
-Table~\ref{tab:mcs_n50}). This is because only few data is
-sent through the interconnection network and therefore (with Amdahl's
-law in mind) a greater fraction of the whole work can be executed in
-parallel.
-
-
+\subsection{Results of Parallel Monte Carlo Simulation}
 %% speedup table
 <<results=tex,echo=false>>=
 X<-bmres_s50
 table_s50 <- cbind(X[,c(3,2,6)],speedup(X))
 colnames(table_s50) <- c("#CPU","Type","Time","Speedup")
-xtable(table_s50, caption="Time and speedup achieved on a shared memory platform using 50 simulation runs.",
+xtable(table_s50, caption="Time and speedup achieved on a shared memory platform using 50 simulation runs",
  label="tab:mcs_s50")
 @ 
 
@@ -575,7 +632,7 @@ xtable(table_s50, caption="Time and speedup achieved on a shared memory platform
 X<-bmres_n50
 table_n50 <- cbind(X[,c(3,2,6)],speedup(X))
 colnames(table_n50) <- c("#CPU","Type","Time","Speedup")
-xtable(table_n50, caption="Time and speedup achieved on cluster@WU using 10 nodes and 50 simulation runs.",
+xtable(table_n50, caption="Time and speedup achieved on cluster@WU using 10 nodes and 50 simulation runs",
  label="tab:mcs_n50")
 @ 
 
@@ -604,5 +661,32 @@ plot(bmres_n50, task = "Parallel Monte Carlo Simulation")
   simulation runs on cluster@WU using 10 nodes}
 \label{fig:mcs_dist}
 \end{figure}
+
+
+The results shown in this section were produced on a shared memory
+machine using up to 4 cores (bignodes of cluster@WU) and on a
+distributed memory platform using up to 10 cluster nodes. We used 50
+simulation runs to estimate the option prices. The corresponding
+benchmark script can be found in Appendix~\ref{app:benchmark}. 
+
+Figure~\ref{fig:mcs_shared} and Table~\ref{tab:mcs_s50} show that a good
+speedup can be achieved on a shared memory machine. Furthermore, in
+comparison to the results of the parallel matrix multiplication
+presented in Section~\ref{sec:mm_compare} a better scalability is
+observed for both, using the shared memory paradigm and using the
+distributed memory paradigm (Figure~\ref{fig:mcs_dist} and
+Table~\ref{tab:mcs_n50}). This is because only few data is
+sent through the interconnection network and therefore (with Amdahl's
+law in mind) a greater fraction of the whole work can be executed in
+parallel. Moreover, when using the distributed memory paradigm only a
+slight overhead is observed in comparison to the shared memory
+paradigm because again of the fact that we have low communication
+costs.
+
+To sum up, a substantial reduction of the execution time can be
+achieved when taking advantage of parallel computing. In fact we
+reduced the runtime of the simulation from over 50 seconds necessary
+with one processor to nearly 6 seconds using 10 processors (see
+Table~\ref{tab:mcs_n50}). 
 
  
