@@ -9,24 +9,25 @@ computing. Furthermore we presented in this thesis all relevant
 packages which extent the base R environment with parallel computing
 facilities. All in all they are a good start to implement parallel
 routines although it is hard work to get routines running with high
-stability. Nevertheless as algorithms become more time comsuming and
+stability. Nevertheless as algorithms become more time consuming and
 problems in computational statistics become more data intensive we
-propose to have at least a look on the possiblities which are offered
+propose to have at least a look on the possibilities which are offered
 from parallel programming models.
 
 With the introduction of OpenMP parallel programming has become easier
 than ever. In this thesis we presented how one can only with a few
 statements parallelize existing serial code to achieve a significant
 reduction of the runtime. With R coming the restriction to low level
-languages like C or FORTRAN as a disadvantage. Therefore we propose
+languages like C or FORTRAN is a disadvantage. Therefore we propose
 implementing high level interface functions to efficient parallel
 OpenMP low level routines.
 
-Using the benchmark environment provided by the new package \pkg{paRc}
-shows that existing high level  functions for general use in parallel
+Using the benchmark environment provided by the package \pkg{paRc}
+shows that high level functions designed for general use in parallel
 computing (like the routines in \pkg{snow})
-help the user to easy achieve parallelism. Nevertheless, creating
-specialized function for a certain task will give better performance.
+indeed help the user to achieve parallelism easily but with the
+drawback of lower performance compared to
+specialized functions. 
 
 The second contribution of this thesis is the parallel implementation
 of Monte Carlo simulation with a special focus on derivative
@@ -35,8 +36,8 @@ algorithmic trading, minimizing time is of major interest. The need for
 cutting edge hardware of investment companies and banks to minimize
 round tripping underlines this trend. Using high performance computing
 is becoming increasingly important in this field as parallel computers
-become mainstream and it will be a major contribution in this
-development.
+become mainstream %and it will be a major contribution in this
+%development.
 
 
 \section{Economical Coherences}
@@ -47,47 +48,79 @@ The economic principle has ever been maximizing
 profits. This means either raising of revenue, increasing the return
 or augmenting assets. In today's ever faster society time has become
 an important figure. And indeed, minimizing time to complete a task
-can be seen as some sort of profit. In view of finance saving time for
+can be seen as some sort of profit. In view of finance e.g., saving time for
 calculating a trading strategy means an advance in knowledge and
-therefore can raise ones (monetary) profits.
+therefore can raise ones (monetary) profits as investors may respond
+earlier to market movements or as arbitrage earnings could be
+generated.
 
-The objective of parallel
-computing is increasing performance which means reducing computational
-time. In an economic which depends more and more on information
-technology many companies will have to do the step from the serial to
-the parallel world. This means that a major rethinking will take place. 
+In business administration optimization plays a major role. Actually in
+cost accounting and controlling linear problems are solved using
+linear programming (e.g., to determine economic order quantities). In
+transportation one can think of automatic shortest path
+selection. Selecting an optimal path is of major interest as it would
+maximize the deliveries possible in a certain time frame or prevent
+empty drives of trucks for example. The classical example for this
+type of problems is the ``travelling salesperson
+problem''. Nevertheless, optimization is expensive in terms of
+computational time and therefore it is desirable to have efficient
+(parallel) algorithms available. Parallel computing would be a
+possibility to achieve higher performance in optimization.
 
-Already a long time ago one of the most important economist \cite{smith:iin}
-proposed the division of labor to increase welfare and now it is time
-to divide tasks such that time is minimized or in other words profits
-are increased.
+
+Concluding we would like to say that we live in an economy which
+depends more and more on information technology. In the near future
+many IT companies will have to take the step from the serial to 
+the parallel world otherwise they will not benefit from the recent
+advances in this area (and the research done in this area is even expected
+to increase). This also means that a major rethinking will
+have to take place in software development.
+
+Nevertheless taking advantage of parallelism through dividing a
+problem in smaller (specialized) tasks is not a new idea in
+economics. Already a long time ago one of the most important
+economists \cite{smith:iin} 
+proposed the division of labor to increase welfare. Now, it is time
+to divide tasks such that computational time is minimized or in other
+words profit is increased.
 
 \section{Outlook}
 
-%%benchmark environment.
+High performance computing is applied to these tasks which are complex
+to solve and therefore need huge amount of computational time or for
+time critical tasks where it is important to save every millisecond. 
 
+Today high performance computing is used in many scientific areas
+where sophisticated computations are carried out. An important field
+which can be applied in many fields in economics is
+optimization. $\mathcal{NP}$-hard problems like decision problems,
+search problems or as mentioned optimization problems are solved in
+polynomial time. With parallel computing time could be reduced to
+solve these problems provided that the problems can be subdivided
+accordingly.
+
+In this thesis classical examples like the matrix multiplication in
+parallel computing were shown. A lot of research has been done in this
+area to provide even faster algorithms. A next step would be to implement
+the most promising variants (like the PUMMA) of them to become
+familiar with sophisticated parallel programming algorithms.
+
+Many improvements are possible for package \pkg{paRc}. The benchmark
+environment could be enhanced to provide greater flexibility to the
+user so that new
+benchmark alternatives can easily be integrated. Furthermore, new
+parallel routines could be developed using the OpenMP programming
+model as an interface to the OpenMP library already exists. 
 
 Further research could clearly be done in the computational finance
 segment. The recent advances in algorithmic trading and the increasing
-need for computational power clearly indicate a  trend to high
-performance computing.
-
-A first step would be to improve parallel pseudo random number
-generation. Only few research has been done in this area in the last
-years 
-
-%%computational statistics 
-
-%%algorithmic trading~\cite{domowitz:mai}
-%%Improvements and further work 
-%%\cite{kontoghiorghes06handbookpcstat}
-
-
-%%Further research could also be done
-
-
-%%Going one setp further
-
+need for computational power clearly indicate a trend towards high
+performance computing. The option pricing environment in package
+\pkg{paRc} supplies a framework for pricing derivatives using parallel
+Monte Carlo simulation which makes heavily use of parallel random
+number generators. A next step would be to improve parallel pseudo
+random number generation. Only few research has been done in this area
+in the last years. 
 
 Besides the topics mentioned above, many more could be thought of and
 implemented, thus there are more than enough fields for further
@@ -98,7 +131,7 @@ research.
 I was extremely lucky to carry out my diploma thesis at the Department
 of Statistics and Mathematics. My position as a studies assistant gave
 me the opportunity to discuss many topics of this thesis with
-the staff members---my collegues. Especially I would like to thank my
+the staff members---my colleagues. Especially I would like to thank my
 supervisor Kurt Hornik for his guidance and mentorship and of course for
 the many reading.
 
@@ -106,10 +139,12 @@ I would like to thank David Meyer as well as
 Achim Zeileis who helped me with statistical, graphical and
 information technology issues.
 
-Furthermore I would like to thank my Josef Leydold for his hints
+Furthermore I would like to thank Josef Leydold for his hints
 regarding random number generation.
 
-Lastly, I would like to thank my girlfriend Selma for proofreading and
+Last but not least, I would like to express my thanks to my parents
+for their ongoing encouragement. In addition I would
+like to thank my girlfriend Selma for proofreading and 
 of course for her patience and her support.
 
 \end{acknowledgments}

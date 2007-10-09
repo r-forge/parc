@@ -348,7 +348,7 @@ xtable(table_n5000, caption="Comparison of parallel programming models on a clus
 @ 
 
 %% explain in more details the  speedup tables
-Finally, Table~\ref{tab:mm_n2500} shows the best results of the matrix
+Finally, Table~\ref{tab:mm_n5000} shows the best results of the matrix
 multiplication benchmark for each parallel programming model with
 complexity grade $5000$. It can
 be seen that BLAS achieve again the best performance for the

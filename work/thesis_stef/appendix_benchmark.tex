@@ -44,10 +44,11 @@ for(n in complexity){
   bm.data(bm) <- bmdata
   for(type in types){
     bm.type(bm) <- type
-    writeLines(paste("Starting",type,"benchmark with complexity",n,"..."))
+    writeLines(paste("Starting",type,"benchmark with complexity",n,
+                     "..."))
     results <- run.benchmark(bm)
     save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),
-         ".Rda",sep=""))
+                                  ".Rda",sep=""))
   }
 }
 \end{Scode}
@@ -59,8 +60,8 @@ and the corresponding cluster job script looks as follows:
 #$ -pe lam 20
 #$ -q node.q
 
-/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < \
-  /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/distributed-mm.R
+/path/to/R-binary --vanilla < \
+  /path/to/MPI-benchmark-examples/distributed-mm.R
 \end{verbatim}
 
 \subsubsection{Normally Distributed Matrices}
@@ -89,16 +90,19 @@ bmdata[[3]] <- function(x){
 }
 
 bm <- create.benchmark(task=task, data=bmdata,
-                       type=types[1], parallel=TRUE, cpu_range=1:maxcpu, runs=runs)
+                       type=types[1], parallel=TRUE,
+                       cpu_range=1:maxcpu, runs=runs)
 set.seed(1782)
 for(n in complexity){
   bmdata[[1]] <- bmdata[[2]] <- n
   bm.data(bm) <- bmdata
   for(type in types){
     bm.type(bm) <- type
-    writeLines(paste("Starting",type,"benchmark with complexity",n,"..."))
+    writeLines(paste("Starting",type,"benchmark with complexity",n,
+                     "..."))
     results <- run.benchmark(bm)
-    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),".Rda",sep=""))
+    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),
+                                  ".Rda",sep=""))
   }
 }
 \end{Scode}
@@ -110,8 +114,8 @@ and the corresponding job script for the grid engine looks as follows:
 #$ -pe pvm 20
 #$ -q node.q
 
-/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < \
-  /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/distr-mm-norm.R
+/path/to/R-binary --vanilla < \
+  /path/to/PVM-benchmark-examples/distributed-mm.R
 \end{verbatim}
 
 \section{Option Pricing}
@@ -129,21 +133,15 @@ maxcpu <- mpi.universe.size()
 task <- "Monte Carlo simulation"
 taskID <- "mcs"
 paradigm <- "distributed"
-types <- c("normal")
+types <- c("normal", "MPI")
 runs <- 10
-#complexity <- c(1000,2500,5000)
+
 
 bm <- create.benchmark(task=task, data=list(),
-                       type=types[1], parallel=FALSE, cpu_range=1)
-## build option
-opt <- list()
-opt$mu <- 0.1           ## expectation of underlying
-opt$sigma <- 0.4        ## standard deviation of underlying
-opt$type <- "Call"      ## type of the option
-opt$strikeprice <- 100  ## strikeprice of the option
-opt$present <- 100      ## present value of the underlying
-opt$maturity <- 1/12    ## time to maturity (in years)
-opt <- as.option(opt)   ## coercing 'list' to 'option'
+                       type=types[1], paralle=TRUE,
+                       cpu_range=1:maxcpu, runs=runs)
+## define option
+opt <- european <- define.option(c(0.1,0.4,100),100,1/12)
 
 bmdata <- list()
 bmdata[[1]] <- opt
@@ -158,11 +156,11 @@ for(type in types){
   bm.type(bm) <- type
   writeLines(paste("Starting",type,"benchmark..."))
   results <- run.benchmark(bm)
-  save(results,file=paste(paste(paradigm,taskID,type,sep="-"),".Rda",sep=""))
+  save(results,file=paste(paste(paradigm,taskID,type,sep="-"),
+                          ".Rda",sep=""))
 }
 
 \end{Scode}
-
 the corresponding job script looks as follows:
 
 \begin{verbatim}
@@ -170,6 +168,6 @@ the corresponding job script looks as follows:
 #$ -pe lam 10
 #$ -q node.q
 
-/home/stheussl/lib/R/R-2.5.1-icc-RBLAS/bin/R --vanilla < \
-  /home/stheussl/svn/paRc/work/thesis_stef/examples/MPI/distributed-mcs.R
+/path/to/R-binary --vanilla < \
+  /path/to/MPI-benchmark-examples/distributed-mcs.R
 \end{verbatim}

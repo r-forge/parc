@@ -123,7 +123,7 @@ Section~\ref{sec:messagepassing}).
   process(es) with task ID(s) \code{tids}.
 \end{description}
 
-\subsection{Built-in high level functions}
+\subsection{Built-in High Level Functions}
 
 \pkg{rpvm} provides only two high level functions. One of them is a
 function to get or set values in the virtual machine settings. This is
