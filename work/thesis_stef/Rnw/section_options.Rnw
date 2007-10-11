@@ -49,7 +49,7 @@ variants of options on financial markets. European and American
 options are the most common of them.
 
 \begin{description}
-\item[European options] are an option with the right to buy the
+\item[European options] are derivatives with the right to buy the
   underlying~$S$ at a certain time~$T$ (expiration date or maturity)
   paying a previously defined price~$X$ (call option). If one sells
   this right it is called a put option. $C_t$ ($P_t$) denotes the value of the
@@ -70,7 +70,7 @@ options are the most common of them.
   Figure \ref{fig:payoffs} shows the payoff functions of a call and
   a put option and the position of the investor (left:~long position,
   right:~short position).
-\item[American Option] are heavily traded on exchanges. The
+\item[American options] are heavily traded on exchanges. The
   difference to its European counterpart is the fact, that it can be
   exercised at any time~$t$ within the maturity $0 \ldots{} T$. The option
   expires if it is not exercised.
@@ -96,13 +96,13 @@ and compare it to the prices estimated with Monte Carlo simulation.
 \centering
 <<fig=TRUE,echo=FALSE, height=5, width=6>>=
 
-european <- define.option(c(0.1,0.4,100),100,1/12)
-priceof(european) <- 4
+european <- define_option(c(0.1,0.4,100),100,1/12)
+price_of(european) <- 4
 par(mfrow=c(2,2))
 plot(european)
 position(european) <- "short"
 plot(european)
-optiontype(european) <- "Put"
+option_type(european) <- "Put"
 position(european) <- "long"
 plot(european)
 position(european) <- "short"
@@ -137,8 +137,8 @@ process if
 \begin{enumerate}
 \item $W_0 = 0$,
 \item the paths are continuous,
-\item all increments $W_{t_1}, W_{t_2} - W_{t_1}, \ldots W_{t_n} - W_{t_{n-1}}$
-  are independent and normal distributed for all $0 < t_1 < t_2 < \ldots < t_n$ 
+\item all increments $W_{t_1}, W_{t_2} - W_{t_1}, \ldots, W_{t_n} - W_{t_{n-1}}$
+  are independent and normal distributed for all $0 < t_1 < t_2 < \cdots < t_n$ 
 \end{enumerate}
 
 The Wiener process is a fundamental part of deriving option pricing
@@ -152,7 +152,7 @@ set.seed(1782)
 X0 <- 0
 n<-500
 T<-5
-wp <- wienerPath(X0,n,T)
+wp <- Wiener_path(X0,n,T)
 plot(wp, main = "Wiener Path", xlab="time", ylab="increments")
 @ 
 \label{fig:wienerpath} 
@@ -205,7 +205,9 @@ $$ V(T,S) = \max(X - S(T),0) .$$
 
 \subsubsection{Black-Scholes Pricing Formulas}
 
-This yields to the Black-Scholes formulas for the prices at time zero
+Solving this differential equation (Equation~\ref{eq:BSM_diff})
+subject to the boundary conditions yields to the Black-Scholes
+formulas for the prices at time zero
 of European options on a non-dividend paying stock. The price of a
 call option $c$ is (\cite{hull03:options_futures}):
 \begin{equation}
@@ -225,19 +227,37 @@ $$ d_2 = \frac{\log(\frac{S_0}{X}) + (r - \frac{\sigma^2}{2})T}
 
 The function $N(x)$ denotes the cumulative probability distribution
 function for a standard normal distribution. It returns the
-probability that $\phi (0,1)$ is less than $x$.
+probability that a variable sampled from the standard normal
+distribution is less than $x$.
+
+\subsubsection{Risk Neutral Valuation}
+The assumption of a risk neutral world is one of the most important
+tools for the analysis of derivatives. This assumption can be derived
+from the Black-Scholes differential equation. It does not involve any
+variable which is affected by the risk preferences of investors
+(\cite{hull03:options_futures}).
+
+In a world where investors are risk neutral, the expected return on
+all securities is the risk free rate of interest $r$. Therefore, the
+present value of any cash flow can be obtained by discounting its
+expected value at the risk free yield. 
+
+With this information given a derivative can be valued in a risk neutral
+world by using the following important assumption: In a risk neutral
+world the return of the underlying asset ($mu$) is equal to the risk
+free interest rate ($r$).
 
 \subsubsection{Implementation in Package paRc}
 
 The Black-Scholes pricing formula is implemented in package
 \pkg{paRc}. If a European option is available one may call the
-function \code{blackscholesprice(x, r)} to retrieve the exact price where
+function \code{Black\_Scholes\_price(x, r)} to retrieve the exact price where
 \code{x} is an object of class \class{option} and \code{r} is the
 risk free yield.
 
 Example~\ref{eq:blackscholesprice} shows how the price of an European
 call option with strike price 100 and maturity 30 days ($1/12$ years)
-can be calculated using the function \code{blackscholesprice()}. The
+can be calculated using the function \code{Black\_Scholes\_price()}. The
 underlying is a stock with a current value of 100, a $\mu$ of 0.1, and
 volatility $\sigma$ of 0.4. The risk free yield is assumed to be
 $4.5$\%.
@@ -246,8 +266,8 @@ $4.5$\%.
 \label{eq:blackscholesprice}
 <<echo = TRUE, eval = TRUE>>=
 ## build example option
-european <- define.option(c(0.1,0.4,100),100,1/12)
-bsprice <- blackscholesprice(european, 0.1)
+european <- define_option(c(0.1,0.4,100),100,1/12)
+bsprice <- Black_Scholes_price(european, 0.1)
 bsprice
 
 @
@@ -420,23 +440,24 @@ given can be retrieved.
 Example~\ref{ex:mcs} shows the implementation of
 Algorithm~\ref{alg:basicmcs} in R. The function takes 
 \code{x}, which is an object of class \class{option}, the risk free
-rate \code{r}, the length of the path \code{n}, and the number of
-simulations \code{n.simulations} as arguments. The function returns
+rate \code{r}, the length of a Wiener path \code{path\_length}, the
+number of simulated paths \code{n\_paths} and the number of
+simulations \code{n\_simulations} as arguments. The function returns
 the given object with the simulated price included.
 
 \begin{Example} Monte Carlo simulation routine
 \label{ex:mcs}
 \begin{Scode}
 
-monteCarloSimulation <- function(x,r,n,length,
-                                 n.simulations=50,antithetic=TRUE){
-  if(!inherits(x,"option")) stop("'x' must be of class 'option'")
+Monte_Carlo_simulation <- function(x, r, path_length, n_paths,
+                                n_simulations=50, antithetic=TRUE){
+  if(!inherits(x, "option")) stop("'x' must be of class 'option'")
   price <- vector()
-  dt <- maturity(x)/n
+  dt <- maturity(x)/path_length
   mu <- underlying(x)[1]
   sigma <- underlying(x)[2]
-  for( i in 1:n.simulations){
-    eps <- matrix(rnorm(n*length),nrow=n)
+  for( i in 1:n_simulations){
+    eps <- matrix(rnorm(path_length*n_paths),nrow=path_length)
 
     if(antithetic)
       eps <- cbind(eps, -eps)
@@ -444,19 +465,19 @@ monteCarloSimulation <- function(x,r,n,length,
     payoffs <- apply(path,2,payoff,x=x,r=r)
     price[i] <- mean(payoffs)
   }
-  pricepath(x) <- price
-  priceof(x) <- mean(price)
+  price_path(x) <- price
+  price_of(x) <- mean(price)
   x
 }
 \end{Scode}
 \end{Example}
 
 Recalling the option from Example~\ref{eq:blackscholesprice} we can
-now use the function \code{monteCarloSimulation()} to estimate the
+now use the function \code{Monte\_Carlo\_simulation()} to estimate the
 price of the option. This is shown in
 Example~\ref{eq:monteCarloserial} using a path length of 30 steps
 and 50 simulation runs. In each simulation run the mean of 5000
-simulated payoffs is calculated 
+simulated payoffs 
 is calculated. Eventually the mean of the 50 estimated option prices
 and is stored in the object (see also the routine from
 Example~\ref{ex:mcs}).
@@ -465,7 +486,7 @@ Example~\ref{ex:mcs}).
 \label{eq:monteCarloserial}
 <<echo = TRUE, eval = TRUE>>=
 ## build example option
-priced <-monteCarloSimulation(european, 0.1, n = 30, length = 5000)
+priced <- Monte_Carlo_simulation(european, r = 0.1, path_length = 30, n_paths = 5000)
 priced
 @
 
@@ -480,16 +501,16 @@ standard error between 50 and 150 trials is negligible small.
 
 The Convergence of the option price when increasing the number of
 simulations can be seen in Figure~\ref{fig:mmcs_convergence}. The grey
-line represents the Black Scholes price of the option.
+line represents the Black-Scholes price of the option.
 
 <<results=tex, echo=FALSE>>=     
 set.seed(1782)
 nsim <- c(10, 50, 150)
 table_mcs <- expand.grid(nsim=nsim, estimate=NA, confidenceL=NA, confidenceU=NA, runtime=NA)
 for(i in 1:length(nsim)){
-  t <- system.time(tmp <- monteCarloSimulation(european, 0.1, 30, 5000, n.sim = nsim[i]))[3]
-  est <- priceof(tmp)
-  conf <- c(est-1.96*sd(pricepath(tmp))/sqrt(nsim[i]),est+1.96*sd(pricepath(tmp))/sqrt(nsim[i]))
+  t <- system.time(tmp <- Monte_Carlo_simulation(european, 0.1, 30, 5000, n_sim = nsim[i]))[3]
+  est <- price_of(tmp)
+  conf <- c(est-1.96*sd(price_path(tmp))/sqrt(nsim[i]),est+1.96*sd(price_path(tmp))/sqrt(nsim[i]))
   table_mcs[i,] <- c(nsim[i], est, conf, t)
 }
 
@@ -502,10 +523,10 @@ xtable(table_mcs, caption="Monte Carlo estimates and confidence intervals", labe
 \begin{figure}[t]
 \centering
 <<echo= FALSE, fig=TRUE, height=5, width=6>>=
-nsim <- length(pricepath(tmp))
-conv <- cumsum(pricepath(tmp))/(1:nsim)
+nsim <- length(price_path(tmp))
+conv <- cumsum(price_path(tmp))/(1:nsim)
 plot(1:nsim,conv, main = "Convergence of the Option Price", ylab ="option price", xlab = "#Monte Carlo simulations", type ="l")
-abline(h=blackscholesprice(tmp, 0.1), col="lightgrey")
+abline(h=Black_Scholes_price(tmp, 0.1), col="lightgrey")
 lines(1:nsim,conv)
 @
 \caption{Convergence of the option price with respect to the number of Monte Carlo simulations}
@@ -531,23 +552,23 @@ calculated) are gathered and returned.
 \label{ex:mcs-master}
 \begin{Scode}
 
-mcs.Rmpi <- function(x, r, n, length, n.simulations=50,
+mcs.Rmpi <- function(x, r, path_length, n_paths, n_simulations=50,
                      antithetic = TRUE, n_cpu = 1,
                      spawnRslaves=FALSE) {
   if(!inherits(x,"option")) stop("'x' must be of class 'option'")
   if( n_cpu == 1 )
-    return(monteCarloSimulation(x, r, n, length, n.simulations=50,
+    return(Monte_Carlo_simulation(x, r, path_length, n_paths, n_simulations,
                                 antithetic))
   if( spawnRslaves == TRUE )
     mpi.spawn.Rslaves(nslaves = n_cpu)
   ## broadcast data and functions necessary on slaves
   mpi.bcast.Robj2slave(x) 
   mpi.bcast.Robj2slave(r) 
-  mpi.bcast.Robj2slave(n)
-  mpi.bcast.Robj2slave(length)
+  mpi.bcast.Robj2slave(path_length)
+  mpi.bcast.Robj2slave(n_paths)
   mpi.bcast.Robj2slave(antithetic)
-  nsim <- ceiling(n.simulations/n_cpu)
-  nsim_on_last <- n.simulations - (n_cpu - 1)*nsim
+  nsim <- ceiling(n_simulations/n_cpu)
+  nsim_on_last <- n_simulations - (n_cpu - 1)*nsim
   mpi.bcast.Robj2slave(nsim)
   mpi.bcast.Robj2slave(nsim_on_last)
   mpi.bcast.Robj2slave(mcs.Rmpi.slave)
@@ -573,14 +594,14 @@ prices to the master slave.
 mcs.Rmpi.slave <- function(){
   require("paRc")
   commrank <- mpi.comm.rank() - 1
-  monteCarloSlave <- function(x, r, n, length, n.simulations=50,
+  Monte_Carlo_slave <- function(x, r, path_length, n_paths, n_simulations=50,
                               antithetic=TRUE){
     price <- vector()
-    dt <- maturity(x)/n
+    dt <- maturity(x)/path_length
     mu <- underlying(x)[1]
     sigma <- underlying(x)[2]
-    for( i in 1:n.simulations){
-      eps <- matrix(rnorm(n*length),nrow=n)
+    for( i in 1:n_simulations){
+      eps <- matrix(rnorm(n*length),nrow=path_length)
       
       if(antithetic)
         eps <- cbind(eps, -eps)
@@ -591,10 +612,10 @@ mcs.Rmpi.slave <- function(){
     price
   }
   if(commrank==(n_cpu - 1))
-    local_prices <- monteCarloSlave(x, r, n, length, nsim_on_last,
+    local_prices <- Monte_Carlo_slave(x, r, path_length, n_paths, nsim_on_last,
                                          antithetic)
   else
-    local_prices <- monteCarloSlave(x, r, n, length, nsim, antithetic)
+    local_prices <- Monte_Carlo_slave(x, r, path_length, n_paths, nsim, antithetic)
   mpi.gather.Robj(local_prices, root=0, comm=1)    
 }
 \end{Scode}

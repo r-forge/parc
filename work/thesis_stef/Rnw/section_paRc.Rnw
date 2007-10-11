@@ -1,5 +1,5 @@
 
-\section{paRc---PARallel Computations in R}
+\Section{paRc---PARallel Computations in R}
 \label{sec:paRc}
 
 In the course of this thesis a package called \pkg{paRc}
@@ -27,7 +27,7 @@ non-commercial use) or the GNU~C compiler with version 4.2 or
 newer. They are known to support OpenMP.
 
 Examples in this section are produced on a bignode of
-cluster@WU. Bignodes provide a shared memory platform with up to 4
+cluster@WU. Big-nodes provide a shared memory platform with up to 4
 CPUs. Shared memory platforms are necessary for running parallel
 OpenMP applications.
 
@@ -39,11 +39,11 @@ parallel environment or to change them.
 
 \subsubsection{OpenMP Routines}
 \begin{description}
-\item[\texttt{omp.get.num.procs()}] returns the number of threads
+\item[\texttt{omp\_get\_num\_procs()}] returns the number of threads
   available to the program.
-\item[\texttt{omp.set.num.threads()}] sets the number of threads to be
+\item[\texttt{omp\_set\_num\_threads()}] sets the number of threads to be
   used in subsequent parallel executions.
-\item[\texttt{omp.get.max.threads()}] gets the number of threads to be
+\item[\texttt{omp\_get\_max\_threads()}] gets the number of threads to be
   used in subsequent parallel executions.
 \end{description}
 
@@ -74,11 +74,11 @@ options(width=62)
 <<echo=TRUE>>=
 library("paRc")
 
-omp.get.num.procs()
+omp_get_num_procs()
 
-omp.set.num.threads(2)
+omp_set_num_threads(2)
 
-omp.get.max.threads()
+omp_get_max_threads()
 
 @ 
 \end{Example}
@@ -88,8 +88,8 @@ omp.get.max.threads()
 \pkg{paRc} provides the following high level OpenMP function: 
 
 \begin{description}
-\item[\texttt{omp.matrix.mult(X, Y, n\_cpu = 1)}] multiplies the matrix
-  \code{X} with matrix \code{Y} using \code{n\_cpu} numbers of
+\item[\texttt{omp\_matrix\_multiplication(X, Y, n\_cpu = 1)}] multiplies the matrix
+  \code{X} \\with matrix \code{Y} using \code{n\_cpu} numbers of
   processors.
 \end{description}
 
@@ -102,7 +102,7 @@ benchmark described by the object.
 
 \subsubsection{Class \class{benchmark}}
 
-An S3 object (\cite{chambers91sms}) named \class{benchmark} contains all
+An S3 object (\cite{chambers91sms}) of class \class{benchmark} contains all
 the necessary information to run a benchmark. The elements in the
 object are
 
@@ -144,21 +144,21 @@ object are
 These are the main routines for benchmarking parallel applications:
 
 \begin{description}
-\item[\code{create.benchmark(task, data, type, cpu\_range, ...)}]
+\item[\code{create\_benchmark(task, data, type, cpu\_range, ...)}]
   defines a benchmark object using a specific \code{task} and the
   corresponding \code{data}. The \code{type} refers to the serial or
   parallel paradigm to use. The \code{cpu\_range} specifies the range
   of CPUs to use for this benchmark. 
-\item[\code{run.benchmark(x)}] takes a benchmark object as argument
-  and carries out the defined benchmark. It returns an object of type
-  bm\_results containing the
+\item[\code{run\_benchmark(x)}] takes a benchmark object as argument
+  and carries out the defined benchmark. An object of type
+  \class{benchmark\_results} is returned containing the
   results of the benchmark.
 \end{description}
 
 \subsubsection{Results}
 
 Results of the benchmark are stored in a data frame. It is an object
-of class \class{bm\_results} and inherits from class
+of class \class{benchmark\_results} and inherits from class
 \class{data.frame}. Each row represents a run of the dedicated
 benchmark and for each run the following data is saved in addition to
 the data defined in the \class{benchmark} object:
@@ -179,7 +179,7 @@ the data defined in the \class{benchmark} object:
 \end{description} 
 
 Example~\ref{ex:benchrun} runs an OpenMP benchmark which returns an
-object of class \class{bm\_results}.
+object of class \class{benchmark\_results}.
 
 % The task to run with 1 and 2 processors is ``matrix
 %multiplication''. The programming models to use are ``OpenMP'' and
@@ -200,21 +200,21 @@ The following routines are for handling a benchmark object. They
 extract or replace the values in the benchmark \code{x}.
 
 \begin{itemize}
-\item \code{bm.task(x)}
-\item \code{bm.data(x)}
-\item \code{bm.type(x)}
-\item \code{bm.cpu.range(x)}
+\item \code{benchmark\_task(x)}
+\item \code{benchmark\_data(x)}
+\item \code{benchmark\_type(x)}
+\item \code{benchmark\_cpu\_range(x)}
 \end{itemize}
 
 The following routines supply extra information about the benchmark object
 or the benchmark environment.
 
 \begin{description}
-\item[\code{bm.is.parallel}] returns \code{TRUE} if the benchmark
-  contains a parallel function. 
-\item[\code{bm.tasks}] returns the tasks which are possible to run
+\item[\code{benchmark\_is\_parallel}] returns \code{TRUE} if the benchmark
+  contains a parallel function to apply. 
+\item[\code{benchmark\_tasks}] returns the tasks which are possible to run
   with the benchmark environment.
-\item[\code{bm.types}] returns the types of available serial or
+\item[\code{benchmark\_types}] returns the types of available serial or
   parallel paradigms to run with the benchmark environment.
 \end{description}
 
@@ -226,7 +226,7 @@ a generic function for calculating the speedup is provided:
 \begin{description}
 \item[\code{speedup(x)}] is a generic function taking an object as
   an argument. Currently there are two methods implemented namely
-  \code{speedup.numeric} and \code{speedup.bm\_results}. The methods
+  \code{speedup.numeric} and \code{speedup.benchmark\_results}. The methods
   calculate the speedup as it is presented in
   Equation~\ref{eq:speedup}.
 \end{description}
@@ -237,7 +237,7 @@ The following S3 methods are provided for the benchmark environment:
 
 \begin{description}
 \item[\code{print.benchmark}] prints objects of class \class{benchmark}
-\item[\code{plot.bm\_results}] supplies a plot method for comparing
+\item[\code{plot.benchmark\_results}] supplies a plot method for comparing
   benchmark results.
 \item[\code{speedup.default}] returns an error message that there is
   no default method. 
@@ -245,8 +245,8 @@ The following S3 methods are provided for the benchmark environment:
   vector of type \class{numeric}. The reference execution time is  the
   first element in the vector. The return value is a vector of type
   \class{numeric}. 
-\item[\code{speedup.bm\_results}] calculates the speedups from a given
-  object of \\class~\class{bm\_results} and returns them as a vector of
+\item[\code{speedup.benchmark\_results}] calculates the speedups from a given
+  object of \\class~\class{benchmark\_results} and the results are returned as a vector of
   type~\class{numeric}. 
 \end{description}
 
@@ -254,17 +254,17 @@ The following S3 methods are provided for the benchmark environment:
 \label{ex:benchrun}
 <<echo=TRUE, eval=TRUE>>=
 n <- 1000
-maxcpu <- omp.get.num.procs()
+max_cpu <- omp_get_num_procs()
 dat <- list()
 dat[[1]] <- dat[[2]] <- n
 dat[[3]] <- function(x){
   runif(x,-5,5)
 }
 
-bm <- create.benchmark(task="matrix multiplication", data=dat,
-                       type="OpenMP", parallel=TRUE, cpu_range=1:maxcpu)
+bm <- create_benchmark(task="matrix multiplication", data=dat,
+                       type="OpenMP", parallel=TRUE, cpu_range=1:max_cpu)
 bm
-bmres <- run.benchmark(bm)
+bmres <- run_benchmark(bm)
 bmres
 speedup(bmres)
 @
@@ -298,13 +298,13 @@ the necessary information for pricing an option. The list elements are
   \item the volatility $\sigma$,
   \item and the present value of the stock.
   \end{itemize}
-\item[strikeprice] is a numeric defining the strikeprice of the option.
+\item[strike\_price] is a numeric defining the strike price of the option.
 \item[maturity] is a numeric defining the time until the option expires.
 \item[type] is a character representing the type of the option. There
   are two possibilities---either a \code{"Call"} option, or a
   \code{"Put"} option.
 \item[kind] contains a character representing the class of the
-  option. Only options of type \code{"European"} could be priced at
+  option. Only options of type \code{"European"} can be priced at
   the time of this writing. 
 \item[position] is a character string marking the position of the
   investor. This can either be \code{"long"} or \code{"short"}.
@@ -316,29 +316,30 @@ the necessary information for pricing an option. The list elements are
 These are the main routines for pricing an option:
 
 \begin{description}
-\item[\code{define.option(underlying, strikeprice, maturity, ...)}]
+\item[\code{define\_option(underlying, strike\_price, maturity, ...)}]
   defines an \\object of class \class{option}. Further arguments
   represented by the \ldots{} are \code{type} (with default
   \code{"Call"}), \code{class} (default \code{"European"}) and
   \code{position} (default \code{"long"}).
-\item[\code{blackscholesprice(x)}] takes an object of class
+\item[\code{Black\_Scholes\_price(x)}] takes an object of class
   \class{option} as argument and returns the analytical solution of
   the Black Scholes differential equation (the price of the
   option). This works only for European options (see
   Section~\ref{sec:blackscholes} for details).
-\item[\code{monteCarloSimulation(x, r, n, length, ...)}] carries out a
+\item[\code{Monte\_Carlo\_simulation(x, r, path\_length, n\_paths, ...)}] carries out a
   Monte Carlo simulation pricing 
   an option given by \code{x}. Further arguments are the risk free
-  yield \code{r}, the length of a wiener path \code{n}, the number of
-  simulated paths \code{length}, the number of simulation runs
-  \code{n.simulations} (with default \code{50}) and if antithetic
+  yield \code{r}, the length of a Wiener path \code{path\_length}, the number of
+  simulated paths \code{n\_paths}, the number of simulation runs
+  \code{n\_simulations} (with default \code{50}) and if antithetic
   variance reduction should be used (\code{antithetic = TRUE}).
-\item[\code{mcs.Rmpi(x, r, n, length, n\_cpu = 1, spawnRslaves =
+\item[\code{mcs\_Rmpi(n\_cpu = 1, spawnRslaves =
     FALSE, ...)}] is the same
-  like \code{monteCarloSimulation()} but uses parallel generation of
-  option prices. Additional arguments \code{n\_cpu} and
-  \code{spawnRslaves} have to be provided naming the number of CPUs
-  and if R slaves are to be spawned respectively.
+  like the serial version above (\code{Monte\_Carlo\_simulation()})
+    but uses parallel generation of 
+  option prices. Additional arguments have to be provided naming the
+    number of CPUs (\code{n\_cpu}) and if R slaves are to be spawned
+    respectively (\code{spawnRslaves}).
 \end{description}
 
 \subsubsection{Extractor and Replacement Functions}
@@ -349,11 +350,12 @@ extract or replace the values in the option \code{x}.
 
 \begin{itemize}
 \item \code{maturity(x)}
-\item \code{strikeprice(x)}
+\item \code{strike\_price(x)}
 \item \code{underlying(x)}
-\item \code{optiontype(x)}
-\item \code{optionclass(x)}
+\item \code{option\_type(x)}
+\item \code{option\_class(x)}
 \item \code{position(x)}
+\item \code{price\_of(x)}
 \end{itemize}
 
 \subsubsection{S3 Methods}
@@ -369,20 +371,20 @@ The following S3 methods are provided for the option pricing environment:
 \label{ex:option}
 <<echo = TRUE, eval = TRUE>>=
 ## build example option
-european <- define.option(c(0.1,0.4,100),100,1/12)
+european <- define_option(c(0.1,0.4,100),100,1/12)
 
 ## use extractors
 underlying(european)
-optiontype(european)
-optionclass(european)
-strikeprice(european)
+option_type(european)
+option_class(european)
+strike_price(european)
 maturity(european)
 
 ## use of replacement functions
 underlying(european) <- c(0.2,0.5,100)
 underlying(european)
 
-priceof(european) <- blackscholesprice(european, r = 0.045)
+price_of(european) <- Black_Scholes_price(european, r = 0.045)
 european
 
 @
@@ -390,7 +392,7 @@ european
 
 In Example~\ref{ex:option} the variable \code{european} is assigned an
 object of class \class{option}. It is defined as an European option
-with strikeprice 100 and maturity 1/12 (30 days). The underlying has a
+with strike price 100 and maturity 1/12 (30 days). The underlying has a
 present value of 100, a return of 0.1 and volatility of 0.4. Invoking the print
 method returns a short summary of the object. The rest
 of the example shows the use of different extractor functions and an
@@ -412,7 +414,7 @@ To complete the set of functions supplied by package \pkg{paRc} the
 following function has to be explained:
 
 \begin{description}
-\item[\code{serial.matrix.mult(X,Y)}] takes the matrices \code{X} and
+\item[\code{serial\_matrix\_multiplication(X,Y)}] takes the matrices \code{X} and
   \code{Y} as arguments and performs a serial matrix
   multiplication. This function calls a C routine providing a
   non-optimized version of the serial matrix multiplication (see

@@ -6,7 +6,7 @@
 ##########################################################
 
 ## input validation function
-matrix.mult.validate <- function(X, Y, dx, dy){
+matrix_mult_validate <- function(X, Y, dx, dy){
   if(!(is.matrix(X) && is.matrix(Y)))
     stop("'X' and 'Y' must be matrices.")
   
@@ -15,12 +15,12 @@ matrix.mult.validate <- function(X, Y, dx, dy){
 }
 
 ## serial version of matrix multiplication
-serial.matrix.mult <- function(X, Y)
+serial_matrix_multiplication <- function(X, Y)
 {
   dx <- dim(X) ## dimensions of matrix A
   dy <- dim(Y) ## dimensions of matrix B
   ## input validation
-  matrix.mult.validate(X, Y, dx, dy)
+  matrix_mult_validate(X, Y, dx, dy)
   ## data preparation
   x <- as.vector(X)
   storage.mode(x) <- "double"
@@ -37,15 +37,15 @@ serial.matrix.mult <- function(X, Y)
 
 
 ## parallel version of matrix multiplication
-omp.matrix.mult <- function(X, Y, n_cpu = 1)
+omp_matrix_multiplication <- function(X, Y, n_cpu = 1)
 {
   
   dx <- dim(X) ## dimensions of matrix A
   dy <- dim(Y) ## dimensions of matrix B
   ## input validation
-  matrix.mult.validate(X, Y, dx, dy)
+  matrix_mult_validate(X, Y, dx, dy)
   ## set number of cpus to use
-  omp.set.num.threads(n_cpu)
+  omp_set_num_threads(n_cpu)
   ## data preparation
   x <- as.vector(X)
   storage.mode(x) <- "double"
@@ -73,9 +73,9 @@ mm.Rmpi.slave.C <- function(){
   require("paRc")
   commrank <- mpi.comm.rank() -1
   if(commrank==(n_cpu - 1))
-    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y)
+    local_mm <- serial_matrix_multiplication(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_last),],Y)
   else
-    local_mm <- serial.matrix.mult(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
+    local_mm <- serial_matrix_multiplication(X[(nrows_on_slaves*commrank + 1):(nrows_on_slaves*commrank + nrows_on_slaves),],Y)
   mpi.gather.Robj(local_mm,root=0,comm=1)    
 }
 
@@ -84,7 +84,7 @@ mm.Rmpi <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   dx <- dim(X) ## dimensions of matrix A
   dy <- dim(Y) ## dimensions of matrix B
   ## Input validation
-  matrix.mult.validate(X, Y, dx, dy)
+  matrix_mult_validate(X, Y, dx, dy)
   
   if( n_cpu == 1 )
     return(X%*%Y)
@@ -123,10 +123,10 @@ mm.Rmpi.C <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   dx <- dim(X) ## dimensions of matrix A
   dy <- dim(Y) ## dimensions of matrix B
   ## Input validation
-  matrix.mult.validate(X, Y, dx, dy)
+  matrix_mult_validate(X, Y, dx, dy)
   
   if( n_cpu == 1 )
-    return(serial.matrix.mult(X,Y))
+    return(serial_matrix_multiplication(X,Y))
   if( spawnRslaves == TRUE )
     mpi.spawn.Rslaves(nslaves = n_cpu)
 
@@ -164,7 +164,7 @@ mm.rpvm <- function(X, Y, n_cpu = 1) {
   dy <- dim(Y) ## dimensions of matrix B
 
   ## Input validation
-  matrix.mult.validate(X,Y,dx,dy)
+  matrix_mult_validate(X,Y,dx,dy)
 
   ## Tags for message sending
   WORKTAG <- 17
@@ -221,14 +221,14 @@ mm.rpvm.C <- function(X, Y, n_cpu = 1) {
   dy <- dim(Y) ## dimensions of matrix B
 
   ## Input validation
-  matrix.mult.validate(X,Y,dx,dy)
+  matrix_mult_validate(X,Y,dx,dy)
 
   ## Tags for message sending
   WORKTAG <- 17
   RESULTAG <- 82
   
   if(n_cpu == 1)
-    return(serial.matrix.mult(X,Y))
+    return(serial_matrix_multiplication(X,Y))
 
   mytid <- .PVM.mytid()
   children <- .PVM.spawnR(ntask = n_cpu, slave = "mm_slaveC.R")
@@ -272,7 +272,7 @@ mm.rpvm.C <- function(X, Y, n_cpu = 1) {
   out
 }
 
-serial.dot.product <- function(x, y)
+serial_dot_product <- function(x, y)
 {
     if(!is.vector(x) && !is.vector(y))
         stop("'x' and 'y' must be vectors.")

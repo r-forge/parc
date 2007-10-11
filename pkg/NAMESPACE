@@ -1,68 +1,68 @@
 useDynLib("paRc")
 
 export(## OpenMP function wrappers
-       "omp.get.num.procs",
-       "omp.set.num.threads",
-       "omp.get.max.threads",
+       "omp_get_num_procs",
+       "omp_set_num_threads",
+       "omp_get_max_threads",
 
        ## Application: Matrix Multiplication 
-       "serial.matrix.mult",
-       "omp.matrix.mult",
+       "serial_matrix_multiplication",
+       "omp_matrix_multiplication",
        
-       "serial.dot.product",
+       "serial_dot_product",
 
        ## benchmarking
-       "bm.task",
-       "bm.task<-",
-       "bm.tasks",
-       "bm.type",
-       "bm.type<-",
-       "bm.types",
-       "bm.function.to.apply",
-       "bm.is.parallel",
-       "bm.cpu.range",
-       "bm.cpu.range<-",
-       "bm.data",
-       "bm.data<-",
-       "bm.data.frame",
-       "create.benchmark",
-       "run.benchmark",
+       "benchmark_task",
+       "benchmark_task<-",
+       "benchmark_tasks",
+       "benchmark_type",
+       "benchmark_type<-",
+       "benchmark_types",
+       "benchmark_function_to_apply",
+       "benchmark_is_parallel",
+       "benchmark_cpu_range",
+       "benchmark_cpu_range<-",
+       "benchmark_data",
+       "benchmark_data<-",
+       "benchmark_data.frame",
+       "create_benchmark",
+       "run_benchmark",
        "speedup",
 
        ## Application: option pricing
-       "define.option",
+       "define_option",
        "payoff",
        "maturity",
-       "strikeprice",
+       "strike_price",
        "underlying",
-       "optiontype",
-       "optionclass",
-       "priceof",
-       "pricepath",
+       "option_type",
+       "option_class",
+       "price_of",
+       "price_path",
        "position",
        "maturity<-",
-       "strikeprice<-",
+       "strike_price<-",
        "underlying<-",
-       "optiontype<-",
-       "optionclass<-",
-       "priceof<-",
-       "pricepath<-",
+       "option_type<-",
+       "option_class<-",
+       "price_of<-",
+       "price_path<-",
        "position<-",
-       "monteCarloSimulation",
+       "Monte_Carlo_simulation",
        "as.option",
-       "wienerPath",
+       "Wiener_path",
        "returns",
-       "blackscholesprice",
+       "Black_Scholes_price",
        "mcs.Rmpi"
        )
 
 ## S3methods
 ## benchmarking
 S3method("print", "benchmark")
-S3method("plot", "bm_results")
+S3method("plot", "benchmark_results")
 S3method("speedup", "default")
 S3method("speedup", "numeric")
-S3method("speedup", "bm_results")
+S3method("speedup", "benchmark_results")
 
 ## option pricing
 S3method("as.option","default")
@@ -73,4 +73,3 @@ S3method("plot","option")
 
 ## coercions
 ##S3method(as., )
-

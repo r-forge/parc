@@ -14,12 +14,13 @@ load("../examples/Rda/bmres-shared-2500.Rda")
 To show how the BLAS routines perform on a single machine in
 comparison to the basic C implementation we ran a benchmark on a
 bignode of cluster@WU. The complexity of computation is defined as the
-number of rows and columns a matrix has. We chose to use two $1000
+number of rows and columns a matrix has. We chose to use  $1000
 \times 1000$  and $2500 \times
 2500$ matrices respectively as grades of complexity (i.e., complexity
-grade $1000$ and complexity grade $2500$). The two matrices used to
-produce these results are generated using pseudo random numbers
-of the uniform
+grade $1000$ and complexity grade $2500$). The matrix multiplication
+$C = AB$ is carried out 10 times using two different matrices ($A$ and
+$B$). In each run the entries of the matrices are generated using
+pseudo random numbers of the uniform
 distribution in the interval $-5$ to $5$. To eliminate fluctuations of the
 runtime the mean time of 10 runs is calculated.
 
