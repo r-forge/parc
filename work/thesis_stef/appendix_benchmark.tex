@@ -19,7 +19,7 @@ library("paRc")
 library("snow")
 
 ## definition of benchmark
-maxcpu <- 4
+max_cpu <- 4
 task <- "matrix multiplication"
 taskID <- "mm"
 paradigm <- "shared"
@@ -34,21 +34,21 @@ bmdata[[3]] <- function(x){
 }
 
 ## create benchmark object
-bm <- create.benchmark(task=task, data=bmdata,
+bm <- create_benchmark(task=task, data=bmdata,
                        type=types[1], parallel=TRUE,
-                       cpu_range=1:maxcpu, runs=runs)
+                       cpu_range=1:max_cpu, runs=runs)
 set.seed(1782)
 ## for each complexity and type run a number of benchmarks
 for(n in complexity){
   bmdata[[1]] <- bmdata[[2]] <- n
-  bm.data(bm) <- bmdata
+  benchmark_data(bm) <- bmdata
   for(type in types){
-    bm.type(bm) <- type
+    benchmark_type(bm) <- type
     writeLines(paste("Starting",type,"benchmark with complexity",n,
                      "..."))
-    results <- run.benchmark(bm)
-    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),
-                                  ".Rda",sep=""))
+    results <- run_benchmark(bm)
+    save(results,file=sprintf("%s-%s-%s-%d.Rda", paradigm, taskID,
+                               type, n))
   }
 }
 \end{Scode}
@@ -76,7 +76,7 @@ library("paRc")
 library("snow")
 
 ## definition of benchmark run
-maxcpu <- 20
+max_cpu <- 20
 task <- "matrix multiplication"
 taskID <- "mm-norm"
 paradigm <- "distributed"
@@ -89,20 +89,20 @@ bmdata[[3]] <- function(x){
   rnorm(x)
 }
 
-bm <- create.benchmark(task=task, data=bmdata,
+bm <- create_benchmark(task=task, data=bmdata,
                        type=types[1], parallel=TRUE,
-                       cpu_range=1:maxcpu, runs=runs)
+                       cpu_range=1:max_cpu, runs=runs)
 set.seed(1782)
 for(n in complexity){
   bmdata[[1]] <- bmdata[[2]] <- n
-  bm.data(bm) <- bmdata
+  benchmark_data(bm) <- bmdata
   for(type in types){
-    bm.type(bm) <- type
+    benchmark_type(bm) <- type
     writeLines(paste("Starting",type,"benchmark with complexity",n,
                      "..."))
-    results <- run.benchmark(bm)
-    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),
-                                  ".Rda",sep=""))
+    results <- run_benchmark(bm)
+    save(results,file=sprintf("%s-%s-%s-%d.Rda", paradigm, taskID,
+                               type, n))
   }
 }
 \end{Scode}
@@ -129,35 +129,34 @@ library("Rmpi")
 library("paRc")
 
 ## definition of benchmark run
-maxcpu <- mpi.universe.size()
+max_cpu <- mpi.universe.size()
 task <- "Monte Carlo simulation"
 taskID <- "mcs"
 paradigm <- "distributed"
 types <- c("normal", "MPI")
 runs <- 10
 
-
-bm <- create.benchmark(task=task, data=list(),
+bm <- create_benchmark(task=task, data=list(),
                        type=types[1], paralle=TRUE,
-                       cpu_range=1:maxcpu, runs=runs)
+                       cpu_range=1:max_cpu, runs=runs)
 ## define option
-opt <- european <- define.option(c(0.1,0.4,100),100,1/12)
+opt <- define_option(c(0.1,0.4,100),100,1/12)
 
 bmdata <- list()
 bmdata[[1]] <- opt
 bmdata[[2]] <- 0.1 ## yield
-bmdata[[3]] <- 30  ## n
-bmdata[[4]] <- 5000 ## length
+bmdata[[3]] <- 30  ## path length
+bmdata[[4]] <- 5000 ## number of paths
 bmdata[[5]] <- 50  ## number of simulations
 bmdata[[6]] <- TRUE ## use antithetic
-bm.data(bm) <- bmdata
+benchmark_data(bm) <- bmdata
 
 for(type in types){
-  bm.type(bm) <- type
+  benchmark_type(bm) <- type
   writeLines(paste("Starting",type,"benchmark..."))
-  results <- run.benchmark(bm)
-  save(results,file=paste(paste(paradigm,taskID,type,sep="-"),
-                          ".Rda",sep=""))
+  results <- run_benchmark(bm)
+  save(results,file=sprintf("%s-%s-%s-%d.Rda", paradigm, taskID,
+                               type, n))
 }
 
 \end{Scode}

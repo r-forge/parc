@@ -32,5 +32,5 @@ legend("topleft", paste("f =",c(1,frac)), col=colors,
 bty = "n", lty=1)
 
 @ 
-\caption{Amdahl's Law for Parallel Computing}
+\caption{Amdahl's Law for parallel computing}
 \end{figure}

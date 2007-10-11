@@ -14,7 +14,7 @@
 \section{Introduction}
 
 If we think of applications in parallel computing matrix
-multiplication comes into mind. Because of its nature it is a prime
+multiplication comes to mind. Because of its nature it is a prime
 example for data parallelism. There has been done a lot of work in
 this area. E.g., \cite{golub96mc} give a comprehensive introduction to the
 field of matrix computations. 
@@ -96,7 +96,7 @@ Block matrices are central in many algorithms. They have become very
 important in high performance computing because it enables
 easy distributing of data. 
 
-In general a $m$ by $n$ matrix $A$ can be partitioned to obtain
+In general an $m$ by $n$ matrix $A$ can be partitioned to obtain
 
 $$ 
 A = \left( \begin{array}{ccc}
@@ -127,7 +127,7 @@ we chose the dot product version for illustrating the implementation
 of the serial version of the matrix multiplication. A good
 introduction to the other algorithms is given by \cite{golub96mc}. 
 
-\subsection{Dot Product Matrix Multiply}
+\subsection{Dot Product Matrix Multiplication}
 In the usual matrix multiplication procedure the array $C$ is computed
 through dot products one at a time from left to right and top to
 bottom order.
@@ -136,7 +136,7 @@ bottom order.
 $\mathbb{R}^{m \times r} \times
 \mathbb{R}^{r \times n} \to \mathbb{R}^{m \times n}$
 
-$$ C = AB \Longrightarrow c_{ij} = \sum_{k=1}^r a_{ik}b_{kj} $$
+$$ C = AB \Longleftrightarrow c_{ij} = \sum_{k=1}^r a_{ik}b_{kj} $$
 
 Algorithm~\ref{alg:basicmm} shows the implementation of the basic dot
 product matrix multiplication.
@@ -174,7 +174,7 @@ product matrix multiplication.
 It is rather easy to implement Algorithm~\ref{alg:basicmm} in C. 
 Example~\ref{ex:serialmm} shows the serial implementation of the dot
 product matrix multiplication in package \pkg{paRc}. It can be called
-from R using \code{serial.matrix.mult(A,B)} where \code{A} and
+from R using \code{serial\_matrix\_multiplication(A,B)} where \code{A} and
 \code{B} are the matrices to be multiplied.
 
 \begin{Example} Serial matrix multiplication algorithm
@@ -260,8 +260,9 @@ available in the package \pkg{snow}.
 
 In general the benchmarks to produce the results in this
 section are defined and run like in
-Example~\ref{ex:benchmarkruns}. First, the parameters like the task or
-the programming model to use in the benchmark are specified. When using
+Example~\ref{ex:benchmarkruns}. First, the parameters like the task,
+the programming model to use in the benchmark or the number of runs
+are specified. When using 
 the matrix multiplication as a task, data is described as follows: the
 first two list elements contain the number of rows $n$ and columns $m$
 respectively. The
@@ -269,15 +270,18 @@ third element contains a function for generating the entries of the
 matrix. It must return a vector of length $n \times m$.
 
 Then the defined benchmark is carried out. For each complexity,
-each type and each number of CPUs a number of benchmark runs is
-performed. Eventually the results are stored on the hard disk.
+each type and each number of CPUs a predefined number of benchmark runs is
+performed. In each run new entries for the matrices are generated
+using a predefined random number generator. Then the actual matrix
+multiplication is carried out. 
+Eventually the results are stored on the hard disk. 
 
 \begin{Example} Running a benchmark
 \label{ex:benchmarkruns}
 \begin{Scode}
 
 ## definition of benchmark
-maxcpu <- mpi.universe.size()
+max_cpu <- mpi.universe.size()
 task <- "matrix multiplication"
 taskID <- "mm"
 paradigm <- "distributed"
@@ -291,21 +295,21 @@ bmdata[[3]] <- function(x){
   runif(x,-5,5)
 }
 ## create benchmark object
-bm <- create.benchmark(task=task, data=bmdata,
+bm <- create_benchmark(task=task, data=bmdata,
                        type=types[1], parallel=TRUE,
-                       cpu_range=1:maxcpu, runs=runs)
+                       cpu_range=1:max_cpu, runs=runs)
 set.seed(1782)
 ## for each complexity and type run a number of benchmarks
 for(n in complexity){
   bmdata[[1]] <- bmdata[[2]] <- n
-  bm.data(bm) <- bmdata
+  benchmark_data(bm) <- bmdata
   for(type in types){
-    bm.type(bm) <- type
-    writeLines(paste("Starting",type,"benchmark with complexity",
-               n,"..."))
-    results <- run.benchmark(bm)
-    save(results,file=paste(paste(paradigm,taskID,type,n,sep="-"),
-         ".Rda",sep=""))
+    benchmark_type(bm) <- type
+    writeLines(paste("Starting", type ,"benchmark with complexity",
+               n, "..."))
+    results <- run_benchmark(bm)
+    save(results,file=sprintf("%s-%s-%s-%d.Rda", paradigm, taskID,
+                               type, n))
   }
 }
 
@@ -341,7 +345,6 @@ construct \code{\textbf{for}} is as follows:
 \begin{itemize}
 \item \code{\textbf{\#pragma omp parallel for} \textit{optional clauses}} 
 \end{itemize} 
-
 The \textit{optional clauses} can be any of the clauses accepted by the
 \code{\textbf{parallel}} or \code{\textbf{for}} directives. For
 example \textit{optional clauses} can be data sharing attribute
@@ -401,10 +404,10 @@ memory parallelism using shared variables.
 Example~\ref{ex:ompmm} shows the implementation for
 Algorithm~\ref{alg:ompmm} in C to achieve loop level parallelism. This
 routine can be called from R
-using the R function \code{omp.matrix.mult(A, B, n\_cpu)}, where \code{A} and
+using the R function \code{omp\_matrix\_multiplication(A, B, n\_cpu)}, where \code{A} and
 \code{B} are the matrices to be multiplied and \code{n\_cpu} is the
 number of CPUs to be used.
-\newpage
+%\newpage
 \begin{Example} Parallel matrix multiplication using OpenMP
 \label{ex:ompmm}
 \begin{Scode}
@@ -574,11 +577,11 @@ mm.Rmpi <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   dx <- dim(X) ## dimensions of matrix A
   dy <- dim(Y) ## dimensions of matrix B
   ## Input validation
-  matrix.mult.validate(X, Y, dx, dy)  
+  matrix_mult_validate(X, Y, dx, dy)  
   if( n_cpu == 1 )
     return(X%*%Y)
   ## spawn R slaves?
-  if( spawnRslaves == TRUE )
+  if(spawnRslaves)
     mpi.spawn.Rslaves(nslaves = n_cpu)
   ## broadcast data and functions necessary on slaves
   mpi.bcast.Robj2slave(Y) 
@@ -600,7 +603,7 @@ mm.Rmpi <- function(X, Y, n_cpu = 1, spawnRslaves=FALSE) {
   ## Rmpi returns a list when the vectors have different length
   for(i in 1:n_cpu)
     out <- rbind(out,mm[[i+1]])
-  if( spawnRslaves == TRUE )
+  if(spawnRslaves)
     mpi.close.Rslaves()
   out
 }
@@ -663,7 +666,7 @@ mm.rpvm <- function(X, Y, n_cpu = 1) {
   dx <- dim(X) ## dimensions of matrix X
   dy <- dim(Y) ## dimensions of matrix Y
   ## Input validation
-  matrix.mult.validate(X,Y,dx,dy)
+  matrix_mult_validate(X,Y,dx,dy)
   ## Tags for message sending
   WORKTAG <- 17
   RESULTAG <- 82
@@ -694,17 +697,17 @@ mm.rpvm <- function(X, Y, n_cpu = 1) {
     .PVM.send(children[id], WORKTAG)
    }
   ## receive partial results
-  partial.results <- list()
+  partial_results <- list()
   for (child in children) {
     .PVM.recv(-1, RESULTAG)
     rank <- .PVM.upkint()
-    partial.results[[rank]] <- .PVM.upkdblmat()
+    partial_results[[rank]] <- .PVM.upkdblmat()
   }
   .PVM.exit()
   ## return in matrix form
   out <- NULL
   for(i in 1:n_cpu)
-    out <- rbind(out,partial.results[[i]])
+    out <- rbind(out,partial_results[[i]])
   out
 }
 \end{Scode}
