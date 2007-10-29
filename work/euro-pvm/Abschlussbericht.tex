@@ -1,0 +1,157 @@
+\documentclass[a4paper,fleqn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[austrian]{babel}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\def\email#1{{\tt#1}}
+\newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+
+\begin{document}
+
+\title{F\"orderungsstipendium - Abschlussbericht}
+
+\author{Stefan Theu"sl \\ Matrikelnummer: 0352689 \\ Email: \email{h0352689@wu-wien.ac.at}}
+
+\maketitle              % typeset the title of the contribution
+
+\section{Kurzbeschreibung der wissenschaftlichen Arbeit}
+
+\begin{description}
+\item[Titel der Diplomarbeit] Applied High Performance Computing using
+  R (deutsch: Angewandtes Hochleistungsrechnen unter Verwendung von R)
+\item[Betreuer] Prof. Dr. Kurt Hornik, Department of Statistics and
+  Mathematics
+\item[Sprache] Englisch
+
+\end{description}
+
+Wie der Titel schon andeutet geht es in dieser Diplomarbeit um
+hochperformantes Rechnen unter Verwendung des Softwarepaketes
+R \cite{Rcore}. Applikationen aus verschiedenen Bereichen der
+Betriebswirtschaft (Finance) sowie aus Statistik und Mathematik,
+sollen die M\"oglichkeiten, aber auch die Grenzen der parallelen
+Programmierung aufzeigen.
+
+Das Department f\"ur Statistik und
+Mathematik bietet seit geraumer Zeit einen Rechencluster und somit
+eine Plattform f\"ur rechenintensive Methoden an. Die neuen
+M\"oglichkeiten, die die Wirtschaftsuniversit\"at nun im
+computationalen Bereich bietet, sollen in dieser Arbeit
+(\cite{theussl07}) 
+getestet und
+genutzt werden. Der Abstract der mittlerweile fertiggestellten Arbeit
+lautet wie folgt:
+
+\begin{abstract}
+In den 1990er Jahren ebnete das Beowulf Projekt den Weg f\"ur massives
+Parallelrechnen, weil dadurch der Zugang zu parallelen Rechenresourcen f\"ur
+viele 
+Forschungsinstitute und der Industrie erst leistbar wurde. Trotzdem
+war der gro\ss{}e Durchbruch lange nicht erkennbar. Ausschlaggebend
+daf\"ur waren zwei Aspekte:
+Erstens gab es bisher keine g\"unstigen Parallelrechner und zweitens
+waren auch keine einfachen Parallelprogrammiermodelle vorhanden. Die
+Einf\"uhrung von Multicoreprozessoren f\"ur Desktopsysteme und
+impliziter Programmiermodelle wie OpenMP f\"uhrte zu einem Umbruch,
+der auch Auswirkungen auf die Softwareentwicklung hat. Der Trend geht
+dabei immer mehr in Richtung Parallelrechnen.
+
+Diese Diplomarbeitet bietet einen \"Uberblick \"uber das Feld des
+Hochleistungsrechnens und im Speziellen des Parallelrechnens unter
+Verwendung von R, einer Softwareumgebung f\"ur statistisches Rechnen
+und Grafiken. Dar\"uber- hinaus beinhaltet diese Arbeit eine Einf\"uhrung %%SELBSTGEMACHTERUMBRUCH
+in paralleles Rechnen unter Verwendung mehrerer Erweiterung zu R.
+
+Der Kern dieser Arbeit ist die Entwicklung eines
+Paketes namens  \pkg{paRc}. Diese Erweiterung beinhaltet eine
+Schnittstelle zu OpenMP und stellt eine Benchmark Umgebung zur
+Verf\"ugung, mit der verschiedene Paralleleprogrammiermodelle wie MPI oder
+PVM sowie hochoptimierte Bibliotheken (BLAS) miteinander verglichen
+werden k\"onnen. Als Aufgabe f\"ur diese Benchmarks wurde das
+klassische Beispiel aus dem Bereich des Parallelrechnens, n\"amlich
+die Matrix Multiplikation, gew\"ahlt.
+
+Schlussendlich wird in dieser Arbeit eine Fallstudie aus der
+computationalen Finanzwirtschaft pr\"asentiert. Im Mittelpunkt dieser
+Fallstudie steht die Bewertung von Derivaten (Europ\"aische Call
+Optionen) unter Verwendung paralleler Monte Carlo Simulation.
+\end{abstract}
+
+Im Zuge dieser
+Diplomarbeit habe ich auch an der Konferenz EuroPVM/MPI
+(\url{http://pvmmpi07.lri.fr}) teilgenommen. Der folgende Bericht
+bezieht sich nun haupts"achlich auf diese Konferenz.  
+
+\section{Bericht: Euro PVM/MPI 2007}
+
+\subsection{MPI Tutorium}
+Die Konferenz begann Sonntags mit einer kleinere Teilnehmeranzahl im
+Rahmen des Tutoriums. Dieses war speziell fuer Anfaenger konzipiert
+und hat erste Einblicke in die Arbeitsweise und Funktionalität von MPI
+erläutert. Hierfür haben die beiden Entwickler des MPI 2.0 Standards
+anhand eines einfachen Beispiels, nämlich dem ``Game of Life'',
+erklärt wie man aus einer seriellen Implementation (ohne paralleles
+Rechnen) schlussendlich eine parallele MPI 2.0 Applikation
+entwickelt. Besonders auf die Aspekte des Ein- und Auslesens von Daten
+sowie auch die Synchronisierung der parallelen Prozesse wurden
+Schwerpunkte gelegt. Interessante Themen waren hier vor allem
+Checkpointing sowie Performance Disk Libraries um hochperformant auf
+die zugrundeliegenden Daten zuzugreifen.
+Im zweiten Tutorial wurde ueber Advanced MPI Programming referiert
+anhand des Beispiels der Matrix-Multiplikation und des PUMMA
+Algorithmus.
+
+\subsection{Konferenz}
+Vom zweiten bis vierten Tag standen jeden Tag unterschiedliche
+Themenschwerpunkte am Programm wobei die für die Diplomarbeit
+relevanten Themen kurz erläutert werden.
+
+Ein interessanter Vortrag von Rusty Lusk hatte die Vergangenheit
+respektive Zukunft paralleler Programmiermodelle zum Thema. Als
+vielversprechende Paradigmen wurden hier OpenMP in Verbindung mit MPI
+hervorgehoben. Implizite Parallelprogrammiersprachen als Ergaenzung zu
+expliziter Parallelisierung mit MPI oder PVM angesehen. Im Endeffekt
+ist es schwierig im HPC Segment ueber MPI wegzuschauen (im Hinblick
+auf Petascale Computing---mehrere Tausend Prozessoren sollen
+angesprochen werden). Darueberhinaus gab es interessante Vortraege
+ueber Tools fuer HPC (zur Performance Analysis, Performance Disk
+Libraries, etc. ). Andere Vortr"age hatten die Input/Output
+Problematik bei hochperformanten Anwendungen zum Thema. Hier wurden
+spezielle Implementierungen empfohlen (z.B. ROMIO fuer Unix Systeme). 
+
+Schlussendlich gab es noch Vortraege ueber Visualisierungstools,
+Datenmodelle und MPI profiling die einen ersten Einblick in
+professionelle MPI Parallelprogrammierung gaben.
+
+Dazwischen sorgten auch ein Gala-Dinner im Senatshaus sowie ein von
+Microsoft gesponserter Cocktail-Evening dafür, dass sich die Community
+besser kennenlernen und vernetzen konnte.
+
+\section{Res"umee}
+
+Im Nachhinein betrachtet, hat sich die Konferenz in vielerlei Hinsicht
+als gewinnbringend erwiesen. Viele neue Einblicke in die Welt des
+parallelen Rechnens sowie viele Kontakte zu Forschern und Entwicklern
+in der ganzen Welt werden das wissen
+
+
+\begin{thebibliography}{2}
+%
+\bibitem {theussl07}
+Theussl, S.:
+Applied High Performance Computing using R.
+Diploma Thesis (2007), see http://epub.wu-wien.ac.at/ in preparation
+
+\bibitem {Rcore}
+R Development Core Team:
+R: A language and environment for statistical computing. R Foundation
+for Statistical Computing, Vienna, Austria. (2006)
+see http://www.R-project.org.
+
+\end{thebibliography}
+
+
+\end{document}
