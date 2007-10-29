@@ -1,0 +1,76 @@
+%\thispagestyle{empty}
+\begin{center}
+  {\Large Abstract\\}
+  {\Large{\bf \Title}\\}
+  %\medskip
+\end{center}
+\bigskip
+
+In the 1990s the Beowulf project smoothed to way for massively parallel
+computing as access to parallel computing power became affordable for
+research institutions and the industry. But the massive breakthrough
+of parallel computing has still not occurred. This is because two
+things were missing: low cost parallel computers and simple to use
+parallel programming models. However, with the introduction of
+multicore processors for mainstream computers and implicit parallel
+programming models like OpenMP a fundamental change of the way
+developers design and build their software applications is taken
+place---a change towards parallel computing.
+
+This thesis gives an overview of the field of high performance
+computing with a special focus on parallel computing in connection
+with the R environment for statistical computing and
+graphics. Furthermore, an introduction to parallel computing using
+various extensions to R is given.
+
+The major contribution of this thesis is the package called
+\pkg{paRc}, which contains an interface to OpenMP and provides a
+benchmark environment to compare various parallel programming models like
+MPI or PVM with each other as well as with highly optimized (BLAS)
+libraries. The dot product matrix multiplication was chosen as the
+benchmark task as it is a prime example in parallel computing. 
+
+Eventually a case study in computational finance is presented in this
+thesis. It deals with the pricing of derivatives (European call
+options) using parallel Monte Carlo simulation. 
+
+%\thispagestyle{empty}
+\begin{center}
+  {\Large Kurzfassung\\}
+  {\Large{\bf \Titel}\\}
+  %\medskip
+\end{center}
+\bigskip
+
+In den 1990er Jahren ebnete das Beowulf Projekt den Weg f\"ur massives
+Parallelrechnen, weil dadurch der Zugang zu parallelen Rechenresourcen f\"ur
+viele 
+Forschungsinstitute und der Industrie erst leistbar wurde. Trotzdem
+war der gro\ss{}e Durchbruch lange nicht erkennbar. Ausschlaggebend
+daf\"ur waren zwei Aspekte:
+Erstens gab es bisher keine g\"unstigen Parallelrechner und zweitens
+waren auch keine einfachen Parallelprogrammiermodelle vorhanden. Die
+Einf\"uhrung von Multicoreprozessoren f\"ur Desktopsysteme und
+impliziter Programmiermodelle wie OpenMP f\"uhrte zu einem Umbruch,
+der auch Auswirkungen auf die Softwareentwicklung hat. Der Trend geht
+dabei immer mehr in Richtung Parallelrechnen.
+
+Diese Diplomarbeitet bietet einen \"Uberblick \"uber das Feld des
+Hochleistungsrechnens und im Speziellen des Parallelrechnens unter
+Verwendung von R, einer Softwareumgebung f\"ur statistisches Rechnen
+und Grafiken. Dar\"uber- hinaus beinhaltet diese Arbeit eine Einf\"uhrung %%SELBSTGEMACHTERUMBRUCH
+in paralleles Rechnen unter Verwendung mehrerer Erweiterung zu R.
+
+Der Kern dieser Arbeit ist die Entwicklung eines
+Paketes namens  \pkg{paRc}. Diese Erweiterung beinhaltet eine
+Schnittstelle zu OpenMP und stellt eine Benchmark Umgebung zur
+Verf\"ugung, mit der verschiedene Paralleleprogrammiermodelle wie MPI oder
+PVM sowie hochoptimierte Bibliotheken (BLAS) miteinander verglichen
+werden k\"onnen. Als Aufgabe f\"ur diese Benchmarks wurde das
+klassische Beispiel aus dem Bereich des Parallelrechnens, n\"amlich
+die Matrix Multiplikation, gew\"ahlt.
+
+Schlussendlich wird in dieser Arbeit eine Fallstudie aus der
+computationalen Finanzwirtschaft pr\"asentiert. Im Mittelpunkt dieser
+Fallstudie steht die Bewertung von Derivaten (Europ\"aische Call
+Optionen) unter Verwendung paralleler Monte Carlo Simulation.
