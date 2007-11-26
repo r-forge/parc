@@ -10,9 +10,13 @@
 \usepackage{url}
 %% \usepackage{/usr/share/R/share/texmf/Sweave} see below new environment
 \usepackage[round]{natbib}
+%% it is essential that hyperref is before the algorithm pkg and float
+%% before hyperref
+\usepackage{float}
+\usepackage{hyperref}
 \usepackage{algorithm}
 \usepackage{algorithmic}
-%%\usepackage{hyperref}
+
 
 % Seitenlayout
 % DIV# gibt den Divisor für die Layoutberechnung an.
