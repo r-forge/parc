@@ -7,7 +7,9 @@ export(## OpenMP function wrappers
 
        ## Application: Matrix Multiplication 
        "serial_matrix_multiplication",
+       "matrix_multiplication_BLAS",
        "omp_matrix_multiplication",
+       "omp_matrix_multiplication_BLAS",
        
        "serial_dot_product",
 

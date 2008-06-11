@@ -1,6 +1,6 @@
 Package: paRc
-Version: 0.0-9
-Date: 2007-08-09
+Version: 0.0-10
+Date: 2008-06-09
 Title: Parallel computations in R
 Author: Stefan Theussl
 Maintainer: Stefan Theussl <stefan.theussl@wu-wien.ac.at>
