@@ -2,5 +2,7 @@
 ## R package: paRc
 ## theussl, 2007
 
-PKG_CFLAGS   = -fopenmp 
-PKG_LIBS   = -lgomp -lm -lpthread 
+PKG_CFLAGS   = -openmp -lm -lguide -lpthread
+PKG_LIBS   = -lguide -lpthread
+#PKG_CFLAGS   = -fopenmp 
+#PKG_LIBS   = -lgomp -lm -lpthread 

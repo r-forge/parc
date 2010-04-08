@@ -224,7 +224,7 @@ benchmark_function_to_apply <- function(x){
   }
   if(taskNr==2){
     foo <- switch(type,
-                  "normal" = monteCarloSimulation,
+                  "normal" = Monte_Carlo_simulation,
                   "MPI" = mcs.Rmpi,
                   stop("no such type")
                   )
